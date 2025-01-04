@@ -1,17 +1,16 @@
-import React from 'react';
-import { useEffect } from 'react';
-import { Route, Routes, useNavigate } from 'react-router';
-import { Cookies, useCookies } from 'react-cookie';
-
-import { AUTH_ABSOLUTE_PATH, AUTH_PATH, GD_ABSOLUTE_PATH, GD_DETAIL_PATH, GD_PATH, GD_UPDATE_PATH, GD_WRITE_PATH, OTHERS_PATH, ROOT_ABSOLUTE_PATH, ROOT_PATH } from './constants';
-
+import React, { useEffect, useState } from 'react';
 import './App.css';
-import GD from './view/GD';
-import GDWrite from './view/GD/Write';
-import GDDetail from './view/GD/Detail';
-import GDUpdate from './view/GD/Update';
+import { BrowserRouter, Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
+import { ACCESS_TOKEN, GEN_DISC_PATH, LOGIN_ABSOLUTE_PATH, LOGIN_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, MY_PATH, NOTICE, OTHERS_PATH, ROOT_PATH, RT_DISC_PATH, SCHEDULE, SNS_SUCCESS_PATH } from './constants';
 import MainLayout from './layouts/MainLayout';
-
+import GerneralDiscuss from './view/General_Discuss';
+import RTDiscuss from './view/RT_Discuss';
+import Notice from './view/Notice';
+import Schedule from './view/Schedule';
+import Main from './view/Main';
+import Mypage from './view/Mypage';
+import Login from './view/Auth/Login';
 
 // component: root path 컴포넌트 //
 function Index() {
@@ -22,43 +21,87 @@ function Index() {
   // function: 네비게이터 함수 //
   const navigator = useNavigate();
 
-  
-  useEffect(() => {
-    navigator(ROOT_ABSOLUTE_PATH);
+  // effect: 마운트 시 경로 이동 effect //
+  useEffect(()=> {
+    if(cookies[ACCESS_TOKEN]) navigator(MAIN_ABSOLUTE_PATH);
+    else navigator(LOGIN_ABSOLUTE_PATH);
   }, []);
 
-  // // effect: 마운트 시 경로 이동 effect //
-  // useEffect(() => {
-  //   if (cookies[ACCESS_TOKEN]) navigator(GD_ABSOLUTE_PATH);   // 값이 존재한다면 로그인 상태, 아니라면 비로그인 상태
-  //   else navigator(AUTH_ABSOLUTE_PATH);
-  // }, []);   // 배열 생략 가능
-
   // render: root path 컴포넌트 렌더링 //
-
   return (
     <></>
   );
 }
 
-function App() {
 
-    //function: 네비게이터 함수 //
-    // const navigator = useNavigate();
+// component: sns success 컴포넌트 //
+function SnsSuccess() {
 
-  return (
-    <Routes>
-      <Route index element={<Index />} />
+  // state: query parameter 상태 //
+  const [queryParam] = useSearchParams();
+  const accessToken = queryParam.get('accessToken');
+  const expiration = queryParam.get('expiration');
 
-      {/* <Route path={GD_PATH} element={<MainLayout />}> */}
-      <Route path={GD_PATH} element={<MainLayout />}>
-        <Route index element={<GD />} />
-        <Route path={GD_WRITE_PATH} element={<GDWrite />} />
-        <Route path={GD_DETAIL_PATH(':roomId')} element={<GDDetail />} />
-        <Route path={GD_UPDATE_PATH(':roomId')} element={<GDUpdate />} />
-      </Route>
+  // state: cookie 상태 //
+  const [cookies, setCookie] = useCookies();
 
-    </Routes>
-  );
+  // function: 네비게이터 함수 //
+  const navigator = useNavigate();
+
+  // effect: sns success 컴포넌트 로드시 accessToken과 expiration을 확인하여 로그인 처리하는 함수 //
+  useEffect(()=> {
+    if(accessToken && expiration) {
+      const expires = new Date(Date.now() + (Number(expiration) * 1000));
+      setCookie(ACCESS_TOKEN, accessToken, {path: ROOT_PATH, expires});
+
+      navigator(MAIN_ABSOLUTE_PATH);
+    }else {
+      navigator(LOGIN_ABSOLUTE_PATH);
+    }
+  }, []);
+
+  // render: sns success 컴포넌트 렌더링 //
+  return <></>;
+
 }
 
-export default App;
+// component: 도란도란 컴포넌트 //
+export default function DoranDoran() {
+  
+    // render: 메인 화면 렌더링 //
+    return (
+      <BrowserRouter>
+        <Routes>
+          <Route index element={<Index />} />
+          <Route path={LOGIN_PATH} element={<Login />} />
+
+          <Route path={MAIN_PATH} element={<MainLayout/>} >
+            <Route index element={<Main />} />
+          </Route>
+
+          <Route path={GEN_DISC_PATH} element={<MainLayout/>}>
+            <Route index element={<GerneralDiscuss />} />
+          </Route>
+
+          <Route path={RT_DISC_PATH} element={<MainLayout/>}>
+            <Route index element={<RTDiscuss />} />
+          </Route>
+
+          <Route path={NOTICE} element={<MainLayout/>} >
+            <Route index element={<Notice />} />
+          </Route>
+
+          <Route path={SCHEDULE} element={<MainLayout/>} >
+            <Route index element={<Schedule />} />
+          </Route>
+
+          <Route path={MY_PATH} element={<MainLayout />}  >
+            <Route index element={<Mypage />} />
+          </Route>
+
+          <Route path={SNS_SUCCESS_PATH} element={<SnsSuccess/>} />
+          <Route path={OTHERS_PATH} element={<Index />}/>
+        </Routes>
+      </BrowserRouter>
+    );
+  }
