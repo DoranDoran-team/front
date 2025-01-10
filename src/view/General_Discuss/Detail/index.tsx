@@ -257,7 +257,7 @@ export default function GDDetail() {
                                 </div>
                             )}
                             <div className="comment-content">{comment.content}</div>
-                            <div className="reply" onClick={() => setReplyTo(comment.id)}>댓글 쓰기</div>
+                            <div className="reply"><span onClick={() => setReplyTo(comment.id)}>댓글 쓰기</span></div>
                             <hr />
                             {replyTo === comment.id && (
                                 <div className='reply-box' style={{ marginLeft: '20px', marginRight: '0' }}>

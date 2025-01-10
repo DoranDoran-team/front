@@ -408,8 +408,8 @@ hr {
     margin: 20px 0px;
 }
 
-#gd-detail-wrapper .reply {
-    /* cursor: pointer; */
+#gd-detail-wrapper .reply span {
+    cursor: pointer;
     font-size: 12px;
 }
 
