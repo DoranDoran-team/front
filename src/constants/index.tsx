@@ -2,6 +2,11 @@
 export const ROOT_PATH = '/';
 
 export const LOGIN_PATH = '/login';
+export const FIND_ID = '/find-id';
+export const FIND_ID_RESULT = '/find-id-result';
+export const FIND_PW = '/find-pw';
+export const CHANGE_PW = '/change-pw';
+export const SIGN_UP = '/sign-up';
 
 export const MAIN_PATH = '/main';
 
@@ -20,6 +25,11 @@ export const OTHERS_PATH = '*';
 export const ROOT_ABSOLUTE_PATH = ROOT_PATH;
 
 export const LOGIN_ABSOLUTE_PATH = LOGIN_PATH;
+export const FIND_ID_ABSOLUTE_PATH = FIND_ID;
+export const FIND_PW_ABSOLUTE_PATH = FIND_PW;
+export const FIND_ID_RESULT_ABSOLUTE_PATH = FIND_ID_RESULT;
+export const CHANGE_PW_ABSOLUTE_PATH = CHANGE_PW;
+export const SIGN_UP_ABSOLUTE_PATH = SIGN_UP;
 
 export const MAIN_ABSOLUTE_PATH = MAIN_PATH;
 

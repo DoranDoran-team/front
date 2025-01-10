@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 import { BrowserRouter, Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
-import { ACCESS_TOKEN, GEN_DISC_PATH, LOGIN_ABSOLUTE_PATH, LOGIN_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, MY_PATH, NOTICE, OTHERS_PATH, ROOT_PATH, RT_DISC_PATH, SCHEDULE, SNS_SUCCESS_PATH } from './constants';
+import { ACCESS_TOKEN, CHANGE_PW, FIND_ID, FIND_ID_RESULT, FIND_PW, GEN_DISC_PATH, LOGIN_ABSOLUTE_PATH, LOGIN_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, MY_PATH, NOTICE, OTHERS_PATH, ROOT_PATH, RT_DISC_PATH, SCHEDULE, SIGN_UP, SNS_SUCCESS_PATH } from './constants';
 import MainLayout from './layouts/MainLayout';
 import GerneralDiscuss from './view/General_Discuss';
 import RTDiscuss from './view/RT_Discuss';
@@ -11,6 +11,12 @@ import Schedule from './view/Schedule';
 import Main from './view/Main';
 import Mypage from './view/Mypage';
 import Login from './view/Auth/Login';
+import FindId from './view/Auth/Find-id';
+import FindPw from './view/Auth/Find-pw';
+import SignUp from './view/Auth/Sign-up';
+import FindIdResult from './view/Auth/Find-id-result';
+import ChangePw from './view/Auth/Change-pw';
+
 
 // component: root path 컴포넌트 //
 function Index() {
@@ -73,7 +79,12 @@ export default function DoranDoran() {
       <BrowserRouter>
         <Routes>
           <Route index element={<Index />} />
-          <Route path={LOGIN_PATH} element={<Login />} />
+          <Route path={LOGIN_PATH} element={<Login />}></Route>
+          <Route path={FIND_ID} element={<FindId/>}/>
+          <Route path={FIND_ID_RESULT} element={<FindIdResult/>} />
+          <Route path={FIND_PW} element={<FindPw/>}></Route>
+          <Route path={CHANGE_PW} element={<ChangePw/>} />
+          <Route path={SIGN_UP} element={<SignUp/>}></Route>
 
           <Route path={MAIN_PATH} element={<MainLayout/>} >
             <Route index element={<Main />} />
