@@ -26,14 +26,14 @@
     margin :100px ;
     
 }
-.mypage-main-wrapper {
+.mypage-wrapper .mypage-main-wrapper {
     flex:1;
     padding: 30px;
     background-color: rgb(170, 247, 133);
     border-radius: 50px;
 }
 
-.top-icon-box{
+.mypage-wrapper .top-icon-box{
     display: flex;
     flex-direction: column;
     justify-content: rigth;
@@ -43,7 +43,7 @@
     position: relative;
     margin-top: -10px;
 }
-.top-icons {
+.mypage-wrapper .top-icons {
     display: flex;
     flex-direction: row;
     justify-content: right;
@@ -52,19 +52,19 @@
     margin: 20px;
 }
 
-.top-icon-setting {
+.mypage-wrapper .top-icon-setting {
     background-image: url('/public/mypage/settings.png');
     width: 40px;
     height: 40px;
 }
-.top-icon-menu {
+.mypage-wrapper .top-icon-menu {
     background-image: url('/public/mypage/menu.png');
     width: 40px;
     height: 40px;
 
     cursor: pointer;
 }
-.menu-list {
+.mypage-wrapper .menu-list {
     position: absolute;
     top: 60px;
     right: -40px;
@@ -83,19 +83,19 @@
     
 }
 
-.menu-item {
+.mypage-wrapper .menu-item {
     font-size: 16px;
     font-weight:bolder;
     margin-bottom: 10px;
     padding: 10px;
     cursor: pointer;
 }
-.menu-item:hover {
+.mypage-wrapper .menu-item:hover {
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 15px;
 }
 
-.user-box {
+.mypage-wrapper .user-box {
     display: flex;
     align-items: center; 
     justify-content: flex-start; 
@@ -107,12 +107,12 @@
     position: relative; 
 }
 
-.mypage-info {
+.mypage-wrapper .mypage-info {
     display: flex;
     flex-direction: column; 
     gap: 5px;
 }
-.main-profile{
+.mypage-wrapper .main-profile{
     width: 150px;
     height: 150px;
     
@@ -124,19 +124,19 @@
     margin-bottom: 20px;
 }
 
-.mypage-nickname {
+.mypage-wrapper .mypage-nickname {
     font-family: '양진체';
     font-size: 36px;
     font-weight: 400;
 }
-.mypage-id {
+.mypage-wrapper .mypage-id {
     font-size: 24px;
     margin-bottom: 0; 
     padding-bottom: 0;
 
 }
 
-.mypage-user {
+.mypage-wrapper .mypage-user {
     font-size: 24px;
     margin-bottom: 0; 
     padding-bottom: 0;
@@ -147,11 +147,11 @@
     left: 400px;
 }
 
-.subscribe-button-box {
+.mypage-wrapper .subscribe-button-box {
     position: absolute;
     right: 50px;
 }
-.subscribe-button{
+.mypage-wrapper .subscribe-button{
     display: flex;
     justify-content: center;
     align-items: center;
@@ -164,7 +164,7 @@
     cursor: pointer;
 
 }
-.mypage-discussion-room-top {
+.mypage-wrapper .mypage-discussion-room-top {
     display: flex;
     margin-top: 100px;
     justify-content: space-between;
@@ -172,7 +172,7 @@
     width: 980px;
     
 }
-.discussion-state-box {
+.mypage-wrapper .discussion-state-box {
     display: flex;
     width: 100px;
     height: 40px;
@@ -185,7 +185,7 @@
     cursor: pointer; 
 }
 
-.state-type-box {
+.mypage-wrapper .state-type-box {
     
     gap: 20px;
     width: 100px;
@@ -202,7 +202,7 @@
 
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
-.state-type{
+.mypage-wrapper .state-type{
     display: flex;
     flex-direction: column;
     text-align: center;
@@ -212,20 +212,20 @@
     
     cursor: pointer;
 }
-.state-type:hover {
+.mypage-wrapper .state-type:hover {
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 15px;
 }
 
-.mypage-state-message,
-.mypage-user {
+.mypage-wrapper .mypage-state-message,
+.mypage-wrapper .mypage-user {
     font-size: 24px;
     margin-bottom: 20px;
     align-content: end;
 
 }
 
-.mypage-discussion-room{
+.mypage-wrapper .mypage-discussion-room{
     font-weight: bold;
 }
 
