@@ -60,7 +60,7 @@ export default function FindId() {
 
         //const pattern = /^[0-9]{11}$/;
         //const isMatched = pattern.test(telNumber);
-        const isTrue = name === name_exam && telNumber === telNumber_exam;
+        const isTrue = (name === name_exam) && (telNumber === telNumber_exam);
 
         if(isTrue) {
             setMessage('인증번호가 전송되었습니다.');
@@ -70,6 +70,7 @@ export default function FindId() {
         } else {
             setMessage('일치하는 정보가 없습니다.');
             setErrorBool(false);
+            console.log(error);
         }
     }
 
@@ -182,7 +183,7 @@ export default function FindId() {
                         <div className={(telNumber.length === 11 && name)? "send-btn" : "send-btn-false"}
                         onClick={onSendClickHandler}>{send ? '전송' : '재전송'}</div>
                     </div>                    
-                    <div className={error || send ? 'message-true' : 'message-false'}>{message}</div>
+                    <div className={error ? 'message-true' : 'message-false'}>{message}</div>
 
                     { error ? 
                         <>
