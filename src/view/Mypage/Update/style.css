@@ -1,0 +1,130 @@
+@font-face {
+    font-family: '양진체';
+    src: url('https://fastly.jsdelivr.net/gh/supernovice-lab/font@0.9/yangjin.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+
+/* mypage 유저 정보 CSS */
+.mypage-wrapper {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    
+    margin :100px ;
+    
+}
+.mypage-main-wrapper {
+    flex:1;
+    padding: 30px;
+    background-color: rgb(170, 247, 133);
+    border-radius: 50px;
+}
+
+.user-box {
+    display: flex;
+    align-items: center; 
+    justify-content: flex-start; 
+    gap: 15px; 
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    margin-top: -20px;
+
+    position: relative; 
+}
+
+.mypage-info {
+    display: flex;
+    flex-direction: column; 
+    gap: 5px;
+}
+.main-profile{
+    width: 150px;
+    height: 150px;
+    
+    border-radius: 375px;
+    background-image: url('/public/mypage/profile1.png');
+    background-position: 50% 50%;
+    background-size: cover;
+
+    margin-bottom: 20px;
+}
+
+.mypage-nickname.edit {
+    font-family: '양진체';
+    font-size: 20px;
+    font-weight: 400;
+    
+    width: 200px;
+    height: 60px;
+    background-color: rgba(255,255,255,1);
+    border-radius: 6px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.mypage-id {
+    font-size: 24px;
+    margin-bottom: 0; 
+    padding-bottom: 0;
+}
+
+.mypage-user {
+    font-size: 24px;
+    margin-bottom: 0; 
+    padding-bottom: 0;
+    bottom: 50px; 
+    
+    position: absolute;
+    bottom: 20px;
+    left: 400px;
+}
+
+.mypage-state-message,
+.mypage-user,
+.mypage-discussion-room {
+    font-size: 24px;
+    margin-bottom: 20px;
+    align-content: end;
+
+}
+.mypage-state-message.edit {
+    width: 514px;
+    height: 62px;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 1);
+
+    display: flex;
+    align-items: center;
+}
+
+.edit-button-box {
+    position: absolute;
+    right: 0px;
+    margin-bottom: 50px;
+    
+}
+.edit-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100px;
+    height: 50px;
+    border-radius: 20px;
+    border: 2px solid rgba(0, 0, 0, 1);
+    cursor: pointer;
+}
+
+.edit-button.complete{
+    background-color: rgba(76,245,39,0.8);
+    color: rgba(75,115,100,1);
+    
+}
+
+.edit-button.fail {
+    background-color: rgba(0,0,0,0.8);
+    color: rgba(215, 224, 213, 0.8);
+    
+}
