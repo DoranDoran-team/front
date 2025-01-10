@@ -23,13 +23,13 @@
     align-items: center;
 }
 
-.title {
+#FindID .title {
     font-weight: 700;
     font-size: 45px;
     margin-bottom: 100px;
 }
 
-.box {
+#FindID .box {
     display: flex;
     flex-direction: column;
     margin-bottom: 100px;
@@ -113,7 +113,7 @@
     font-weight: 200;
     color: red;
     align-self: stretch;
-    margin-bottom: 15px;
+    height: 16px;
 }
 
 #FindID .message-true {
@@ -121,7 +121,7 @@
     font-weight: 200;
     color: rgba(0, 128, 0, 0.7);
     align-self: stretch;
-    margin-bottom: 20px;
+    height: 16px;
 }
 
 #FindID .timer {
