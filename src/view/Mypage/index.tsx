@@ -11,6 +11,7 @@ export default function Mypage() {
     const [subscribe, setSubscribe] = useState<boolean>(false);
     const [user] = useState<boolean>(false);
     const [stateType, setStateType] = useState<boolean>(false);
+    const [editbutton, setEditButton] = useState<boolean>(false);
 
     // variable: 자기자신 확인 //
     const isUser = user && true;
@@ -37,7 +38,10 @@ export default function Mypage() {
     const onStateTypeButtonHandler = () => {
         setStateType(!stateType)
     }
-
+    // event handler: 게시물 메뉴 버튼 클릭 이벤트 처리 함수 //
+    const onPostMenuButtonHandler = () => {
+        setEditButton(!editbutton);
+    }
 
 
     // render: 마이페이지 화면 렌더링 //
@@ -46,16 +50,17 @@ export default function Mypage() {
             <div className="mypage-main-wrapper">
                 <div className="top-icon-box">
                     <div className="top-icons">
-                        <div className="top-icon-setting"></div>
-                        <div className="top-icon-menu" onClick={onMenuButtonHandler}></div>
+                        <div className="top-icon-setting" onClick={onUpdateButtonHandler}></div>
+                        <div className="top-icon-menu" onClick={onMenuButtonHandler}>
+                            {menu && (<div className='menu-list' >
+                                <div className="menu-item" >개인 정보 수정</div>
+                                <div className="menu-item">마일리지 관리</div>
+                                <div className="menu-item">실시간 토론 참여 이력</div>
+                                <div className="menu-item">공지사항</div>
+                                <div className="menu-item">출석체크</div>
+                            </div>)}
+                        </div>
                     </div>
-                    {menu && (<div className='menu-list'>
-                        <div className="menu-item" onClick={onUpdateButtonHandler}>개인 정보 수정</div>
-                        <div className="menu-item">마일리지 관리</div>
-                        <div className="menu-item">실시간 토론 참여 이력</div>
-                        <div className="menu-item">공지사항</div>
-                        <div className="menu-item">출석체크</div>
-                    </div>)}
                 </div>
 
                 <div className="user-box">
@@ -90,7 +95,13 @@ export default function Mypage() {
                     <div className="discussion-info">
                         <div className="discussion-title-box">
                             <div className="discussion-title">대마초 합법화</div>
-                            <div className="discussion-icon"></div>
+                            <div className="discussion-icon-box">
+                                <div className="discussion-icon" onClick={onPostMenuButtonHandler}></div>
+                                {editbutton && <div className="discussion-edit-box">
+                                    <div className="edit-item">수정</div>
+                                    <div className="edit-item">삭제</div>
+                                </div>}
+                            </div>
                         </div>
                         <div className="discussion-contents">범죄 감소와 세수 증대 효과가 있다. vs 건강 문제와 사회적 부작용이 우려된다.</div>
                         <div className="discussion-bottom">
