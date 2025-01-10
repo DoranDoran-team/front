@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './style.css';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import Footer from '../../components/footer';
 
 import { useCookies } from 'react-cookie';
-import { ACCESS_TOKEN, GEN_DISC_ABSOLUTE_PATH, GEN_DISC_PATH, MAIN_ABSOLUTE_PATH, NOTICE, NOTICE_ABSOLUTE_PATH, ROOT_ABSOLUTE_PATH, ROOT_PATH, RT_DISC_ABSOLUTE_PATH, RT_DISC_PATH, SCHEDULE, SCHEDULE_ABSOLUTE_PATH } from '../../constants';
+import { ACCESS_TOKEN, GEN_DISC_ABSOLUTE_PATH, GEN_DISC_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, NOTICE, NOTICE_ABSOLUTE_PATH, ROOT_ABSOLUTE_PATH, ROOT_PATH, RT_DISC_ABSOLUTE_PATH, RT_DISC_PATH, SCHEDULE, SCHEDULE_ABSOLUTE_PATH } from '../../constants';
+import { RankingClickResultStore } from '../../stores';
 //import ArrowToTop from '../../components/arrow-to-top/ArrowToTop';
 
 // component: 로고 컴포넌트 //
@@ -28,8 +29,8 @@ function Logo() {
     return (
         <div id='layout-logo'>
             <div className='box'>
-                <div className={`title ${isHome ? 'active' : ''}`} 
-                onClick={() => onItemClickHandler(MAIN_ABSOLUTE_PATH)}>도란도란</div>
+                <div className={`title ${isHome ? 'active' : ''}`}
+                    onClick={() => onItemClickHandler(MAIN_ABSOLUTE_PATH)}>도란도란</div>
             </div>
         </div>
     );
@@ -151,12 +152,88 @@ function TopPersonalNavigation() {
     );
 }
 
+// component: 랭킹 컴포넌트 //
+function Ranking() {
+
+    // state: 랭킹 클릭 상태 //
+    const { clickRank, setClickRank } = RankingClickResultStore();
+
+    const onClickRankHandler = () => {
+        setClickRank(!clickRank);
+    }
+
+    return (
+        <div className='ranking-box-gather'>
+            <div className='cancel-ranking'>
+                <p style={{ margin: '0px', fontSize: '20px', fontWeight: 'bolder' }}>랭킹</p>
+                <p style={{ margin: '0px' }} onClick={onClickRankHandler}>X</p>
+            </div>
+            <div className='ranking-box'>
+                <div>1등</div>
+                <div>나무와선녀꾼</div>
+                <div>100,000P</div>
+            </div>
+            <div className='ranking-box'>
+                <div>2등</div>
+                <div>나무와선녀꾼</div>
+                <div>90,000P</div>
+            </div>
+            <div className='ranking-box'>
+                <div>3등</div>
+                <div>나무와선녀꾼</div>
+                <div>80,000P</div>
+            </div>
+            <div className='ranking-box'>
+                <div>4등</div>
+                <div>나무와선녀꾼</div>
+                <div>70,000P</div>
+            </div>
+            <div className='ranking-box'>
+                <div>5등</div>
+                <div>나무와선녀꾼</div>
+                <div>60,000P</div>
+            </div>
+            <div className='ranking-box'>
+                <div>6등</div>
+                <div>나무와선녀꾼</div>
+                <div>50,000P</div>
+            </div>
+            <div className='ranking-box'>
+                <div>7등</div>
+                <div>나무와선녀꾼</div>
+                <div>40,000P</div>
+            </div>
+            <div className='ranking-box'>
+                <div>8등</div>
+                <div>나무와선녀꾼</div>
+                <div>30,000P</div>
+            </div>
+            <div className='ranking-box'>
+                <div>9등</div>
+                <div>나무와선녀꾼</div>
+                <div>20,000P</div>
+            </div>
+        </div>
+    )
+}
 
 // component: 메인 레이아웃 컴포넌트 //
 export default function MainLayout() {
 
+    // state: 랭킹 클릭 상태 //
+    const { clickRank, setClickRank } = RankingClickResultStore();
+
     // function: 네비데이터 함수 //
     const navigator = useNavigate();
+
+    const location = useLocation();
+
+    // 메인 페이지 경로 설정
+    const isMainPage = location.pathname === MAIN_PATH;
+
+    const onClickRankHandler = () => {
+        setClickRank(!clickRank);
+    }
 
     return (
         <div id='main-layout'>
@@ -166,6 +243,17 @@ export default function MainLayout() {
                 <TopPersonalNavigation />
             </div>
             <div id='main-wrapper'>
+                {isMainPage && (
+                    <div className="ranking-section" onClick={onClickRankHandler} style={clickRank ? { background: 'black', color: 'white' } : { background: 'white' }}>
+                        랭킹
+                    </div>
+
+                )}
+                {clickRank && (
+                    <div className='ranking'>
+                        <Ranking />
+                    </div>
+                )}
                 <Outlet />
             </div>
             {/* <ArrowToTop /> */}
