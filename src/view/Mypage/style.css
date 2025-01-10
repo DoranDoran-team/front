@@ -1,0 +1,461 @@
+@font-face {
+    font-family: '양진체';
+    src: url('https://fastly.jsdelivr.net/gh/supernovice-lab/font@0.9/yangjin.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@keyframes slideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* mypage 유저 정보 CSS */
+.mypage-wrapper {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    
+    margin :100px ;
+    
+}
+.mypage-main-wrapper {
+    flex:1;
+    padding: 30px;
+    background-color: rgb(170, 247, 133);
+    border-radius: 50px;
+}
+
+.top-icon-box{
+    display: flex;
+    flex-direction: column;
+    justify-content: rigth;
+
+    gap: 15px;
+    margin: 20px;
+    position: relative;
+    margin-top: -10px;
+}
+.top-icons {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+
+    gap: 15px;
+    margin: 20px;
+}
+
+.top-icon-setting {
+    background-image: url('/public/mypage/settings.png');
+    width: 40px;
+    height: 40px;
+}
+.top-icon-menu {
+    background-image: url('/public/mypage/menu.png');
+    width: 40px;
+    height: 40px;
+
+    cursor: pointer;
+}
+.menu-list {
+    position: absolute;
+    top: 60px;
+    right: -40px;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    padding: 10px 15px;
+    z-index: 100;
+    margin-top: 5px;
+
+    text-align: center; 
+
+    opacity: 0; /* 처음에 투명하게 설정 */
+    transform: translateY(-10px); /* 위에서 내려오는 효과 */
+    animation: slideIn 0.3s ease forwards; /* 보여지는 애니메이션 */
+    
+}
+
+.menu-item {
+    font-size: 16px;
+    font-weight:bolder;
+    margin-bottom: 10px;
+    padding: 10px;
+    cursor: pointer;
+}
+.menu-item:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+}
+
+.user-box {
+    display: flex;
+    align-items: center; 
+    justify-content: flex-start; 
+    gap: 15px; 
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    margin-top: -20px;
+
+    position: relative; 
+}
+
+.mypage-info {
+    display: flex;
+    flex-direction: column; 
+    gap: 5px;
+}
+.main-profile{
+    width: 150px;
+    height: 150px;
+    
+    border-radius: 375px;
+    background-image: url('/public/mypage/profile1.png');
+    background-position: 50% 50%;
+    background-size: cover;
+
+    margin-bottom: 20px;
+}
+
+.mypage-nickname {
+    font-family: '양진체';
+    font-size: 36px;
+    font-weight: 400;
+}
+.mypage-id {
+    font-size: 24px;
+    margin-bottom: 0; 
+    padding-bottom: 0;
+
+}
+
+.mypage-user {
+    font-size: 24px;
+    margin-bottom: 0; 
+    padding-bottom: 0;
+    bottom: 50px; 
+    
+    position: absolute;
+    bottom: 20px;
+    left: 400px;
+}
+
+.subscribe-button-box {
+    position: absolute;
+    right: 50px;
+}
+.subscribe-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100px;
+    height: 50px;
+    border-radius: 20px;
+    border: 2px solid rgba(0, 0, 0, 1);
+    
+    cursor: pointer;
+
+}
+.mypage-discussion-room-top {
+    display: flex;
+    margin-top: 100px;
+    justify-content: space-between;
+
+    width: 980px;
+    
+}
+.discussion-state-box {
+    display: flex;
+    width: 100px;
+    height: 40px;
+    background-color: rgba(255,255,255,1);
+    border-radius: 15px;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    font-size: 14px;
+    cursor: pointer; 
+}
+
+.state-type-box {
+    
+    gap: 20px;
+    width: 100px;
+    height: 100px;
+    background-color: rgba(255, 255, 255, 1);
+    border-radius: 15px;
+    margin-top: -25px;
+    position: absolute;
+    
+    right: 410px;
+    opacity: 0; /* 처음에 투명하게 설정 */
+    transform: translateY(-10px); /* 위에서 내려오는 효과 */
+    animation: slideIn 0.3s ease forwards; /* 보여지는 애니메이션 */
+
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+.state-type{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin-top: 20px;
+    height: 25px;
+    font-size: 14px;
+    
+    cursor: pointer;
+}
+.state-type:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+}
+
+.mypage-state-message,
+.mypage-user {
+    font-size: 24px;
+    margin-bottom: 20px;
+    align-content: end;
+
+}
+
+.mypage-discussion-room{
+    font-weight: bold;
+}
+
+/* 유저가 개설한 토론방 리스트 CSS */
+.myapge-middle-box {
+    display: flex;
+    background-color: rgba(255,255,255,255);
+
+    width: 211px;
+    height: 72px;
+    border-radius: 15px;
+
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: -20px;
+
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+.mypage-middle-nickname {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.mypage-middle-icon {
+    width:30px;
+    height: 30px;
+
+    background-image: url(/public/mypage/account.png);
+}
+
+.discussion-room-list {
+    display: flex;
+    gap: 24px;
+    background-color: rgba(255,255,255,255);
+    border-radius: 15px;
+    padding: 20px;
+
+    width: 940px;
+    height: 160px;
+    justify-content: space-around;
+
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.discussion-image {
+    
+    background-image: url('/public/mypage/profile1.png');
+    border-radius: 375px;
+    width: 130px;
+    height: 130px;
+
+    background-position: 50% 50%;
+    background-size: cover;
+}
+.discussion-info {
+    width: 720px;
+    height: 130px;
+    padding: 10px;
+    
+    align-items: center;
+    
+}
+.discussion-title-box {
+    display: flex;    
+    justify-content: space-between;
+    width: 720px;
+
+    font-size: 20px;
+    font-weight: bold;
+    margin: 10px 0px;
+    
+}
+.discussion-icon {
+    background-image: url('/public/mypage/see.png');
+    width: 20px;
+    height: 20px;
+
+    background-position: 50% 50%;
+    background-size: cover;
+}
+
+.discussion-contents {
+
+    font-size: 16px;
+    font-weight: bold;
+    margin: 10px 0px;
+}
+
+.discussion-bottom {
+    display: flex;
+    width: 720px;
+    justify-content: space-between;
+    align-items: center;
+
+    margin: 10px 0px;
+}
+
+.discussion-bottom-box {
+    display: flex;
+    gap: 10px;
+
+    font-size: 14px;
+    width: 500px;
+    align-items: center;
+}
+.discussion-fixed {
+    color: rgba(0,0,0,0.2);
+    align-items: center;
+}
+.discussion-icons {
+    display: flex;
+    width: 720px;
+    font-weight: 400;
+    justify-content: right;
+    gap: 8px;
+}
+
+.discussion-icon-box {
+    display: flex;
+    
+}
+.discussion-state-box.continue {
+    width: 98px;
+    height: 34px;
+    text-align: center;
+    background-color: rgba(171, 246, 190, 1);
+    border-radius: 15px;
+}
+
+.discussion-state-box.end {
+    width: 98px;
+    height: 34px;
+    text-align: center;
+    background-color: rgb(120, 129, 123);
+    border-radius: 15px;
+}
+
+.discussion-state {
+    padding: 6px;
+}
+
+.discussion-comment-icon {
+    width: 23px;
+    height: 20px;
+
+    background-image: url('/public/mypage/comment.png');
+    background-position: 50% 50%;
+    background-size: cover;
+}
+
+.discussion-like-icon {
+    width: 23px;
+    height: 20px;
+
+    background-image: url('/public/mypage/like.png');
+    background-position: 50% 50%;
+    background-size: cover;
+}
+
+
+/* mypage 구독자 정보 */
+.subscribe-wrapper {
+    
+    width: 440px;
+    padding: 20px 30px;
+}
+
+.subscribe-title {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+.subscribe-search-box {
+    display: flex;
+    gap: 10px;
+    padding-bottom: 20px;
+}
+
+.input {
+    width: 50%;
+    height: 25px;
+    border-radius: 6px;
+    border-color: rgba(0,0,0,0.5);
+}
+
+.button {
+    width:60px;
+    height: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    text-align: center;
+    padding: 5px;
+}
+
+
+.subscribe-box {
+    display: flex;
+    gap: 10px;
+
+    align-items: center;
+    
+}
+
+.subscribe-image {
+    width: 80px;
+    height: 79px;
+
+    border-radius: 555px;
+    
+    background-image: url('/public/mypage/profile1.png');
+    background-position: 50% 50%;
+    background-size: cover;
+}
+
+.subscribe-cancel-button {
+    width: 70px;
+    height: 30px;
+    border: 1px solid rgba(255, 7, 7, 1);
+    border-radius: 15px;
+    margin-left: 30px;
+    
+
+}
+
+.subscribe-cancel {
+    font-weight: bold;
+    font-size: 13px;
+    text-align: center;
+    
+    color: rgba(255, 7, 7, 1);
+    margin: 6px 0px;
+}
