@@ -6,7 +6,7 @@ import { FIND_ID_RESULT_ABSOLUTE_PATH } from "../../../constants";
 
 // component: 아이디 찾기 컴포넌트 //
 export default function FindId() {
-    
+
     // state: 아이디 찾기 입력 정보 상태 //
     const [name, setName] = useState<string>('');
     const [telNumber, setTelNumber] = useState<string>('');
@@ -32,7 +32,7 @@ export default function FindId() {
 
     // event handler: 이름 변경 이벤트 핸들러 //
     const onNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-        const {value} = event.target;
+        const { value } = event.target;
         setName(value);
     }
 
@@ -62,7 +62,7 @@ export default function FindId() {
         //const isMatched = pattern.test(telNumber);
         const isTrue = (name === name_exam) && (telNumber === telNumber_exam);
 
-        if(isTrue) {
+        if (isTrue) {
             setMessage('인증번호가 전송되었습니다.');
             setErrorBool(true);
             setSend(true);
@@ -76,7 +76,7 @@ export default function FindId() {
 
     // event handler: 전화번호 인증번호 변경 이벤트 핸들러 //
     const authNumberChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-        const {value} = event.target;
+        const { value } = event.target;
         setAuthNumber(value);
     }
 
@@ -94,7 +94,7 @@ export default function FindId() {
             return;
         }
 
-        if(authNumber === authNumber_exam) {
+        if (authNumber === authNumber_exam) {
             setIsMatched(true);
             setStopTimer(true);
             setAuthMessage('인증번호가 일치합니다.');
@@ -178,33 +178,33 @@ export default function FindId() {
                 <div className="box">
                     <input className="input-box" value={name} onChange={onNameChangeHandler} placeholder="이름"></input>
                     <div className="tel-box">
-                        <input className="input-box2" onChange={onTelNumberChangeHandler} placeholder="전화번호(- 제외)" 
-                        value={displayFormattedPhoneNumber(telNumber)} onKeyDown={handleKeyDown1}></input>
-                        <div className={(telNumber.length === 11 && name)? "send-btn" : "send-btn-false"}
-                        onClick={onSendClickHandler}>{send ? '전송' : '재전송'}</div>
-                    </div>                    
+                        <input className="input-box2" onChange={onTelNumberChangeHandler} placeholder="전화번호(- 제외)"
+                            value={displayFormattedPhoneNumber(telNumber)} onKeyDown={handleKeyDown1}></input>
+                        <div className={(telNumber.length === 11 && name) ? "send-btn" : "send-btn-false"}
+                            onClick={onSendClickHandler}>{send ? '전송' : '재전송'}</div>
+                    </div>
                     <div className={error ? 'message-true' : 'message-false'}>{message}</div>
 
-                    { error ? 
+                    {error ?
                         <>
-                        <div className="tel-box2">
-                            <input className="input-box2" onChange={authNumberChangeHandler} placeholder="인증번호 6자리" 
-                            value={authNumber} onKeyDown={handleKeyDown2} maxLength={6}></input>
-                            <div className='timer'>{formatTime()}</div>
-                            <div className={authNumber.length === 6 ? "send-btn" : "send-btn-false"}
-                            onClick={onCheckClickHandler}>확인</div>
-                        </div>
-                        <div className={isMatched ? "message-true" : "message-false"}>{authMessage}</div>
+                            <div className="tel-box2">
+                                <input className="input-box2" onChange={authNumberChangeHandler} placeholder="인증번호 6자리"
+                                    value={authNumber} onKeyDown={handleKeyDown2} maxLength={6}></input>
+                                <div className='timer'>{formatTime()}</div>
+                                <div className={authNumber.length === 6 ? "send-btn" : "send-btn-false"}
+                                    onClick={onCheckClickHandler}>확인</div>
+                            </div>
+                            <div className={isMatched ? "message-true" : "message-false"}>{authMessage}</div>
                         </>
-                        
-                    :
+
+                        :
                         ''
                     }
                 </div>
-            
-                <div className={error && isMatched ? "login-btn": "login-btn-false"}
-                onClick={error && isMatched ? findIDResult : undefined}>아이디 확인</div>
-                
+
+                <div className={error && isMatched ? "login-btn" : "login-btn-false"}
+                    onClick={error && isMatched ? findIDResult : undefined}>아이디 확인</div>
+
             </div>
         </div>
     )
