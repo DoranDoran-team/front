@@ -6,7 +6,7 @@ import { MY_ABSOLUTE_UPDATE_PATH, MY_UPDATE_PATH } from "../../constants";
 // component: 마이페이지 컴포넌트 //
 export default function Mypage() {
     // state: 마이페이지 상태 //
-    const [menu, setMenu]=useState<boolean>(false);
+    const [menu, setMenu] = useState<boolean>(false);
     const [state] = useState<boolean>(true);
     const [subscribe, setSubscribe] = useState<boolean>(false);
     const [user] = useState<boolean>(false);
@@ -14,22 +14,22 @@ export default function Mypage() {
     const [editbutton, setEditButton] = useState<boolean>(false);
 
     // variable: 자기자신 확인 //
-    const isUser = user && true ; 
+    const isUser = user && true;
 
     // event handler: menu 클릭 이벤트 처리 함수 //
-    const onMenuButtonHandler = () =>{
+    const onMenuButtonHandler = () => {
 
         setMenu(!menu);
     }
 
     // event handler: 구독 버튼 클릭 이벤츠 처리 함수 //
-    const onSubscribeButtonHandler= () =>{
-        
+    const onSubscribeButtonHandler = () => {
+
         setSubscribe(!subscribe)
     }
     // function: 네비게이터 함수 처리 //
     const navigator = useNavigate();
-    
+
     // event handler: 내 정보 수정 클릭 이벤트 처리 함수 //
     const onUpdateButtonHandler = () => {
         navigator(MY_ABSOLUTE_UPDATE_PATH(1));
@@ -72,7 +72,7 @@ export default function Mypage() {
                     <div className="mypage-user">구독자 <span>28</span>명 / 토론방<span>9</span>개</div>
                     {isUser ? <div className="subscribe-button-box" onClick={onSubscribeButtonHandler}>
                         {subscribe ? <div className="subscribe-button">구독</div>
-                        :<div className="subscribe-button">구독 중</div>}
+                            : <div className="subscribe-button">구독 중</div>}
                     </div> : ''}
                 </div>
                 <div className="mypage-state-message">논쟁을 즐기는 ENTP</div>
@@ -85,6 +85,7 @@ export default function Mypage() {
                         </div>}
                     </div>
                 </div>
+
                 <div className="myapge-middle-box">
                     <div className="mypage-middle-icon"></div>
                     <div className="mypage-middle-nickname">별별이</div>
@@ -110,9 +111,9 @@ export default function Mypage() {
                                 {!state ? <div className="discussion-state-box continue">
                                     <div className="discussion-state ">진행중</div>
                                 </div> :
-                                <div className="discussion-state-box end">
-                                    <div className="discussion-state ">마감</div>
-                                </div>
+                                    <div className="discussion-state-box end">
+                                        <div className="discussion-state ">마감</div>
+                                    </div>
                                 }
                             </div>
                             <div className="discussion-icons">
@@ -128,7 +129,7 @@ export default function Mypage() {
             <div className="subscribe-wrapper">
                 <div className="subscribe-title">내가 구독한 사람 2명</div>
                 <div className="subscribe-search-box">
-                    <input className="input" placeholder="아이디를 입력하세요. "/>
+                    <input className="input" placeholder="아이디를 입력하세요. " />
                     <div className="button active">검색</div>
                 </div>
                 <div className="subscribe-box">

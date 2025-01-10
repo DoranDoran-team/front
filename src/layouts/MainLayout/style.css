@@ -39,7 +39,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 1000px;
+    height: 100%;
     width: 100%;
     position: relative;
     /* 자식 요소 위치 기준 설정 */
@@ -70,7 +70,7 @@
 
 .ranking {
     position: absolute;
-    top: 60%;
+    top: 22%;
     left: 1%;
 
     width: 300px;

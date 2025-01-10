@@ -23,7 +23,7 @@
     align-items: center;
 }
 
-.title {
+#ChangePW .title {
     font-weight: 700;
     font-size: 45px;
     margin-bottom: 100px;
