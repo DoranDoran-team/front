@@ -11,6 +11,10 @@ export const SIGN_UP = '/sign-up';
 export const MAIN_PATH = '/main';
 
 export const GEN_DISC_PATH = '/gen_disc';
+export const GEN_DISC_WRITE_PATH = 'write';
+export const GEN_DISC_DETAIL_PATH = (roomId: string | number) => `${roomId}`;
+export const GEN_DISC_UPDATE_PATH = (roomId: string | number) => `${roomId}/update`;
+
 export const RT_DISC_PATH = '/rt_disc';
 export const NOTICE = '/notice';
 export const SCHEDULE = '/schedule';
@@ -36,6 +40,10 @@ export const SIGN_UP_ABSOLUTE_PATH = SIGN_UP;
 export const MAIN_ABSOLUTE_PATH = MAIN_PATH;
 
 export const GEN_DISC_ABSOLUTE_PATH = GEN_DISC_PATH;
+export const GEN_DISC_WRITE_ABSOLUTE_PATH = `${GEN_DISC_PATH}/${GEN_DISC_WRITE_PATH}`;
+export const GEN_DISC_DETAIL_ABSOLUTE_PATH = (roomId: string | number) => `${GEN_DISC_PATH}/${GEN_DISC_DETAIL_PATH(roomId)}`;
+export const GEN_DISC_UPDATE_ABSOLUTE_PATH = (roomId: string | number) => `${GEN_DISC_PATH}/${GEN_DISC_UPDATE_PATH(roomId)}`;
+
 export const RT_DISC_ABSOLUTE_PATH = RT_DISC_PATH;
 export const NOTICE_ABSOLUTE_PATH = NOTICE;
 export const SCHEDULE_ABSOLUTE_PATH = SCHEDULE;
