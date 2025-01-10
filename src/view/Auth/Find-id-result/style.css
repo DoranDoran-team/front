@@ -23,7 +23,7 @@
     align-items: center;
 }
 
-.title {
+#Login .title {
     font-weight: 700;
     font-size: 45px;
     margin-bottom: 100px;
@@ -74,7 +74,6 @@
     font-size: 20px;
     font-weight: 600;
     cursor: pointer;
-    margin-bottom: 10px;
 }
 
 .login-btn:hover {

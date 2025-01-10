@@ -27,8 +27,8 @@ export default function SignUp() {
     const [send, setSend] = useState<boolean>(true);
 
     // state: 타이머 상태 //
-    const [timer, setTimer] = useState(180);
-    
+    const [timer, setTimer] = useState(5);
+
     // state: 타이머를 멈출 상태 추가
     const [stopTimer, setStopTimer] = useState(false);
 
@@ -51,13 +51,13 @@ export default function SignUp() {
 
     // event handler: 이름 변경 이벤트 핸들러 //
     const onNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-        const {value} = event.target;
+        const { value } = event.target;
         setName(value);
     }
 
     // event handler: 아이디 변경 이벤트 핸들러 //
     const onUserIdChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-        const {value} = event.target;
+        const { value } = event.target;
         setUserId(value);
     }
 
@@ -70,38 +70,38 @@ export default function SignUp() {
 
     // event handler: 아이디 중복 확인 버튼 클릭 이벤트 핸들러 //
     const duplicatedCheck = () => {
-        if(userId === legacy_userId) {
+        if (userId === legacy_userId) {
             setIdErrMsg('중복된 아이디입니다.');
             setIdErr(false);
-        }else {
+        } else {
             setIdErrMsg('사용 가능한 아이디입니다.');
             setIdErr(true);
         }
     }
 
     // event handler: 비밀번호 변경 이벤트 핸들러 //
-    const onPasswordChangeHandler = (event : ChangeEvent<HTMLInputElement>) => {
-        const {value} = event.target;
+    const onPasswordChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
         setPassword(value);
 
         const pattern = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,13}$/;
         let isTrue = pattern.test(value);
-        if(isTrue) {
+        if (isTrue) {
             setPwError('');
-        }else {
+        } else {
             setPwError('영문, 숫자를 혼용하여 8 ~ 13자 입력해주세요.');
         }
     }
-    
+
     // event handler: 비밀번호 확인 변경 이벤트 핸들러 //
     const onPasswordCheckChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-        const {value} = event.target;
+        const { value } = event.target;
         setPasswordCheck(value);
 
-        if(password === value) {
+        if (password === value) {
             setIsMatched2(true);
             setSamePwErr('');
-        }else {
+        } else {
             setIsMatched2(false);
             setSamePwErr('비밀번호가 일치하지 않습니다.');
         }
@@ -113,29 +113,30 @@ export default function SignUp() {
         if (numbersOnly.length <= 11) {
             setTelNumber(numbersOnly);
         }
-    
-            //setSend(false);
-            //setTelMessage('');
+
+        //setSend(false);
+        //setTelMessage('');
     }
-    
+
     // event handler: 엔터키로 인증번호 전송 버튼 동작 //
     const handleKeyDown2 = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             onSendClickHandler();
         }
     }
-    
+
     // event handler: 전화번호 인증 메시지 전송 클릭 이벤트 핸들러 //
-    const onSendClickHandler = () => {    
+    const onSendClickHandler = () => {
         setErrorBool(true);
+        setTimer(180);
     }
-    
+
     // event handler: 전화번호 인증번호 변경 이벤트 핸들러 //
     const authNumberChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-        const {value} = event.target;
+        const { value } = event.target;
         setAuthNumber(value);
     }
-    
+
     // event handler: 엔터키로 전화번호 인증번호 확인 버튼 동작 //
     const handleKeyDown3 = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
@@ -146,8 +147,8 @@ export default function SignUp() {
     // event handler: 인증 번호 확인 버튼 클릭 이벤트 핸들러 //
     const onCheckClickHandler = () => {
         if (!authNumber) return;
-        
-        if(authNumber === authNumber_exam) {
+
+        if (authNumber === authNumber_exam) {
             setIsMatched(true);
             setStopTimer(true);
             setAuthMessage('인증번호가 일치합니다.');
@@ -254,7 +255,7 @@ export default function SignUp() {
 
     // useRef로 interval을 관리
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
-    
+
     // Effect: 타이머 기능 구현 //
     useEffect(() => {
         if (error && !stopTimer) { // stopTimer가 false일 때만 타이머 시작
@@ -270,12 +271,12 @@ export default function SignUp() {
                 });
             }, 1000);
         }
-    
+
         // stopTimer가 true가 되면 타이머를 멈추도록 추가
         if (stopTimer && intervalRef.current) {
             clearInterval(intervalRef.current);
         }
-    
+
         return () => {
             if (intervalRef.current) {
                 clearInterval(intervalRef.current);
@@ -303,38 +304,38 @@ export default function SignUp() {
 
                 <div className="box">
                     <input className="input-box" value={name} onChange={onNameChangeHandler} placeholder="이름"></input>
-                    
+
                     <div className="id-box">
                         <div className="tel-box">
-                            <input className="input-box2" onChange={onUserIdChangeHandler} placeholder="아이디" 
+                            <input className="input-box2" onChange={onUserIdChangeHandler} placeholder="아이디"
                                 value={userId} onKeyDown={handleKeyDown1}></input>
                             <div className={userId ? "send-btn" : "send-btn-false"}
                                 onClick={userId.length > 0 ? duplicatedCheck : undefined}>중복 확인</div>
                         </div>
-                        <div className={idErr? 'message-true' : 'message-false'}>{idErrMsg}</div>
+                        <div className={idErr ? 'message-true' : 'message-false'}>{idErrMsg}</div>
                     </div>
-                    
-                    <div style={{marginBottom: "15px"}}>
-                        <input className="input-box3" type='password' value={password} onChange={onPasswordChangeHandler} 
+
+                    <div style={{ marginBottom: "15px" }}>
+                        <input className="input-box3" type='password' value={password} onChange={onPasswordChangeHandler}
                             placeholder="비밀번호(영문 + 숫자 혼합 8 ~ 13자)"></input>
                         {pwError.length === null ? '' : <div className="message-false">{pwError}</div>}
                     </div>
-                    
-                    <div style={{marginBottom: "15px"}}>
+
+                    <div style={{ marginBottom: "15px" }}>
                         <input className="input-box3" type='password' value={passwordCheck}
                             onChange={onPasswordCheckChangeHandler} placeholder="비밀번호 확인"></input>
                         {isMatched2 ? '' : <div className="message-false">{pwSameError}</div>}
                     </div>
-                    
-                    <div style={{marginBottom: "15px"}}>
+
+                    <div style={{ marginBottom: "15px" }}>
                         <input className="input-box3" value={birth} onChange={onBirthChangeHandler} placeholder="생년월일(YYYYMMDD)"
                             maxLength={8}></input>
                         {birthMsgBool ? '' : <div className="message-false">{birthMessage}</div>}
                     </div>
-                    
-                    <div style={{marginBottom: "15px"}}>
+
+                    <div style={{ marginBottom: "15px" }}>
                         <div className="tel-box">
-                            <input className="input-box2" onChange={onTelNumberChangeHandler} placeholder="전화번호(- 제외)" 
+                            <input className="input-box2" onChange={onTelNumberChangeHandler} placeholder="전화번호(- 제외)"
                                 value={displayFormattedPhoneNumber(telNumber)} onKeyDown={handleKeyDown2}></input>
                             <div className={telNumber.length === 11 ? "send-btn" : "send-btn-false"}
                                 onClick={telNumber.length === 11 ? onSendClickHandler : undefined}>{send ? '전송' : '재전송'}</div>
@@ -342,10 +343,10 @@ export default function SignUp() {
                         {error ? <div className="message-true">인증번호가 전송되었습니다.</div> : ''}
                     </div>
 
-                    {error ? 
+                    {error ?
                         <>
                             <div className="tel-box2">
-                                <input className="input-box2" onChange={authNumberChangeHandler} placeholder="인증번호 6자리" 
+                                <input className="input-box2" onChange={authNumberChangeHandler} placeholder="인증번호 6자리"
                                     value={authNumber} onKeyDown={handleKeyDown3} maxLength={6}></input>
                                 <div className='timer'>{formatTime()}</div>
                                 <div className={authNumber.length === 6 ? "send-btn" : "send-btn-false"}
@@ -373,10 +374,10 @@ export default function SignUp() {
                             <label htmlFor="service" className="permission-label">[필수] 이용약관 동의</label>
                             <button type="button" onClick={toggleServiceTerms1}
                                 className={`toggle-button ${showServiceTerms ? 'rotate' : ''}`}>▼</button>
-                    </div>
-{showServiceTerms && (
-    <div style={{ paddingLeft: '40px', marginTop: '8px', color: '#666' }}>
-        <p className='service-contents'>{`도란도란 서비스 이용 약관
+                        </div>
+                        {showServiceTerms && (
+                            <div style={{ paddingLeft: '40px', marginTop: '8px', color: '#666' }}>
+                                <p className='service-contents'>{`도란도란 서비스 이용 약관
 
 제 1조 (목적)
 본 약관은 도란도란(이하 "갑"이라 합니다)이 제공하는 서비스(이하 "서비스"라 합니다)를 이용함에 있어, 회원(이하 "을"이라 합니다)과 갑 간의 권리, 의무, 책임 사항 및 기타 필요한 사항을 규정함을 목적으로 합니다.
@@ -429,26 +430,26 @@ export default function SignUp() {
 협의가 이루어지지 않을 경우, 관련 법령에 따른 절차에 따라 해결합니다.
 부칙
 본 약관은 2025년 1월 1일부터 시행됩니다.`}</p>
-    </div>
-)}
+                            </div>
+                        )}
 
 
-<div className='permission-box-detail'>
-    <input type="checkbox"
-        id="privacy"
-        name="privacy"
-        checked={terms.privacy}
-        onChange={handleTermChange} />
-    <label htmlFor="privacy" className="permission-label">[필수] 개인정보 수집 및 이용 동의</label>
-    <button type="button"
-        onClick={toggleServiceTerms2}
-        className={`toggle-button ${showPrivacyTerms ? 'rotate' : ''}`}>
-        ▼
-    </button>
-</div>
-{showPrivacyTerms && (
-    <div style={{ paddingLeft: '40px', marginTop: '8px', color: '#666' }}>
-        <p className='service-contents'>{`개인정보 수집 및 이용 동의 약관
+                        <div className='permission-box-detail'>
+                            <input type="checkbox"
+                                id="privacy"
+                                name="privacy"
+                                checked={terms.privacy}
+                                onChange={handleTermChange} />
+                            <label htmlFor="privacy" className="permission-label">[필수] 개인정보 수집 및 이용 동의</label>
+                            <button type="button"
+                                onClick={toggleServiceTerms2}
+                                className={`toggle-button ${showPrivacyTerms ? 'rotate' : ''}`}>
+                                ▼
+                            </button>
+                        </div>
+                        {showPrivacyTerms && (
+                            <div style={{ paddingLeft: '40px', marginTop: '8px', color: '#666' }}>
+                                <p className='service-contents'>{`개인정보 수집 및 이용 동의 약관
 
 제 1조 (목적)
 도란도란(이하 "서비스")는 이용자의 개인정보를 중요하게 여기며, 관련 법령을 준수하여 개인정보를 보호합니다. 본 약관은 이용자가 서비스를 이용함에 있어 개인정보의 수집, 이용, 보관 및 파기와 관련된 사항을 규정함을 목적으로 합니다.
@@ -507,12 +508,12 @@ export default function SignUp() {
 고객센터: 010-9876-5432
 이메일: support@dorandoran.com
 주소: 부산광역시 연제구 중앙대로 1234`}</p>
-    </div>
-)}
+                            </div>
+                        )}
                     </div>
 
-                    <div className={signUp ? "login-btn": "login-btn-false"}
-                    onClick={signUp ? onSignUpClickHandler : undefined}>회원가입</div>
+                    <div className={signUp ? "login-btn" : "login-btn-false"}
+                        onClick={signUp ? onSignUpClickHandler : undefined}>회원가입</div>
 
                 </div>
             </div>
