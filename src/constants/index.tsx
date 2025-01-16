@@ -31,7 +31,6 @@ export const ADMIN_MILEAGE_PATH = 'mileage';
 
 export const MY_INFO_PW_PATH = (userId: string|number) => `${userId}/pw-check`;
 export const MY_INFO_UPDATE_PATH = (userId: string|number) => `${userId}/change-info`;
-export const ADMIN_PATH = '/admin'
 
 
 export const SNS_SUCCESS_PATH = '/sns-success';
