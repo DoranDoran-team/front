@@ -108,7 +108,6 @@ export default function GD() {
                             <div className='discussion-info'>
                                 <div className="discussion-info-high">
                                     <div className="discussion-title">생성형 AI에게 윤리적 책임을 물을 수 있는가?</div>
-                                    <div className="discussion-option">⋮</div>
                                 </div>
                                 <div className="discussion-info-middle">
                                     <div className="">찬성팀 주장</div>
@@ -148,7 +147,6 @@ export default function GD() {
                             <div className='discussion-info'>
                                 <div className="discussion-info-high">
                                     <div className="discussion-title">생성형 AI에게 윤리적 책임을 물을 수 있는가?</div>
-                                    <div className="discussion-option">⋮</div>
                                 </div>
                                 <div className="discussion-info-middle">
                                     <div className="">찬성팀 주장</div>
@@ -188,7 +186,6 @@ export default function GD() {
                             <div className='discussion-info'>
                                 <div className="discussion-info-high">
                                     <div className="discussion-title">생성형 AI에게 윤리적 책임을 물을 수 있는가?</div>
-                                    <div className="discussion-option">⋮</div>
                                 </div>
                                 <div className="discussion-info-middle">
                                     <div className="">찬성팀 주장</div>
@@ -228,7 +225,6 @@ export default function GD() {
                             <div className='discussion-info'>
                                 <div className="discussion-info-high">
                                     <div className="discussion-title">생성형 AI에게 윤리적 책임을 물을 수 있는가?</div>
-                                    <div className="discussion-option">⋮</div>
                                 </div>
                                 <div className="discussion-info-middle">
                                     <div className="">찬성팀 주장</div>
@@ -268,7 +264,6 @@ export default function GD() {
                             <div className='discussion-info'>
                                 <div className="discussion-info-high">
                                     <div className="discussion-title">생성형 AI에게 윤리적 책임을 물을 수 있는가?</div>
-                                    <div className="discussion-option">⋮</div>
                                 </div>
                                 <div className="discussion-info-middle">
                                     <div className="">찬성팀 주장</div>
