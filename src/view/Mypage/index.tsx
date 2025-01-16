@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import './style.css';
 import { useNavigate } from "react-router-dom";
-import { MY_ABSOLUTE_UPDATE_PATH, MY_UPDATE_PATH } from "../../constants";
+import { MY_ABSOLUTE_UPDATE_PATH, MY_INFO_PW_ABSOLUTE_PATH, MY_INFO_UPDATE_ABSOLUTE_PATH, MY_UPDATE_PATH } from "../../constants";
 
 // component: 마이페이지 컴포넌트 //
 export default function Mypage() {
+
     // state: 마이페이지 상태 //
     const [menu, setMenu] = useState<boolean>(false);
     const [state] = useState<boolean>(true);
@@ -24,9 +25,9 @@ export default function Mypage() {
 
     // event handler: 구독 버튼 클릭 이벤츠 처리 함수 //
     const onSubscribeButtonHandler = () => {
-
         setSubscribe(!subscribe)
     }
+
     // function: 네비게이터 함수 처리 //
     const navigator = useNavigate();
 
@@ -34,15 +35,21 @@ export default function Mypage() {
     const onUpdateButtonHandler = () => {
         navigator(MY_ABSOLUTE_UPDATE_PATH(1));
     }
+
     // event handler: 토론방 상태 클릭 이벤트 처리 함수 //
     const onStateTypeButtonHandler = () => {
         setStateType(!stateType)
     }
+
     // event handler: 게시물 메뉴 버튼 클릭 이벤트 처리 함수 //
     const onPostMenuButtonHandler = () => {
         setEditButton(!editbutton);
     }
 
+    // event handler: 개인 정보 수정 버튼 클릭 이벤트 핸들러 //
+    const onChangeInfoClickHandler = () => {
+        navigator(MY_INFO_PW_ABSOLUTE_PATH('qwer1234'));
+    }
 
     // render: 마이페이지 화면 렌더링 //
     return (
@@ -53,7 +60,7 @@ export default function Mypage() {
                         <div className="top-icon-setting" onClick={onUpdateButtonHandler}></div>
                         <div className="top-icon-menu" onClick={onMenuButtonHandler}>
                             {menu && (<div className='menu-list' >
-                                <div className="menu-item" >개인 정보 수정</div>
+                                <div className="menu-item" onClick={onChangeInfoClickHandler}>개인 정보 수정</div>
                                 <div className="menu-item">마일리지 관리</div>
                                 <div className="menu-item">실시간 토론 참여 이력</div>
                                 <div className="menu-item">공지사항</div>
