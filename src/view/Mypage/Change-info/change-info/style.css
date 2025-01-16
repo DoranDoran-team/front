@@ -1,0 +1,224 @@
+#change-info {
+    display: flex;
+    flex-direction: row;
+    gap: 50px;
+}
+
+#change-info .mypage-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+#change-info .mypage-menu .mypage {
+    display: flex;
+    font-size: 32px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#change-info .mypage-menu .menu-box {
+    display: flex;
+    margin-left: 30px;
+    flex-direction: column;
+
+    font-size: 22px;
+    cursor: pointer;
+    gap: 17px;
+}
+
+#change-info .background {
+    width: 1000px;
+    border-radius: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    align-items: center;
+
+    background-color: #D7FFE1;
+}
+
+#change-info .background .title {
+    margin-top: 50px;
+    font-size: 35px;
+    font-weight: 600;
+    margin-bottom: 60px;
+    height: auto;
+}
+
+#change-info .input-box {
+    width: 300px;
+    height: 30px;
+
+    border-radius: 6px;
+    border: 1px solid #B4B4B4;
+
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+#change-info .change-pw {
+    width: 320px;
+    height: 50px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: #B4B4B4;
+    border-radius: 6px;
+    border: 1px solid #b4b4b4;
+
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+
+    margin-bottom: 15px;
+}
+
+#change-info .change-pw:hover {
+    background-color: #d4d4d4;
+    border: 1px solid #d4d4d4;
+}
+
+#change-info .input-box3 {
+    width: 300px;
+    height: 30px;
+
+    border-radius: 6px;
+    border: 1px solid #B4B4B4;
+
+    padding: 10px;
+}
+
+#change-info .message-false {
+    font-size: 12px;
+    font-weight: 200;
+    color: red;
+    margin-top: 5px;
+}
+
+#change-info .tel-box {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+#change-info .input-box2 {
+    width: 230px;
+    height: 30px;
+
+    border-radius: 6px;
+    border: 1px solid #B4B4B4;
+
+    padding: 10px;
+}
+
+#change-info .send-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 58px;
+    border-radius: 6px;
+    background-color: #ABF6BE;
+    border: 1px solid #ABF6BE;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+#change-info .send-btn-false {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 58px;
+    border-radius: 6px;
+    background-color: #B4B4B4;
+    border: 1px solid #B4B4B4;
+
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+}
+
+#change-info .send-btn:hover {
+    border: 1px solid #79eb96;
+    background-color: #79eb96;
+}
+
+#change-info .message-false {
+    font-size: 12px;
+    font-weight: 200;
+    color: red;
+    align-self: flex-start;
+    margin-top: 5px;
+}
+
+#change-info .message-true {
+    font-size: 12px;
+    font-weight: 200;
+    color: rgba(0, 128, 0, 0.7);
+    align-self: flex-start;
+    margin-top: 5px;
+}
+
+#change-info .tel-box2 {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+#change-info .btn-box {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-left: auto;
+    margin-top: 60px;
+}
+
+#change-info .update-btn {
+    width: 80px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ABF6BE;
+    border-radius: 6px;
+    border: 1px solid #ABF6BE;
+
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#change-info .update-btn:hover {
+    background-color: #79eb96;
+    border: 1px solid #79eb96;
+}
+
+#change-info .cancle-btn {
+    width: 80px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #B4b4b4;
+    border-radius: 6px;
+    border: 1px solid #B4b4b4;
+
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    color: white;
+}
+
+#change-info .cancle-btn:hover {
+    background-color: #d4d4d4;
+    border: 1px solid #d4d4d4;
+}
