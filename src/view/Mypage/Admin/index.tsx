@@ -25,11 +25,11 @@ export default function Admin() {
                 <div className="mypage-state-message">관리자 계정 입니다. </div>
                 <div className="mypage-discussion-room">신고 접수 목록</div>
                 <div className='accuse-box'>
-                    {['댓글', '|','게시글','|','채팅'].map((type) => (
+                    {['댓글', '|', '게시글', '|', '채팅'].map((type) => (
                         <div
                             key={type}
-                            className={`accuse-type ${activeTypes === type ? 'active' : ''}`} 
-                            onClick={() => onAccuseTypeClickHandler(type)} 
+                            className={`accuse-type ${activeTypes === type ? 'active' : ''}`}
+                            onClick={() => onAccuseTypeClickHandler(type)}
                         >
                             {type}
                         </div>
@@ -51,24 +51,24 @@ export default function Admin() {
                     <div className='accuse-tr'>25.01.01</div>
                     <div className='accuse-tr'>부적절한 언어 사용</div>
                 </div>
-                : activeTypes === '게시글' ?
-                <div className='accuse-table'>
-                    <div className='accuse-tr'>1</div>
-                    <div className='accuse-tr'>게시글</div>
-                    <div className='accuse-tr'>@dorai5</div>
-                    <div className='accuse-tr'>@normal</div>
-                    <div className='accuse-tr'>25.01.01</div>
-                    <div className='accuse-tr'>부적절한 언어 사용</div>
-                </div>
-                :activeTypes === '채팅' ?
-                <div className='accuse-table'>
-                    <div className='accuse-tr'>1</div>
-                    <div className='accuse-tr'>채팅</div>
-                    <div className='accuse-tr'>@dorai5</div>
-                    <div className='accuse-tr'>@normal</div>
-                    <div className='accuse-tr'>25.01.01</div>
-                    <div className='accuse-tr'>부적절한 언어 사용</div>
-                </div>:''}
+                    : activeTypes === '게시글' ?
+                        <div className='accuse-table'>
+                            <div className='accuse-tr'>1</div>
+                            <div className='accuse-tr'>게시글</div>
+                            <div className='accuse-tr'>@dorai5</div>
+                            <div className='accuse-tr'>@normal</div>
+                            <div className='accuse-tr'>25.01.01</div>
+                            <div className='accuse-tr'>부적절한 언어 사용</div>
+                        </div>
+                        : activeTypes === '채팅' ?
+                            <div className='accuse-table'>
+                                <div className='accuse-tr'>1</div>
+                                <div className='accuse-tr'>채팅</div>
+                                <div className='accuse-tr'>@dorai5</div>
+                                <div className='accuse-tr'>@normal</div>
+                                <div className='accuse-tr'>25.01.01</div>
+                                <div className='accuse-tr'>부적절한 언어 사용</div>
+                            </div> : ''}
             </div>
             <div className="subscribe-wrapper">
                 <div className="subscribe-title">활동 중지 2명</div>
