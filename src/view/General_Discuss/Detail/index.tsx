@@ -248,7 +248,7 @@ export default function GDDetail() {
                                     )}
                                 </div>
                             </div>
-                            {commentOptions[comment.id] && ( 
+                            {commentOptions[comment.id] && (
                                 <div className='dropdown-menu-box'>
                                     <div className='dropdown-menu'>
                                         <div className='dropdown-item' onClick={() => handleEditComment(comment.id)}>수정하기</div>

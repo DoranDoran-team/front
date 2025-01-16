@@ -93,13 +93,13 @@ export default function Notice() {
                     <div className="td-title">TITLE.</div>
                     <div className="td-date">DATE.</div>
                 </div>
-                    
+
                 <div className="tr" onClick={() => onTrClickHandler(3)}>
                     <div className="tr-no">3</div>
                     <div className="tr-title">title</div>
                     <div className="tr-date">2025.01.01</div>
                 </div>
-                
+
                 <div className="tr" onClick={() => onTrClickHandler(2)}>
                     <div className="tr-no">2</div>
                     <div className="tr-title">title</div>
@@ -116,8 +116,8 @@ export default function Notice() {
             </div>
 
             <div className="search">
-                <input value={searchWords} className="search-input" placeholder="제목" 
-                    onChange={onSearchChangeHandler} onKeyDown={handleKeyDown}/>
+                <input value={searchWords} className="search-input" placeholder="제목"
+                    onChange={onSearchChangeHandler} onKeyDown={handleKeyDown} />
                 <div className="search-btn">검색</div>
             </div>
 
