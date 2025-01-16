@@ -297,6 +297,6 @@
     cursor: pointer;
 }
 
-.dropdown-item:hover {
+#gd-wrapper .dropdown-item:hover {
     background-color: #f1f1f1;
 }
