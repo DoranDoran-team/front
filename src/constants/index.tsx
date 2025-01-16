@@ -20,7 +20,7 @@ export const NOTICE = '/notice';
 export const SCHEDULE = '/schedule';
 
 export const MY_PATH = '/mypage';
-export const MY_UPDATE_PATH = (userId: string|number) => `${userId}/update`;
+export const MY_UPDATE_PATH = (userId: string | number) => `${userId}/update`;
 export const ADMIN_PATH = '/admin'
 
 export const SNS_SUCCESS_PATH = '/sns-success';
@@ -49,7 +49,7 @@ export const NOTICE_ABSOLUTE_PATH = NOTICE;
 export const SCHEDULE_ABSOLUTE_PATH = SCHEDULE;
 
 export const MY_ABSOLUTE_PATH = MY_PATH;
-export const MY_ABSOLUTE_UPDATE_PATH = (userId:string|number) => `${MY_PATH}/${MY_UPDATE_PATH(userId)}`
+export const MY_ABSOLUTE_UPDATE_PATH = (userId: string | number) => `${MY_PATH}/${MY_UPDATE_PATH(userId)}`
 
 export const ADMIN_ABSOULTE_PATH = ADMIN_PATH;
 export const OTHERS_ABSOLUTE_PATH = OTHERS_PATH;
