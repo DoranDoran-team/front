@@ -13,6 +13,30 @@ export default function GDDetail() {
     const [replyContent, setReplyContent] = useState<{ [key: number]: string }>({});
     const [replyTo, setReplyTo] = useState<number | null>(null);
 
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const [selectedReportReason, setSelectedReportReason] = useState<string | null>(null);
+    const [reportTarget, setReportTarget] = useState<{ type: 'post' | 'comment'; id: number | null }>({ type: 'post', id: null });
+
+    const openReportModal = (type: 'post' | 'comment', id: number | null) => {
+        setReportTarget({ type, id });
+        setIsReportModalOpen(true);
+    };
+
+    const closeReportModal = () => {
+        setIsReportModalOpen(false);
+        setSelectedReportReason(null);
+    };
+
+    const handleReportSubmit = () => {
+        if (!selectedReportReason) {
+            alert('신고 사유를 선택해 주세요.');
+            return;
+        }
+        console.log(`${reportTarget.type === 'post' ? '게시글' : '댓글'} ID ${reportTarget.id} 신고 이유: ${selectedReportReason}`);
+        closeReportModal();
+    };
+
+
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
     };
@@ -168,7 +192,11 @@ export default function GDDetail() {
                         </div>
                         <div className='status-and-option'>
                             <div className='status'>진행 중</div>
-                            <div className='option' onClick={toggleDropdownOption}>⋮</div>
+                            {true ? (
+                                <div className='option' onClick={toggleDropdownOption}>⋮</div>
+                            ) : (
+                                <div className="siren-button" onClick={() => openReportModal('post', null)}></div>
+                            )}
                         </div>
                     </div>
                     {isDropdownOptionOpen && (
@@ -179,6 +207,72 @@ export default function GDDetail() {
                             </div>
                         </div>
                     )}
+                    {isReportModalOpen && (
+                        <div className="report-modal">
+                            <div className="report-modal-content">
+                                <h3>신고 사유 선택</h3>
+                                <div className='report-modal-labels'>
+                                    <div>
+                                        <label>
+                                            <input
+                                                type="radio"
+                                                value="폭력성"
+                                                checked={selectedReportReason === '폭력성'}
+                                                onChange={(e) => setSelectedReportReason(e.target.value)}
+                                            />
+                                            폭력성
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <label>
+                                            <input
+                                                type="radio"
+                                                value="선정성"
+                                                checked={selectedReportReason === '선정성'}
+                                                onChange={(e) => setSelectedReportReason(e.target.value)}
+                                            />
+                                            선정성
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <label>
+                                            <input
+                                                type="radio"
+                                                value="따돌림 또는 왕따"
+                                                checked={selectedReportReason === '따돌림 또는 왕따'}
+                                                onChange={(e) => setSelectedReportReason(e.target.value)}
+                                            />
+                                            따돌림 또는 왕따
+                                        </label>
+                                    </div>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            value="도배"
+                                            checked={selectedReportReason === '도배'}
+                                            onChange={(e) => setSelectedReportReason(e.target.value)}
+                                        />
+                                        도배
+                                    </label>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            value="개인정보 유출"
+                                            checked={selectedReportReason === '개인정보 유출'}
+                                            onChange={(e) => setSelectedReportReason(e.target.value)}
+                                        />
+                                        개인정보 유출
+                                    </label>
+                                </div>
+                                <div className="modal-buttons">
+                                    <button onClick={closeReportModal}>취소</button>
+                                    <button onClick={handleReportSubmit}>신고하기</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+
                     <div className="discussion-info">
                         <div className="discussion-image">이미지 자리</div>
                         <div className="discussion-text-info">
@@ -244,11 +338,11 @@ export default function GDDetail() {
                                     {comment.user === 'comment_user' ? (
                                         <div className='comment-option' onClick={() => toggleCommentOptions(comment.id)}>⋮</div>
                                     ) : (
-                                        <div className='siren-button'></div>
+                                        <div className='siren-button' onClick={() => openReportModal('comment', comment.id)}></div>
                                     )}
                                 </div>
                             </div>
-                            {commentOptions[comment.id] && ( 
+                            {commentOptions[comment.id] && (
                                 <div className='dropdown-menu-box'>
                                     <div className='dropdown-menu'>
                                         <div className='dropdown-item' onClick={() => handleEditComment(comment.id)}>수정하기</div>
