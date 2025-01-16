@@ -290,7 +290,7 @@ export default function GDDetail() {
                         <div className="recommendation-icon"></div>
                         <div className="recommendation-count">127</div>
                     </div>
-                    <hr />
+                    <hr/>
                     <div className='comment-box'>
                         <div className='comment-input-and-button'>
                             <div className='input-comment'>

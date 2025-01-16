@@ -31,7 +31,7 @@
     flex:1;
     padding: 30px;
 
-    background-color: rgb(170, 247, 133);
+    background-color: #D7FFE1;
     border-radius: 50px;
     position: relative;
 
@@ -114,6 +114,7 @@
     margin-top: -20px;
 
     position: relative;
+    width: 900px;
 }
 
 .mypage-wrapper .mypage-info {
