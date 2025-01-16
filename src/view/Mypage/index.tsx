@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import './style.css';
 import { useNavigate } from "react-router-dom";
-import { MY_ABSOLUTE_UPDATE_PATH, MY_UPDATE_PATH } from "../../constants";
+import { MY_ABSOLUTE_UPDATE_PATH} from "../../constants";
 
 // component: 마이페이지 컴포넌트 //
 export default function Mypage() {
@@ -70,7 +70,7 @@ export default function Mypage() {
                         <div className="mypage-id">@ LiveLive88</div>
                     </div>
                     <div className="mypage-user">구독자 <span>28</span>명 / 토론방<span>9</span>개</div>
-                    {isUser ? <div className="subscribe-button-box" onClick={onSubscribeButtonHandler}>
+                    {!isUser ? <div className="subscribe-button-box" onClick={onSubscribeButtonHandler}>
                         {subscribe ? <div className="subscribe-button">구독</div>
                             : <div className="subscribe-button">구독 중</div>}
                     </div> : ''}

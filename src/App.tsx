@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 import { BrowserRouter, Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
-import { ACCESS_TOKEN, GEN_DISC_DETAIL_ABSOLUTE_PATH, GEN_DISC_PATH, GEN_DISC_WRITE_ABSOLUTE_PATH, LOGIN_ABSOLUTE_PATH, LOGIN_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, MY_PATH, NOTICE, OTHERS_PATH, ROOT_PATH, RT_DISC_PATH, SCHEDULE, SNS_SUCCESS_PATH,CHANGE_PW, FIND_ID, FIND_ID_RESULT, FIND_PW, SIGN_UP, ADMIN_PATH, MY_UPDATE_PATH } from './constants';
+import { ACCESS_TOKEN, GEN_DISC_DETAIL_ABSOLUTE_PATH, GEN_DISC_PATH, GEN_DISC_WRITE_ABSOLUTE_PATH, LOGIN_ABSOLUTE_PATH, LOGIN_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, MY_PATH, NOTICE, OTHERS_PATH, ROOT_PATH, RT_DISC_PATH, SCHEDULE, SNS_SUCCESS_PATH,CHANGE_PW, FIND_ID, FIND_ID_RESULT, FIND_PW, SIGN_UP, ADMIN_PATH, MY_ABSOLUTE_UPDATE_PATH, ADMIN_ABSOLUTE_ACCUSE_PATH, ADMIN_ABSOLUTE_MILEAGE_PATH } from './constants';
 import MainLayout from './layouts/MainLayout';
 import GD from './view/General_Discuss';
 import RTDiscuss from './view/RT_Discuss';
@@ -20,6 +20,8 @@ import FindIdResult from './view/Auth/Find-id-result';
 import ChangePw from './view/Auth/Change-pw';
 
 import Update from './view/Mypage/Update';
+import Accuse from './view/Mypage/Admin/Accuse';
+import Mileage from './view/Mypage/Admin/Mileage';
 import Admin from './view/Mypage/Admin';
 
 // component: root path 컴포넌트 //
@@ -115,11 +117,13 @@ export default function DoranDoran() {
 
           <Route path={MY_PATH} element={<MainLayout />}  >
             <Route index element={<Mypage />} />
-            <Route path={MY_UPDATE_PATH(':userId')} element={<Update />}/>
+            <Route path={MY_ABSOLUTE_UPDATE_PATH(':userId')} element={<Update />}/>
           </Route>
 
           <Route path={ADMIN_PATH} element={<MainLayout />}>
             <Route index element={<Admin />}/>
+            <Route path={ADMIN_ABSOLUTE_ACCUSE_PATH} element={<Accuse />} />
+            <Route path={ADMIN_ABSOLUTE_MILEAGE_PATH} element={<Mileage />} />
           </Route>
 
           <Route path={SNS_SUCCESS_PATH} element={<SnsSuccess/>} />

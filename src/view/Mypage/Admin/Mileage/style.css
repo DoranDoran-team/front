@@ -1,7 +1,7 @@
 .accuse-title {
     font-weight: bold;
     font-size: 24px;
-    width: 900px;
+    
     margin-top: 20px;
     margin-bottom: 10px;
     padding-bottom: 10px;
@@ -72,15 +72,6 @@
 .accuse-table > .accuse-tr:nth-child(5) { 
     flex: none;
     width: 100px;
-}
-
-.discussion-participants-icon {
-    background-image: url(/public/mypage/account.png);
-    width: 23px;
-    height: 20px;
-
-    background-position: 50% 50%;
-    background-size: cover;
 }
 
 .accuse-box.complete {
