@@ -246,14 +246,15 @@ export default function MainLayout() {
                 {isMainPage && (
                     <div className="ranking-section" onClick={onClickRankHandler} style={clickRank ? { background: 'black', color: 'white' } : { background: 'white' }}>
                         랭킹
+                        {clickRank && (
+                            <div className='ranking'>
+                                <Ranking />
+                            </div>
+                        )}
                     </div>
 
                 )}
-                {clickRank && (
-                    <div className='ranking'>
-                        <Ranking />
-                    </div>
-                )}
+
                 <Outlet />
             </div>
             {/* <ArrowToTop /> */}
