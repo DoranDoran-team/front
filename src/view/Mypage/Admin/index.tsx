@@ -1,20 +1,73 @@
-import React, { useState } from 'react'
+import React, {  useState } from 'react'
 import './style.css';
+import { useNavigate } from 'react-router-dom';
+import { ADMIN_ABSOLUTE_ACCUSE_PATH, ADMIN_ABSOLUTE_MILEAGE_PATH, ADMIN_ACCUSE_PATH, ADMIN_MILEAGE_PATH } from '../../../constants';
+import AdminSideBar from '../../../components/Admin/Sidebar';
 
 export default function Admin() {
 
-    // state: 신고 타입 상태 //
-    const [activeTypes, setActiveTypes] = useState<string | null>(null);
-    // event handler: 신고 타입 클릭 이벤트 처리  //
+    // state: 관리자 마이페이지 상태 //
+    const [menu, setMenu] = useState<boolean>(false);
+    const [state] = useState<boolean>(false);
+    const [editbutton, setEditButton] = useState<boolean>(false);
+    const [toggleDown, setToggleDown] = useState<boolean>(false)
+        const [sortingState, setSortingState] = useState({
+            selected: '정렬순'
+        })
 
-    const onAccuseTypeClickHandler = (type: string) => {
-        setActiveTypes(type === activeTypes ? null : type);
+    // function: 네비게이터 함수 처리 //
+    const navigator = useNavigate();
+
+    // event handler: menu 클릭 이벤트 처리 함수 //
+    const onMenuButtonHandler = () => {
+
+        setMenu(!menu);
+    }
+
+    // event handler: 게시물 메뉴 버튼 클릭 이벤트 처리 함수 //
+    const onPostMenuButtonHandler = () => {
+        setEditButton(!editbutton);
+    }
+
+    // event handler: 정렬 메뉴 버튼 이벤트 처리 함수 //
+    const onSortingButtonHandler = () => {
+        setToggleDown(!toggleDown);
+        setSortingState((prevState) => ({
+            ...prevState
+        }));
+        
     };
+    // event handler: 정렬 메뉴 아이템 클릭 이벤트 처리 함수 //
+    const onSortOptionClickHandler = (option:string) => {
+        setSortingState({
+            selected: option,
+        })
+        setToggleDown(!toggleDown)
+    }
+    // event handler: 메뉴 아이템 클릭 이벤트 처리 함수 //
+    const onAsscuseButtonHandler = () => {
+        navigator(ADMIN_ABSOLUTE_ACCUSE_PATH)
+    }
 
-
+    const onMileageButtonHandler = () => {
+        navigator(ADMIN_ABSOLUTE_MILEAGE_PATH)
+    }
     return (
         <div className="mypage-wrapper">
+            <div className="admin-side-wrapper">
+                            <AdminSideBar/>
+                        </div>
             <div className="mypage-main-wrapper">
+            <div className="top-icon-box">
+                    <div className="top-icons">
+                        <div className="top-icon-menu" onClick={onMenuButtonHandler}>
+                            {menu && (<div className='menu-list' >
+                                <div className="menu-item" onClick={onMileageButtonHandler}>마일리지 관리</div>
+                                <div className="menu-item" onClick={onAsscuseButtonHandler}>신고 관리</div>
+                            </div>)}
+                        </div>
+                    </div>
+                </div>
                 <div className="user-box">
                     <div className="main-profile"></div>
                     <div className="mypage-info">
@@ -23,65 +76,81 @@ export default function Admin() {
                     </div>
                 </div>
                 <div className="mypage-state-message">관리자 계정 입니다. </div>
-                <div className="mypage-discussion-room">신고 접수 목록</div>
-                <div className='accuse-box'>
-                    {['댓글', '|','게시글','|','채팅'].map((type) => (
-                        <div
-                            key={type}
-                            className={`accuse-type ${activeTypes === type ? 'active' : ''}`} 
-                            onClick={() => onAccuseTypeClickHandler(type)} 
-                        >
-                            {type}
+                <div className="mypage-discussion-room-top">
+                    <div className="mypage-discussion-room">실시간 토론방 현황</div>
+                    <div className="discussion-state-box" onClick={onSortingButtonHandler}>{sortingState.selected}
+                        {toggleDown && <div className="state-type-box" >
+                            <div className="state-type" onClick={()=>onSortOptionClickHandler('진행중')}>진행중</div>
+                            <div className="state-type" onClick={()=>onSortOptionClickHandler('마감')}>마감</div>
+                        </div>}
+                    </div>
+                </div>
+                {sortingState.selected === '진행중' ? <div className="discussion-room-list">
+                    <div className="discussion-image"></div>
+                    <div className="discussion-info">
+                        <div className="discussion-title-box">
+                            <div className="discussion-title">대마초 합법화</div>
+                            <div className="discussion-icon-box">
+                                <div className="discussion-icon" onClick={onPostMenuButtonHandler}></div>
+                                {editbutton && <div className="discussion-edit-box">
+                                    <div className="edit-item">수정</div>
+                                    <div className="edit-item">삭제</div>
+                                </div>}
+                            </div>
                         </div>
-                    ))}
-                </div>
-                <div className='accuse-table'>
-                    <div className='accuse-th'>번호</div>
-                    <div className='accuse-th'>신고내용</div>
-                    <div className='accuse-th'>신고글 작성자</div>
-                    <div className='accuse-th'>신고자</div>
-                    <div className='accuse-th'>신고 일시</div>
-                    <div className='accuse-th'>신고 사유</div>
-                </div>
-                {activeTypes === '댓글' ? <div className='accuse-table'>
-                    <div className='accuse-tr'>1</div>
-                    <div className='accuse-tr'>댓글</div>
-                    <div className='accuse-tr'>@dorai5</div>
-                    <div className='accuse-tr'>@normal</div>
-                    <div className='accuse-tr'>25.01.01</div>
-                    <div className='accuse-tr'>부적절한 언어 사용</div>
-                </div>
-                : activeTypes === '게시글' ?
-                <div className='accuse-table'>
-                    <div className='accuse-tr'>1</div>
-                    <div className='accuse-tr'>게시글</div>
-                    <div className='accuse-tr'>@dorai5</div>
-                    <div className='accuse-tr'>@normal</div>
-                    <div className='accuse-tr'>25.01.01</div>
-                    <div className='accuse-tr'>부적절한 언어 사용</div>
-                </div>
-                :activeTypes === '채팅' ?
-                <div className='accuse-table'>
-                    <div className='accuse-tr'>1</div>
-                    <div className='accuse-tr'>채팅</div>
-                    <div className='accuse-tr'>@dorai5</div>
-                    <div className='accuse-tr'>@normal</div>
-                    <div className='accuse-tr'>25.01.01</div>
-                    <div className='accuse-tr'>부적절한 언어 사용</div>
-                </div>:''}
-            </div>
-            <div className="subscribe-wrapper">
-                <div className="subscribe-title">활동 중지 2명</div>
-                <div className="subscribe-box">
-                    <div className="subscribe-image"></div>
-                    <div className="subscribe-user-info">
-                        <div className="subscribe-nickname">마이멜로디</div>
-                        <div className="subscribe-user">@1000JEA</div>
+                        <div className="discussion-contents">범죄 감소와 세수 증대 효과가 있다. vs 건강 문제와 사회적 부작용이 우려된다.</div>
+                        <div className="discussion-bottom">
+                            <div className="discussion-bottom-box">
+                                <div className="discussion-created">20204.12.30 16:30</div>
+                                <div className="discussion-fixed">(수정됨)</div>
+                                {state ? <div className="discussion-state-box continue">
+                                    <div className="discussion-state ">진행중</div>
+                                </div> :
+                                    <div className="discussion-state-box end">
+                                        <div className="discussion-state ">마감</div>
+                                    </div>
+                                }
+                            </div>
+                            <div className="discussion-icons">
+                                <div className="discussion-participants-icon"></div>
+                                <div className="discussion-comment">6</div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="subscribe-cancel-button">
-                        <div className="subscribe-cancel">취소</div>
+                </div>:
+                <div className="discussion-room-list">
+                    <div className="discussion-image"></div>
+                    <div className="discussion-info">
+                        <div className="discussion-title-box">
+                            <div className="discussion-title">대마초 합법화</div>
+                            <div className="discussion-icon-box">
+                                <div className="discussion-icon" onClick={onPostMenuButtonHandler}></div>
+                                {editbutton && <div className="discussion-edit-box">
+                                    <div className="edit-item">수정</div>
+                                    <div className="edit-item">삭제</div>
+                                </div>}
+                            </div>
+                        </div>
+                        <div className="discussion-contents">범죄 감소와 세수 증대 효과가 있다. vs 건강 문제와 사회적 부작용이 우려된다.</div>
+                        <div className="discussion-bottom">
+                            <div className="discussion-bottom-box">
+                                <div className="discussion-created">20204.12.30 16:30</div>
+                                <div className="discussion-fixed">(수정됨)</div>
+                                {!state ? <div className="discussion-state-box continue">
+                                    <div className="discussion-state ">진행중</div>
+                                </div> :
+                                    <div className="discussion-state-box end">
+                                        <div className="discussion-state ">마감</div>
+                                    </div>
+                                }
+                            </div>
+                            <div className="discussion-icons">
+                                <div className="discussion-participants-icon"></div>
+                                <div className="discussion-comment">6</div>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </div>}
             </div>
         </div>
     )

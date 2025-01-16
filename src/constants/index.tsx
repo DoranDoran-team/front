@@ -24,9 +24,15 @@ export const SCHEDULE = '/schedule';
 
 export const MY_PATH = '/mypage';
 export const MY_UPDATE_PATH = (userId: string|number) => `${userId}/update`;
+
+export const ADMIN_PATH = '/admin';
+export const ADMIN_ACCUSE_PATH = 'accuse';
+export const ADMIN_MILEAGE_PATH = 'mileage';
+
 export const MY_INFO_PW_PATH = (userId: string|number) => `${userId}/pw-check`;
 export const MY_INFO_UPDATE_PATH = (userId: string|number) => `${userId}/change-info`;
 export const ADMIN_PATH = '/admin'
+
 
 export const SNS_SUCCESS_PATH = '/sns-success';
 export const OTHERS_PATH = '*';
@@ -62,6 +68,8 @@ export const MY_INFO_PW_ABSOLUTE_PATH = (userId:string|number) => `${MY_PATH}/${
 export const MY_INFO_UPDATE_ABSOLUTE_PATH = (userId:string|number) => `${MY_PATH}/${MY_INFO_UPDATE_PATH(userId)}`;
 
 export const ADMIN_ABSOULTE_PATH = ADMIN_PATH;
+export const ADMIN_ABSOLUTE_ACCUSE_PATH = `${ADMIN_PATH}/${ADMIN_ACCUSE_PATH}`
+export const ADMIN_ABSOLUTE_MILEAGE_PATH = `${ADMIN_PATH}/${ADMIN_MILEAGE_PATH}`
 export const OTHERS_ABSOLUTE_PATH = OTHERS_PATH;
 
 // variable: HTTP BEARER TOKEN COOKIE NAME //
