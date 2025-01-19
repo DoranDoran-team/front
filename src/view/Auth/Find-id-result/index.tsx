@@ -2,14 +2,13 @@ import React from 'react'
 import './style.css'
 import { useNavigate } from 'react-router-dom';
 import { FIND_PW_ABSOLUTE_PATH, LOGIN_ABSOLUTE_PATH } from '../../../constants';
+import useIdSearchResultZustand from '../../../stores/id-search-result-store';
 
 // component: 아이디 찾기 결과 화면 컴포넌트 //
 export default function FindIdResult() {
 
-    // variable: 임시 변수 //
-    const name = '홍길동';
-    const telNumber = '01012345678';
-    const userId = 'qwer1234';
+    // state: zustand 만든 거 가져오기 //
+    const { name, telNumber, userId} = useIdSearchResultZustand();
 
     // event handler: 로그인 버튼 클릭 이벤트 핸들러 //
     const loginBtnClickHandler = () => {
@@ -60,7 +59,8 @@ export default function FindIdResult() {
                     </div>
                 </div>
                 
-                <div className='login-btn' onClick={loginBtnClickHandler}>로그인</div>
+                <div className='login-btn' onClick={loginBtnClickHandler}
+                    style={{marginBottom: "10px"}}>로그인</div>
                 <div className='login-btn' onClick={findPwBtnClickHandler}>비밀번호 찾기</div>
             </div>
         </div>
