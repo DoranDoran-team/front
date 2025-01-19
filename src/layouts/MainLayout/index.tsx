@@ -97,17 +97,6 @@ function TopPersonalNavigation() {
     // function: 네비게이터 함수 //
     const navigator = useNavigate();
 
-    // // event handler: 사람 아이콘 버튼 클릭 이벤트 //
-    // const onLogInClickHandler = () => {
-    //     if (pathname === SIGN_IN_ABSOLUTE_PATH) window.location.reload();
-    //     navigator(SIGN_IN_ABSOLUTE_PATH);
-    // }
-
-    // // event handler: 회원가입 버튼 //
-    // const onSignUpClickHandler = () => {
-    //     navigator(SIGN_UP_ABSOLUTE_PATH);
-    // }
-
     // event Handler: 로그아웃 버튼 클릭 이벤트 처리 //
     const onLogoutButtonClickHandler = () => {
         removeCookie(ACCESS_TOKEN, { path: ROOT_ABSOLUTE_PATH });

@@ -50,7 +50,6 @@
     display: flex;
     flex-direction: row;
     gap: 10px;
-    margin-bottom: 10px;
 }
 
 #findPW .tel-box2 {
@@ -58,7 +57,6 @@
     display: flex;
     flex-direction: row;
     gap: 10px;
-    margin-bottom: 10px;
 }
 
 #findPW .input-box2 {
@@ -114,6 +112,8 @@
     color: red;
     align-self: stretch;
     height: 16px;
+    margin-top: 5px;
+    margin-bottom: 15px;
 }
 
 #findPW .message-true {
@@ -122,6 +122,8 @@
     color: rgba(0, 128, 0, 0.7);
     align-self: stretch;
     height: 16px;
+    margin-top: 5px;
+    margin-bottom: 15px;
 }
 
 .timer {
