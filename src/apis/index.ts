@@ -7,6 +7,9 @@ import SignUpRequestDto from "./dto/request/auth/sign-up.request.dto";
 import SignInRequestDto from "./dto/request/auth/sign-in.request.dto";
 import SignInResponseDto from "./dto/response/auth/sign-in.response.dto";
 import IdSearchNameTelNumberRequestDto from "./dto/request/auth/id-search-name-tel-number.request.dto";
+import findIdResultResponseDto from "./dto/response/auth/find-id-result.response.dto";
+import FindPwRequestDto from "./dto/request/auth/find-pw.request.dto";
+import PatchPwRequestDto from "./dto/request/auth/patch-pw.request.dto";
 
 // variable: api url 상수//
 const DORANDORAN_API_DOMAIN = process.env.REACT_APP_API_URL;
@@ -21,6 +24,8 @@ const SIGN_IN_API_URL = `${AUTH_MODULE_URL}/sign-in`;
 
 const ID_SEARCH_NAME_TEL_API_URL = `${AUTH_MODULE_URL}/find-id`;
 const ID_SEARCH_TEL_AUTH_API_URL = `${AUTH_MODULE_URL}/find-id-check`;
+const FIND_PW_API_URL = `${AUTH_MODULE_URL}/find-pw`;
+const PATCH_PASSWORD_API_URL = `${AUTH_MODULE_URL}/change-pw`;
 
 // function: Authorization Bearer 헤더값 //
 const bearerAuthorization = (accessToken: String) => ({headers: {'Authorization': `Bearer ${accessToken}`}});
@@ -89,7 +94,23 @@ export const idSearchNameTelNumberRequest = async (requestBody: IdSearchNameTelN
 // function: id search middle (전화번호 + 인증번호) 요청 함수 //
 export const idSearchTelAuthRequest = async (requestBody: TelAuthCheckRequestDto) => {
     const responseBody = await axios.post(ID_SEARCH_TEL_AUTH_API_URL, requestBody)
+        .then(responseDataHandler<findIdResultResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+};
+
+// function: password resetting (userId + telNumber) 요청 함수 //
+export const findPwRequest = async (requestBody: FindPwRequestDto) => {
+    const responseBody = await axios.post(FIND_PW_API_URL, requestBody)
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
 };
+
+// function: 비밀번호 재설정 patch password 요청 함수 //
+export const patchPasswordRequest = async (requestBody: PatchPwRequestDto) => {
+    const responseBody = await axios.patch(PATCH_PASSWORD_API_URL, requestBody)
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
