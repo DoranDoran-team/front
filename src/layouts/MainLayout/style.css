@@ -7,6 +7,16 @@
 
 /* 4, 5, 6, 8, 10, 11은 otf */
 
+.scrolled {
+    background-color: #c7e6c7; /* /main 경로에서 사용할 색상 */
+    transition: background-color 0.5s;
+}
+
+.default-scrolled {
+    background-color: white; /* 다른 경로에서 사용할 색상 */
+    transition: background-color 0.5s;
+}
+
 #main-layout {
     display: flex;
     flex-direction: column;
@@ -30,7 +40,8 @@
     align-items: center;
     gap: 10%;
     z-index: 30;
-    background-color: rgba(238, 238, 238, 0.5);
+    /* background-color: rgba(238, 238, 238, 0.5); */
+    background-color: none;
 }
 
 #main-wrapper {
