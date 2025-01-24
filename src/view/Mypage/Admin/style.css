@@ -86,3 +86,70 @@
 .accuse-box.complete {
     
 }
+
+.mypage-discussion-room-top .search-bar {
+    display: flex;
+    flex: 9;
+    width: 100%;
+    /* justify-content: space-between; */
+    padding: 20px 0px;
+    border-radius: 50px;
+    background-color: #D7FFE1;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.2);
+    justify-content: space-between;
+}
+
+.mypage-discussion-room-top .search-bar-and-sequence {
+    display: flex;
+    width: 100%;
+    margin-top: 40px;
+    gap: 20px;
+}
+
+.mypage-discussion-room-top .search-bar div {
+    display: flex;
+}
+
+.mypage-discussion-room-top .magnifier-and-search-input {
+    display: flex;
+    flex: 1;
+    width: 100%;
+}
+
+.mypage-discussion-room-top .search-input {
+    font-size: 16px;
+    width: 86%;
+    margin-left: 20px;
+    outline: none;
+    border: none;
+    background-color: #D7FFE1;
+}
+
+.mypage-discussion-room-top .search-button {
+    margin-right: 30px;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.mypage-discussion-room-top .search-button:hover {
+    cursor: pointer;
+    color: #000000;
+}
+
+.mypage-discussion-room-top .magnifier {
+    background-image: url(../../../image/magnifier.png);
+    width: 32.5px;
+    background-repeat: none;
+    background-size: cover;
+    background-position: center;
+    margin-left: 30px;
+    
+}
+
+.mypage-discussion-room-top .mypage-discussion-room {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    
+    flex: 1;
+    margin-right: 40px;
+}

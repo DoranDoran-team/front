@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from 'react'
+import React, {useEffect, useState } from 'react'
 import './style.css';
 import AdminSideBar from '../../../../components/Admin/Sidebar';
+import Modal from '../../../../components/modal';
 
 export default function Mileage() {
 
     // state: 신고 타입 상태 //
     const [activeTypes, setActiveTypes] = useState<string | null>(null);
-    const [menu, setMenu] = useState<boolean>(false);
+
+    // state: modal 상태 //
+    const [accountModalOpen, setAccountModalOpen] = useState<boolean>(false);
+    const [mileageModalOpen, setMileageModalOpen] = useState<boolean>(false);
     // event handler: 신고 타입 클릭 이벤트 처리  //
 
     const onAccuseTypeClickHandler = (type: string) => {
         if(type === '|') return;
         setActiveTypes(type === activeTypes ? null : type);
     };
-
-    // event handler: menu 클릭 이벤트 처리 함수 //
-    const onMenuButtonHandler = () => {
-
-        setMenu(!menu);
-    }
-
+    useEffect(()=>{
+        setActiveTypes('대기중');
+    },[])
     return (
         <div className="mypage-wrapper">
             <div className="admin-side-wrapper">
@@ -48,7 +48,7 @@ export default function Mileage() {
                     <div className='accuse-th'>등록 날짜</div>
                     <div className='accuse-th'>처리 상태</div>
                 </div>
-                {activeTypes === '대기중' ? <div className='accuse-table'>
+                {activeTypes === '대기중' ? <div className='accuse-table' onClick={()=>setAccountModalOpen(!accountModalOpen)}>
                     <div className='accuse-tr'>1</div>
                     <div className='accuse-tr'>1111-112-2223-2323</div>
                     <div className='accuse-tr'>부산은행</div>
@@ -67,15 +67,7 @@ export default function Mileage() {
                 </div>:''}
                 <div className="accuse-title">환전 신청 목록</div>
                 <div className='accuse-box complete'>
-                    {['대기중', '|' ,'처리 완료'].map((type) => (
-                        <div
-                            key={type}
-                            className={`accuse-type ${activeTypes === type ? 'active' : ''}`} 
-                            onClick={() => onAccuseTypeClickHandler(type)} 
-                        >
-                            {type}
-                        </div>
-                    ))}
+
                 </div>
                 <div className='accuse-table'>
                     <div className='accuse-th'>번호</div>
@@ -85,7 +77,7 @@ export default function Mileage() {
                     <div className='accuse-th'>신청금액</div>
                     <div className='accuse-th'>처리 상태</div>
                 </div>
-                {activeTypes === '대기중' ? <div className='accuse-table'>
+                {activeTypes === '대기중' ? <div className='accuse-table' onClick={()=>setMileageModalOpen(!mileageModalOpen)}>
                     <div className='accuse-tr'>1</div>
                     <div className='accuse-tr'>1111-112-2223-2323</div>
                     <div className='accuse-tr'>@normal</div>
@@ -94,7 +86,7 @@ export default function Mileage() {
                     <div className='accuse-tr'>대기중</div>
                 </div>
                 : activeTypes === '처리 완료' ?
-                <div className='accuse-table'>
+                <div className='accuse-table' >
                     <div className='accuse-tr'>1</div>
                     <div className='accuse-tr'>1111-112-2223-2323</div>
                     <div className='accuse-tr'>@normal</div>
@@ -103,6 +95,8 @@ export default function Mileage() {
                     <div className='accuse-tr'>처리 완료</div>
                 </div>:''}
             </div>
+            {accountModalOpen&& <Modal content='해당 계정의 계좌를 승인하시겠습니까?' lt_btn='아니요' rt_btn='예' handler={()=>setAccountModalOpen(!accountModalOpen)}/>}
+            {mileageModalOpen&& <Modal content='해당 계정의 환전을 승인하시겠습니까?' lt_btn='아니요' rt_btn='예' handler={()=>setMileageModalOpen(!mileageModalOpen)}/>}    
         </div>
     )
 }
