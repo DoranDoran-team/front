@@ -2,22 +2,29 @@ import React from 'react'
 import './style.css'
 import { useNavigate } from 'react-router-dom';
 import { FIND_PW_ABSOLUTE_PATH, LOGIN_ABSOLUTE_PATH } from '../../../constants';
+import useIdSearchResultZustand from '../../../stores/id-search-result-store';
 
 // component: 아이디 찾기 결과 화면 컴포넌트 //
 export default function FindIdResult() {
 
-    // variable: 임시 변수 //
-    const name = '홍길동';
-    const telNumber = '01012345678';
-    const userId = 'qwer1234';
+    // state: zustand 상태 //
+    const { name, telNumber, userId, telAuthNumber,
+        setName, setTelNumber, setUserId, setTelAuthNumber
+    } = useIdSearchResultZustand();
 
     // event handler: 로그인 버튼 클릭 이벤트 핸들러 //
     const loginBtnClickHandler = () => {
+        setName('');
+        setTelNumber('');
+        setUserId('');
         navigator(LOGIN_ABSOLUTE_PATH);
     }
 
     // event handler: 비밀번호 찾기 버튼 클릭 이벤트 핸들러 //
     const findPwBtnClickHandler = () => {
+        setName('');
+        setTelNumber('');
+        setUserId('');
         navigator(FIND_PW_ABSOLUTE_PATH);
     }
 
@@ -60,7 +67,8 @@ export default function FindIdResult() {
                     </div>
                 </div>
                 
-                <div className='login-btn' onClick={loginBtnClickHandler}>로그인</div>
+                <div className='login-btn' onClick={loginBtnClickHandler}
+                    style={{marginBottom: "10px"}}>로그인</div>
                 <div className='login-btn' onClick={findPwBtnClickHandler}>비밀번호 찾기</div>
             </div>
         </div>

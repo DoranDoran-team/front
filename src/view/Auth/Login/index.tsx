@@ -2,7 +2,11 @@ import React, { ChangeEvent, useState } from "react";
 import './style.css';
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
-import { FIND_ID_ABSOLUTE_PATH, FIND_PW_ABSOLUTE_PATH, MAIN_ABSOLUTE_PATH, SIGN_UP_ABSOLUTE_PATH } from "../../../constants";
+import { ACCESS_TOKEN, FIND_ID_ABSOLUTE_PATH, FIND_PW_ABSOLUTE_PATH, MAIN_ABSOLUTE_PATH, ROOT_PATH, SIGN_UP_ABSOLUTE_PATH } from "../../../constants";
+import SignInRequestDto from "../../../apis/dto/request/auth/sign-in.request.dto";
+import { signInRequest } from "../../../apis";
+import SignInResponseDto from "../../../apis/dto/response/auth/sign-in.response.dto";
+import ResponseDto from "../../../apis/dto/response/response.dto";
 
 // component: 로그인 화면 컴포넌트 //
 export default function Login() {
@@ -15,10 +19,6 @@ export default function Login() {
     const [password, setPassword] = useState<string>('');
     const [message, setMessage] = useState<string>('');
     const [error, setErrorBool] = useState<boolean>(false);
-
-    // variable: 임시 아이디, 비밀번호
-    const id_exam = 'qwer1234';
-    const pw_exam = 'qwer1234';
 
     // function: 네비게이터 함수 //
     const navigator = useNavigate();
@@ -49,24 +49,12 @@ export default function Login() {
             return;
         }
 
-        // const requestBody: SignInRequestDto = {
-        //     userId: id,
-        //     password
-        // };
+        const requestBody: SignInRequestDto = {
+            userId: id,
+            password
+        };
 
-        // signInRequest(requestBody).then(signInResponse);
-
-        if(id !== id_exam || password !== pw_exam) {
-            setErrorBool(false);
-            setMessage('로그인 정보가 일치하지 않습니다.');
-        }
-
-        if(id === id_exam && password === pw_exam) {
-            navigator(MAIN_ABSOLUTE_PATH);
-        }
-
-        setId('');
-        setPassword('');
+        signInRequest(requestBody).then(signInResponse);
     }
 
     // event handler: 아이디 찾기 클릭 이벤트 핸들러 //
@@ -83,6 +71,27 @@ export default function Login() {
     const signUpClickHandler = () => {
         navigator(SIGN_UP_ABSOLUTE_PATH);
     }
+
+    // function: 로그인 response 처리 함수 //
+    const signInResponse = (responseBody: SignInResponseDto | ResponseDto | null) => {
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'VF' ? '아이디와 비밀번호를 모두 입력하세요.' :
+            responseBody.code === 'SF' ? '로그인 정보가 일치하지 않습니다.' :
+            responseBody.code === 'TCF' ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'SU' ? '로그인 성공하였습니다.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if(!isSuccessed) {
+            setMessage(message);
+            return ;
+        }
+        const {accessToken, expiration} = responseBody as SignInResponseDto;
+        const expires = new Date(Date.now() + (expiration * 1000));
+        setCookies(ACCESS_TOKEN, accessToken, {path: ROOT_PATH, expires});
+        navigator(MAIN_ABSOLUTE_PATH);
+    };
 
     // render: 로그인 화면 렌더링 //
     return (

@@ -97,17 +97,6 @@ function TopPersonalNavigation() {
     // function: 네비게이터 함수 //
     const navigator = useNavigate();
 
-    // // event handler: 사람 아이콘 버튼 클릭 이벤트 //
-    // const onLogInClickHandler = () => {
-    //     if (pathname === SIGN_IN_ABSOLUTE_PATH) window.location.reload();
-    //     navigator(SIGN_IN_ABSOLUTE_PATH);
-    // }
-
-    // // event handler: 회원가입 버튼 //
-    // const onSignUpClickHandler = () => {
-    //     navigator(SIGN_UP_ABSOLUTE_PATH);
-    // }
-
     // event Handler: 로그아웃 버튼 클릭 이벤트 처리 //
     const onLogoutButtonClickHandler = () => {
         removeCookie(ACCESS_TOKEN, { path: ROOT_ABSOLUTE_PATH });
@@ -128,13 +117,13 @@ function TopPersonalNavigation() {
                     onMouseLeave={() => setIsHovered2(false)}>
                     <div>
                         <AlarmMessage></AlarmMessage>
-                        
+
                         <div className='menu'>회원님이 구독하신 <strong>@test123</strong> 님이 게시글을 작성하였습니다.</div>
-                        <hr/>
+                        <hr />
                         <div className='menu'>회원님이 신청하신 마일리지 환급 <strong>5,000점</strong> 승인 완료되었습니다.</div>
-                        <hr/>
+                        <hr />
                         <div className='menu'>회원님이 게시한 "<strong>AI에게 윤리적 책임이 있는가?</strong>" 토론이 마감되었습니다.</div>
-                        <hr/>
+                        <hr />
                         <div className='menu2'>회원님이 예약하신 "<strong>대마초 합법화 가능한가?</strong>" 실시간 토론 입장이 시작되었습니다.</div>
                     </div>
                 </div>)
@@ -161,12 +150,12 @@ function TopPersonalNavigation() {
 
 // component: 알림 메시지 컴포넌트 //
 function AlarmMessage() {
-    
+
     // render: 알림 메시지 렌더링 //
     return (
         <>
             <div className='menu'><strong>@abc123</strong> 님이 회원님의 게시글에 댓글을 달았습니다.</div>
-            <hr/>
+            <hr />
         </>
     )
 }
@@ -238,6 +227,7 @@ function Ranking() {
 
 // component: 메인 레이아웃 컴포넌트 //
 export default function MainLayout() {
+    const [isScrolled, setIsScrolled] = useState<boolean>(false);
 
     // state: 랭킹 클릭 상태 //
     const { clickRank, setClickRank } = RankingClickResultStore();
@@ -246,6 +236,21 @@ export default function MainLayout() {
     const navigator = useNavigate();
 
     const location = useLocation();
+
+    const handleScroll = () => {
+        if (window.scrollY > 0) {
+            setIsScrolled(true);
+        } else {
+            setIsScrolled(false);
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
 
     // 메인 페이지 경로 설정
     const isMainPage = location.pathname === MAIN_PATH;
@@ -256,7 +261,7 @@ export default function MainLayout() {
 
     return (
         <div id='main-layout'>
-            <div className='category'>
+            <div className={`category ${isScrolled ? (isMainPage ? 'scrolled' : 'default-scrolled') : ''}`}>
                 <Logo />
                 <TopNavigation />
                 <TopPersonalNavigation />
