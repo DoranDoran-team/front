@@ -47,7 +47,7 @@ export default function Mypage() {
     const onPostMenuButtonHandler = () => {
         setEditButton(!editbutton);
     }
-    
+
     const navigateToMileage = () => {
         navigator(MY_ABSOLUTE_MILEAGE_PATH(1));
     };
@@ -69,7 +69,6 @@ export default function Mypage() {
                                 <div className="menu-item" onClick={onChangeInfoClickHandler}>개인 정보 수정</div>
                                 <div className="menu-item" onClick={navigateToMileage}>마일리지 관리</div>
                                 <div className="menu-item">실시간 토론 참여 이력</div>
-                                <div className="menu-item">공지사항</div>
                                 <div className="menu-item">출석체크</div>
                             </div>)}
                         </div>
@@ -140,19 +139,21 @@ export default function Mypage() {
                 </div>
             </div>
             <div className="subscribe-wrapper">
-                <div className="subscribe-title">내가 구독한 사람 2명</div>
-                <div className="subscribe-search-box">
-                    <input className="input" placeholder="아이디를 입력하세요. " />
-                    <div className="button active">검색</div>
-                </div>
-                <div className="subscribe-box">
-                    <div className="subscribe-image"></div>
-                    <div className="subscribe-user-info">
-                        <div className="subscribe-nickname">마이멜로디</div>
-                        <div className="subscribe-user">@1000JEA</div>
+                <div>
+                    <div className="subscribe-title">내가 구독한 사람 2명</div>
+                    <div className="subscribe-search-box">
+                        <input className="input" placeholder="아이디를 입력하세요. " />
+                        <div className="button active">검색</div>
                     </div>
-                    <div className="subscribe-cancel-button">
-                        <div className="subscribe-cancel">구독취소</div>
+                    <div className="subscribe-box">
+                        <div className="subscribe-image"></div>
+                        <div className="subscribe-user-info">
+                            <div className="subscribe-nickname">마이멜로디</div>
+                            <div className="subscribe-user">@1000JEA</div>
+                        </div>
+                        <div className="subscribe-cancel-button">
+                            <div className="subscribe-cancel">구독취소</div>
+                        </div>
                     </div>
                 </div>
             </div>
