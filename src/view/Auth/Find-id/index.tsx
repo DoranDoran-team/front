@@ -7,13 +7,15 @@ import IdSearchNameTelNumberRequestDto from "../../../apis/dto/request/auth/id-s
 import { idSearchNameTelNumberRequest, idSearchTelAuthRequest } from "../../../apis";
 import ResponseDto from "../../../apis/dto/response/response.dto";
 import TelAuthCheckRequestDto from "../../../apis/dto/request/auth/tel-auth-check.request.dto";
+import useIdSearchResultZustand from "../../../stores/id-search-result-store";
+import findIdResultResponseDto from "../../../apis/dto/response/auth/find-id-result.response.dto";
 
 // component: 아이디 찾기 컴포넌트 //
 export default function FindId() {
 
     // state: 아이디 찾기 입력 정보 상태 //
-    const [name, setName] = useState<string>('');
-    const [telNumber, setTelNumber] = useState<string>('');
+    const [userName, setUserName] = useState<string>('');
+    const [userTelNumber, setUserTelNumber] = useState<string>('');
     const [authNumber, setAuthNumber] = useState<string>('');
     const [error, setErrorBool] = useState<boolean>(false);
     const [message, setMessage] = useState<string>('');
@@ -28,6 +30,11 @@ export default function FindId() {
 
     // state: 전화번호 인증 번호 전송 상태 //
     const [send, setSend] = useState<boolean>(true);
+
+    // state: zustand 상태 //
+    const { name, telNumber, userId, telAuthNumber,
+        setName, setTelNumber, setUserId, setTelAuthNumber
+    } = useIdSearchResultZustand();
 
     // event handler: 이름 변경 이벤트 핸들러 //
     const onNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -113,7 +120,7 @@ export default function FindId() {
     };
 
     // function: 아이디 찾기에서 전화번호 + 인증번호 확인 Response 처리 함수 //
-    const idSearchtelAuthCheckResponse = (responseBody: ResponseDto | null) => {
+    const idSearchtelAuthCheckResponse = (responseBody: ResponseDto | null | findIdResultResponseDto) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'VF' ? '올바른 데이터가 아닙니다.' :
@@ -122,8 +129,11 @@ export default function FindId() {
             responseBody.code === 'SU' ? '인증번호가 확인되었습니다.' : '';
 
         const isSuccessed = responseBody != null && responseBody.code === 'SU';
-
-        if (isSuccessed) setStopTimer(true);
+        const {userId} = responseBody as findIdResultResponseDto;
+        if (isSuccessed) {
+            setUserId(userId);
+            setStopTimer(true);
+        }
         setIsMatched(isSuccessed);
         setAuthMessage(message);
     };

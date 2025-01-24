@@ -7,16 +7,24 @@ import useIdSearchResultZustand from '../../../stores/id-search-result-store';
 // component: 아이디 찾기 결과 화면 컴포넌트 //
 export default function FindIdResult() {
 
-    // state: zustand 만든 거 가져오기 //
-    const { name, telNumber, userId} = useIdSearchResultZustand();
+    // state: zustand 상태 //
+    const { name, telNumber, userId, telAuthNumber,
+        setName, setTelNumber, setUserId, setTelAuthNumber
+    } = useIdSearchResultZustand();
 
     // event handler: 로그인 버튼 클릭 이벤트 핸들러 //
     const loginBtnClickHandler = () => {
+        setName('');
+        setTelNumber('');
+        setUserId('');
         navigator(LOGIN_ABSOLUTE_PATH);
     }
 
     // event handler: 비밀번호 찾기 버튼 클릭 이벤트 핸들러 //
     const findPwBtnClickHandler = () => {
+        setName('');
+        setTelNumber('');
+        setUserId('');
         navigator(FIND_PW_ABSOLUTE_PATH);
     }
 
