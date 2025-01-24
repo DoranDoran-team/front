@@ -1,20 +1,22 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './style.css';
-import { useNavigate } from 'react-router-dom';
-import { ADMIN_ABSOLUTE_ACCUSE_PATH, ADMIN_ABSOLUTE_MILEAGE_PATH, ADMIN_ABSOULTE_PATH } from '../../../../constants';
 import AdminSideBar from '../../../../components/Admin/Sidebar';
+import Modal from '../../../../components/modal';
 
 export default function Accuse() {
 
     // state: 신고 타입 상태 //
     const [activeTypes, setActiveTypes] = useState<string | null>(null);
-    const [menu, setMenu] = useState<boolean>(false);
     const [toggleDown, setToggleDown] = useState<boolean>(false)
     const [sortingState, setSortingState] = useState({
         selected: '정렬순'
     })
     const [modalOpen, setModalOpen] = useState<boolean>(false);
 
+    // variable: 모달 내용 //
+    const content = '해당 계정을 처리하시겠습니까?';
+    const lt_btn = '아니요';
+    const rt_btn = '예';
     
     // event handler: 신고 타입 클릭 이벤트 처리  //
 
@@ -22,15 +24,6 @@ export default function Accuse() {
         if(type === '|') return;
         setActiveTypes(type === activeTypes ? null : type);
     };
-
-
-    
-    
-    // event handler: menu 클릭 이벤트 처리 함수 //
-    const onMenuButtonHandler = () => {
-
-        setMenu(!menu);
-    }
 
     // event handler: 정렬 메뉴 버튼 이벤트 처리 함수 //
     const onSortingButtonHandler = () => {
@@ -53,6 +46,9 @@ export default function Accuse() {
         setModalOpen(!modalOpen);
     }
 
+    useEffect(()=>{
+        setActiveTypes('댓글')
+    },[])
     return (
         <div className="mypage-wrapper">
             <div className="admin-side-wrapper">
@@ -129,15 +125,7 @@ export default function Accuse() {
                     <div className="accuse-title">처리 완료</div>
                 </div>
                 <div className='accuse-box complete'>
-                    {['댓글', '|','게시글','|','채팅'].map((type) => (
-                        <div
-                            key={type}
-                            className={`accuse-type ${activeTypes === type ? 'active' : ''}`} 
-                            onClick={() => onAccuseTypeClickHandler(type)} 
-                        >
-                            {type}
-                        </div>
-                    ))}
+                    
                 </div>
                 <div className='accuse-table'>
                     <div className='accuse-th'>번호</div>
@@ -179,15 +167,7 @@ export default function Accuse() {
 
                 </div>:''}
             </div>
-            {modalOpen && <div className='accuse-modal'>
-                <div className='modal-box'>
-                    <div className='modal-content'>해당 계정을 처리하시겠습니까?</div>
-                    <div className='modal-button-box'>
-                        <div className='modal-button'>예</div>
-                        <div className='modal-button' onClick={onModalOpenHandler}>아니요</div>
-                    </div>
-                </div>
-            </div>}
+            {modalOpen && <Modal content="해당계정을 처리하시겠습니까? " lt_btn="아니요" rt_btn="예" handler={onModalOpenHandler} /> }
             <div className="blacklist-wrapper">
                 <div className="blacklist-title">활동 중지 2명</div>
                 <div className="subscribe-search-box">

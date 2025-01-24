@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './style.css';
 import { GEN_DISC_ABSOLUTE_PATH } from '../../../constants';
+import Modal from '../../../components/modal';
 
 export default function GDWrite() {
     const [firstOpinion, setFirstOpinion] = useState<string>('');
@@ -130,13 +131,14 @@ export default function GDWrite() {
             </div>
 
             {showModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <p>게시하시겠습니까?</p>
-                        <button onClick={handleConfirm}>예</button>
-                        <button onClick={() => setShowModal(false)}>아니오</button>
-                    </div>
-                </div>
+                // <div className="modal">
+                //     <div className="modal-content">
+                //         <p>게시하시겠습니까?</p>
+                //         <button onClick={handleConfirm}>예</button>
+                //         <button onClick={() => setShowModal(false)}>아니오</button>
+                //     </div>
+                // </div>
+                <Modal content="게시하시겠습니까?" lt_btn='아니요' rt_btn='예' handler={()=>setShowModal(false)}/>
             )}
         </div>
     );
