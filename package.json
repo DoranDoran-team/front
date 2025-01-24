@@ -10,6 +10,7 @@
     "@types/node": "^16.7.13",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
+    "axios": "^1.7.9",
     "cookie": "^1.0.2",
     "date-fns": "^4.1.0",
     "react": "^18.3.1",

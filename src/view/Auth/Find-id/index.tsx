@@ -3,6 +3,10 @@ import './style.css';
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { FIND_ID_RESULT_ABSOLUTE_PATH } from "../../../constants";
+import IdSearchNameTelNumberRequestDto from "../../../apis/dto/request/auth/id-search-name-tel-number.request.dto";
+import { idSearchNameTelNumberRequest, idSearchTelAuthRequest } from "../../../apis";
+import ResponseDto from "../../../apis/dto/response/response.dto";
+import TelAuthCheckRequestDto from "../../../apis/dto/request/auth/tel-auth-check.request.dto";
 
 // component: 아이디 찾기 컴포넌트 //
 export default function FindId() {
@@ -24,11 +28,6 @@ export default function FindId() {
 
     // state: 전화번호 인증 번호 전송 상태 //
     const [send, setSend] = useState<boolean>(true);
-
-    // variable: 임시 이름, 전화번호 //
-    const name_exam = '홍길동';
-    const telNumber_exam = '01012345678';
-    const authNumber_exam = '123456';
 
     // event handler: 이름 변경 이벤트 핸들러 //
     const onNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -57,21 +56,9 @@ export default function FindId() {
     // event handler: 전화번호 인증 메시지 전송 클릭 이벤트 핸들러 //
     const onSendClickHandler = () => {
         if (!name || !telNumber) return;
-
-        //const pattern = /^[0-9]{11}$/;
-        //const isMatched = pattern.test(telNumber);
-        const isTrue = (name === name_exam) && (telNumber === telNumber_exam);
-
-        if (isTrue) {
-            setMessage('인증번호가 전송되었습니다.');
-            setErrorBool(true);
-            setSend(true);
-            setTimer(180);
-        } else {
-            setMessage('일치하는 정보가 없습니다.');
-            setErrorBool(false);
-            console.log(error);
-        }
+    
+        const requestBody: IdSearchNameTelNumberRequestDto = { name, telNumber };
+        idSearchNameTelNumberRequest(requestBody).then(idSearchNameTelNumberResponse);
     }
 
     // event handler: 전화번호 인증번호 변경 이벤트 핸들러 //
@@ -94,23 +81,52 @@ export default function FindId() {
             return;
         }
 
-        if (authNumber === authNumber_exam) {
-            setIsMatched(true);
-            setStopTimer(true);
-            setAuthMessage('인증번호가 일치합니다.');
-        } else {
-            setIsMatched(false);
-            setAuthMessage('인증번호가 일치하지 않습니다.');
-        }
-
-        //const requestBody: TelAuthCheckRequestDto = { telNumber, telAuthNumber };
-        //idSearchTelAuthRequest(requestBody).then(idSearchtelAuthCheckResponse);
+        const requestBody: TelAuthCheckRequestDto = { 
+            telNumber, 
+            telAuthNumber: authNumber 
+        };
+        idSearchTelAuthRequest(requestBody).then(idSearchtelAuthCheckResponse);
     }
 
     // event handler: 아이디 확인 버튼 클릭 이벤트 //
     const findIDResult = () => {
         navigator(FIND_ID_RESULT_ABSOLUTE_PATH);
     }
+
+    // function: 아이디 찾기 name + telNumber 1차 Response 처리 함수 //
+    const idSearchNameTelNumberResponse = (responseBody: ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'NF' ? '존재하지 않는 정보입니다.' :
+            responseBody.code === 'TF' ? '전송에 실패했습니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'SU' ? '인증번호가 전송되었습니다.' : 
+            responseBody.code === 'NI' ? '존재하지 않는 정보입니다.' :'';
+
+        const isSuccessed = responseBody != null && responseBody.code === 'SU';
+        if (isSuccessed) {
+            setErrorBool(true);
+            setTimer(180);
+        }
+        setMessage(message);
+        setSend(isSuccessed);
+    };
+
+    // function: 아이디 찾기에서 전화번호 + 인증번호 확인 Response 처리 함수 //
+    const idSearchtelAuthCheckResponse = (responseBody: ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'VF' ? '올바른 데이터가 아닙니다.' :
+            responseBody.code === 'TAF' ? '인증번호가 일치하지 않습니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'SU' ? '인증번호가 확인되었습니다.' : '';
+
+        const isSuccessed = responseBody != null && responseBody.code === 'SU';
+
+        if (isSuccessed) setStopTimer(true);
+        setIsMatched(isSuccessed);
+        setAuthMessage(message);
+    };
 
     // Function: 전화번호 '-'넣는 함수 //
     const displayFormattedPhoneNumber = (numbers: string) => {
@@ -195,10 +211,7 @@ export default function FindId() {
                                     onClick={onCheckClickHandler}>확인</div>
                             </div>
                             <div className={isMatched ? "message-true" : "message-false"}>{authMessage}</div>
-                        </>
-
-                        :
-                        ''
+                        </> : ''
                     }
                 </div>
 
