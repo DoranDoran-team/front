@@ -21,6 +21,7 @@
 /* mypage 유저 정보 CSS */
 .mypage-wrapper {
     display: flex;
+    justify-content: center;
     width: 100%;
     height: 100%;
 
@@ -28,7 +29,7 @@
 
 }
 .mypage-wrapper .mypage-main-wrapper {
-    flex:1;
+    flex:3;
     padding: 30px;
 
     background-color: #D7FFE1;
@@ -447,9 +448,12 @@
 
 /* mypage 구독자 정보 */
 .subscribe-wrapper {
+    display: flex;
+    flex: 1;
+    justify-content: center;
 
     width: 440px;
-    padding: 20px 30px;
+    /* padding: 20px 30px; */
 }
 
 .subscribe-title {
