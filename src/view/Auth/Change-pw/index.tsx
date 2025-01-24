@@ -2,6 +2,10 @@ import React, { ChangeEvent, useState } from 'react'
 import './style.css';
 import { useNavigate } from 'react-router-dom';
 import { LOGIN_ABSOLUTE_PATH } from '../../../constants';
+import PatchPwRequestDto from '../../../apis/dto/request/auth/patch-pw.request.dto';
+import { usePatchPasswordZustand } from '../../../stores';
+import { patchPasswordRequest } from '../../../apis';
+import ResponseDto from '../../../apis/dto/response/response.dto';
 
 // component: 비밀번호 재설정 화면 컴포넌트 //
 export default function ChangePw() {
@@ -13,6 +17,11 @@ export default function ChangePw() {
     const [message, setMessage] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState<string>('');
     const [isPossible, setIsPossible] = useState<boolean>(false);
+
+    // state: zustand 상태 //
+    const { userId, zusTelNumber, telAuthNumber, zusPassword,
+        setUserId, setZusTelNumber, setTelAuthNumber, setZusPassword }
+        = usePatchPasswordZustand();
 
     // event handler: 비밀번호 변경 이벤트 핸들러 //
     const onPasswordChangeHandler = (event : ChangeEvent<HTMLInputElement>) => {
@@ -54,12 +63,48 @@ export default function ChangePw() {
 
     // event handler: 비밀번호 변경 버튼 클릭 이벤트 핸들러 //
     const onChangeClickHandler = () => {
-        alert('비밀번호가 변경되었습니다.');
-        navigator(LOGIN_ABSOLUTE_PATH);
+
+        console.log(zusTelNumber);
+
+        const requestBody: PatchPwRequestDto = { 
+            userId, 
+            telNumber: zusTelNumber, 
+            telAuthNumber, 
+            password
+        };
+        patchPasswordRequest(requestBody).then(patchPasswordResponse);
     }
 
     // function: navigator //
     const navigator = useNavigate();
+
+    // function: 비밀번호 재설정 Response 처리 함수 //
+    const patchPasswordResponse = (responseBody: ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'VF' ? '올바른 데이터가 아닙니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+        console.log(responseBody);
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+
+        if (!isSuccessed) {
+            // setPasswordMessage(message);
+            // setIsMatched1(isSuccessed);
+            // if (responseBody !== null && responseBody.code === 'VF') {
+            //     setNewPassword("");
+            //     setPasswordCheck("");
+            // }
+            alert('다시 시도해주시기 바랍니다.');
+            return;
+        }
+
+        alert('비밀번호가 변경되었습니다.');
+        setUserId('');
+        setZusTelNumber('');
+        setTelAuthNumber('');
+        navigator(LOGIN_ABSOLUTE_PATH);
+    };
     
     // render: 비밀번호 재설정 화면 렌더링 //
     return (
@@ -81,7 +126,7 @@ export default function ChangePw() {
                     <div className={isMatched ? 'message-true' : 'message-false'}>{errorMessage}</div>
                 </div>
                     
-                <div className={isMatched ? "login-btn" : "login-btn-false"}
+                <div className={isMatched && isPossible && passwordCheck ? "login-btn" : "login-btn-false"}
                 onClick={isMatched ? onChangeClickHandler : undefined}>비밀번호 변경</div>
                 
             </div>
