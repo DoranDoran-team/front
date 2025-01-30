@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import './style.css';
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import { MY_ABSOLUTE_MILEAGE_PATH, MY_ABSOLUTE_UPDATE_PATH, MY_INFO_PW_ABSOLUTE_PATH, MY_INFO_UPDATE_ABSOLUTE_PATH, MY_UPDATE_PATH } from "../../constants";
+import { MY_ABSOLUTE_MILEAGE_PATH, MY_ABSOLUTE_UPDATE_PATH, MY_INFO_PW_ABSOLUTE_PATH, MY_INFO_UPDATE_ABSOLUTE_PATH, MY_MILEAGE_PATH, MY_UPDATE_PATH } from "../../constants";
 
 
 // component: 마이페이지 컴포넌트 //
@@ -49,7 +49,7 @@ export default function Mypage() {
     }
 
     const navigateToMileage = () => {
-        navigator(MY_ABSOLUTE_MILEAGE_PATH(1));
+            navigator(MY_ABSOLUTE_MILEAGE_PATH);
     };
 
     // event handler: 개인 정보 수정 버튼 클릭 이벤트 핸들러 //

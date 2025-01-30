@@ -1,10 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './style.css';
+import { getMileageData, refundRequest } from '../../../apis';
+import { useCookies } from 'react-cookie';
+import { GetMileageResponseDto } from '../../../apis/dto/response/get-mileage.response.dto';
+
+type RefundHistoryItem = {
+    transactionDate: string;
+    amount: number;
+    status: string;
+};
 
 export default function MypageMileage() {
+    const [cookies] = useCookies();
+    const accessToken = cookies.accessToken;
+
     const [currentMileage, setCurrentMileage] = useState(5000);
-    const [totalEarnedMileage, setTotalEarnedMileage] = useState(10000);
-    const [totalRefundedMileage, setTotalRefundedMileage] = useState(3000);
+    const [totalEarnedMileage, setTotalEarnedMileage] = useState(0);
+    const [totalRefundedMileage, setTotalRefundedMileage] = useState(0);
+    const [refundHistory, setRefundHistory] = useState<RefundHistoryItem[]>([]);
+
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndDate] = useState<string>('');
     const [filterPeriod, setFilterPeriod] = useState<string>('');
@@ -12,20 +26,32 @@ export default function MypageMileage() {
     const [accountNumber, setAccountNumber] = useState<string>('');
     const [bankName, setBankName] = useState<string>('');
 
+    useEffect(() => {
+        if (!accessToken) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+
+        const fetchMileageData = async () => {
+            const data: GetMileageResponseDto | null = await getMileageData(accessToken);
+            if (data) {
+                setCurrentMileage(data.totalMileage || 0);
+                setTotalEarnedMileage(data.totalMileage || 0);
+                setTotalRefundedMileage(data.totalRefundedMileage || 0);
+                setRefundHistory(data.refundHistory || []);
+            }
+        };
+
+        fetchMileageData();
+    }, [accessToken]);
+
     // 적립 내역 데이터 예시입니다 ~_~
     const initialMileageHistory = [
         { date: '2025-01-01', detail: '실시간 토론 참여', mileage: 500 },
         { date: '2024-12-15', detail: '금주 추천수 1위 토론 게시', mileage: 1000 },
         { date: '2024-12-28', detail: '일반 토론 투표 참여', mileage: 300 },
     ];
-    const [mileageHistory, setMileageHistory] = useState(initialMileageHistory); 
-
-    // 환급 내역 상태 예시입니다잉
-    const [refundHistory, setRefundHistory] = useState([
-        { date: '2025-01-01', amount: 1000, status: '승인 대기' },
-        { date: '2025-01-03', amount: 1000, status: '승인 반려' },
-        { date: '2025-01-05', amount: 2000, status: '승인 완료' },
-    ]);
+    const [mileageHistory, setMileageHistory] = useState(initialMileageHistory);
 
     const filterMileageHistory = (start: string, end: string) => {
         const filteredData = initialMileageHistory.filter((entry) => {
@@ -75,7 +101,7 @@ export default function MypageMileage() {
         setMileageHistory(initialMileageHistory);
     };
 
-    const handleRefund = () => {
+    const handleRefund = async () => {
         if (refundAmount === '' || refundAmount <= 0 || !accountNumber || !bankName) {
             alert('모든 입력란을 정확히 입력해 주세요.');
             return;
@@ -84,16 +110,27 @@ export default function MypageMileage() {
             alert('환급 신청 금액이 보유 마일리지를 초과했습니다.');
             return;
         }
-        alert(`환급 신청 완료: ${refundAmount}p`);
-        setCurrentMileage(currentMileage - refundAmount);
-        setTotalRefundedMileage(totalRefundedMileage + refundAmount);
-        setRefundHistory((prev) => [
-            ...prev,
-            { date: new Date().toISOString().split('T')[0], amount: refundAmount, status: '승인 대기' },
-        ]);
-        setRefundAmount('');
-        setAccountNumber('');
-        setBankName('');
+
+        if (!accessToken) {
+            alert('로그인 정보가 없습니다. 다시 로그인 해주세요.');
+            return;
+        }
+
+        const requestBody = {
+            accountNumber,
+            bankName,
+            amount: refundAmount,
+        };
+
+        const response = await refundRequest(requestBody, accessToken);
+
+        if (response && response.code === "SU") {
+            alert(`환급 신청 완료: ${refundAmount}p`);
+            setCurrentMileage(currentMileage - refundAmount);
+        } else {
+            alert('환급 신청에 실패했습니다. 다시 시도해 주세요.');
+        }
+
     };
 
     return (
@@ -168,7 +205,7 @@ export default function MypageMileage() {
             <div className="section-divider"></div>
             {/* 환급 내역 */}
             <div className="refund-history">
-                <h3>환급 내역</h3>
+                <h3>환급 신청 내역</h3>
                 <table className="history-table">
                     <thead>
                         <tr>
@@ -178,13 +215,19 @@ export default function MypageMileage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {refundHistory.map((entry, index) => (
-                            <tr key={index}>
-                                <td>{entry.date}</td>
-                                <td>{entry.amount}p</td>
-                                <td>{entry.status}</td>
+                        {refundHistory.length > 0 ? (
+                            refundHistory.map((entry, index) => (
+                                <tr key={index}>
+                                    <td>{new Date(entry.transactionDate).toLocaleString()}</td>
+                                    <td>{entry.amount}p</td>
+                                    <td>{entry.status}</td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={3}>환급 내역이 없습니다.</td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -196,11 +239,11 @@ export default function MypageMileage() {
                     <div>환급 가능한 마일리지: <strong>{currentMileage}p</strong></div>
                 </div>
                 <div className="refund-form">
-                    <label>환급 신청할 마일리지:</label>
+                    <label>환급 신청할 마일리지</label>
                     <input
                         type="number"
-                        value={refundAmount}
-                        onChange={(e) => setRefundAmount(Number(e.target.value))}
+                        value={refundAmount || ''}
+                        onInput={(input) => setRefundAmount(input.currentTarget.value === '' ? '' : Number(input.currentTarget.value))}
                         placeholder="금액 입력"
                         min="1"
                     />
@@ -209,14 +252,14 @@ export default function MypageMileage() {
                             환급 후 남는 마일리지: <strong>{currentMileage - refundAmount}p</strong>
                         </div>
                     )}
-                    <label>계좌번호:</label>
+                    <label>계좌번호</label>
                     <input
                         type="text"
                         value={accountNumber}
                         onChange={(e) => setAccountNumber(e.target.value)}
                         placeholder="계좌번호 입력"
                     />
-                    <label>은행명:</label>
+                    <label>은행명</label>
                     <input
                         type="text"
                         value={bankName}
