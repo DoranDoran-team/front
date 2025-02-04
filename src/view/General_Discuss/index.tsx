@@ -2,8 +2,7 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import './style.css';
 import { useNavigate } from 'react-router-dom';
 
-
-import { ACCESS_TOKEN, GEN_DISC_DETAIL_ABSOLUTE_PATH } from '../../constants';
+import { ACCESS_TOKEN, GEN_DISC_DETAIL_ABSOLUTE_PATH, GEN_DISC_WRITE_ABSOLUTE_PATH } from '../../constants';
 import DiscussionList from "../../types/discussionList.interface";
 import { usePagination } from "../../hooks";
 
@@ -13,22 +12,12 @@ import ResponseDto from "../../apis/dto/response/response.dto";
 import { getDiscussionListRequest } from "../../apis";
 import Pagination from "../../components/pagination";
 
-import { GEN_DISC_DETAIL_ABSOLUTE_PATH, GEN_DISC_WRITE_ABSOLUTE_PATH } from '../../constants';
 
-
-const discussionData = Array.from({ length: 30 }, (_, index) => ({
-    id: index + 1,
-    title: `생성형 AI에게 윤리적 책임을 물을 수 있는가? ${index + 1}`,
-    category: index % 4 === 0 ? '시사·교양' : index % 4 === 1 ? '과학' : index % 4 === 2 ? '경제' : '기타',
-    deadline: '2025.01.05',
-    userNickname: 'user_nickname',
-    commentCount: 5,
-    recommendationCount: 127,
-}));
 interface TableRowProps {
     discussionList: DiscussionList
     getDiscussionList: ()=> void
 }
+
 // component: 일반 토론방 리스트 컴포넌트//
 function TableRow({ discussionList, getDiscussionList}:TableRowProps) {
 
@@ -39,6 +28,7 @@ function TableRow({ discussionList, getDiscussionList}:TableRowProps) {
     const onDiscussionClickHandler = () => {
         navigator(GEN_DISC_DETAIL_ABSOLUTE_PATH(discussionList.roomId))
     }
+
     // function: get general discussion response 처리 함수 //
 
     return (
@@ -78,23 +68,18 @@ function TableRow({ discussionList, getDiscussionList}:TableRowProps) {
                         </div>
                     </div>
         </div>
-    )
-
+)
 }
-
-const categories = ['전체', '시사·교양', '과학', '경제', '기타'];
-
 // GD: general discussion
 // component: 일반 토론 컴포넌트 //
 export default function GD() {
+
     const navigator = useNavigate();
-    const roomId = "123";
+
     // state: 쿠키 상태 //
     const [cookies] = useCookies();
-    // const [currentPage, setCurrentPage] = useState(1);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState<string>('정렬순');
-    const [selectedCategory, setSelectedCategory] = useState<string>('전체');
 
     // state: 검색어 상태 //
     const [searched, setSearched] = useState<string>('');
@@ -114,7 +99,7 @@ export default function GD() {
         onNextSectionClickHandler,} = usePagination<DiscussionList>();
 
     // state: 일반 토론방 상태 //
-    const [category, setCategory] = useState<string>('');
+    const [category, setCategory] = useState<string>('전체');
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
     };
@@ -136,44 +121,6 @@ export default function GD() {
         setSelectedOption(option);
         setIsDropdownOpen(false);
     };
-    const itemsPerPage = 10;
-
-    const handleWriteButtonClick = () => {
-        navigate(GEN_DISC_WRITE_ABSOLUTE_PATH);
-    };
-
-    const handleCategoryClick = (category: string) => {
-        setSelectedCategory(category);
-        setCurrentPage(1); // 카테고리 변경 시 페이지 초기화
-    };
-
-    // 페이지에 표시할 데이터 계산
-
-    const filteredData = selectedCategory === '전체'
-        ? discussionData
-        : discussionData.filter(item => item.category === selectedCategory);
-
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = discussionData.slice(indexOfFirstItem, indexOfLastItem);
-
-    // 클릭 이벤트 핸들러
-    const handleBoxClick = (event: React.MouseEvent<HTMLDivElement>) => {
-        const target = event.target as HTMLElement;
-
-        // 클릭한 요소가 discussion-option 클래스가 없는 경우
-        if (!target.classList.contains('discussion-option')) {
-            navigator(GEN_DISC_DETAIL_ABSOLUTE_PATH(roomId)); // 상세 조회 페이지로 이동
-        }
-    };
-
-    // 페이지 변경 핸들러
-    // const handlePageChange = (pageNumber: number) => {
-    //     setCurrentPage(pageNumber);
-    // };
-
-    // 전체 페이지 수 계산
-    const totalPages = Math.ceil(discussionData.length / itemsPerPage);
     
     // function: get general discussion list response 처리 함수 //
     const getDiscussionListResponse = (responseBody: GetDiscussionListResponseDto | ResponseDto | null) => {
@@ -199,6 +146,10 @@ export default function GD() {
         getDiscussionListRequest(accessToken).then(getDiscussionListResponse);
     }
 
+    // event handler: 토론방 작성 클릭 이벤트 처리 //
+    const handleWriteButtonClick = () => {
+        navigator(GEN_DISC_WRITE_ABSOLUTE_PATH);
+    };
     // event handler: 토론방 카테고리 클릭 이벤트 처리 //
     const onCategoryHandler = (type:string) => {
             setCategory(category => (category === type ? '': type));
@@ -228,10 +179,10 @@ export default function GD() {
                 <div className='gd-box'>
                     <div className="top">
                         <div className="top-title">
-                            {selectedCategory}
+                            {category}
                         </div>
                         <div className='top-category-box'>   
-                            {['시사·교양', '과학','경제','기타'].map((type) => (
+                            {['전체','시사·교양', '과학','경제','기타'].map((type) => (
                         <div
                             key={type}
                             className={`top-category ${category === type ? 'active' : ''}`}  
@@ -240,7 +191,6 @@ export default function GD() {
                             <span>{type}</span>
                         </div>
                         ))}
-                       
                         </div>
                         <div className="search-bar-and-sequence">
                             <div className='search-bar'>
@@ -251,6 +201,7 @@ export default function GD() {
                                 <div className='search-button' onClick={onSearchButtonClickHandler}>검색</div>
                             </div>
                             <div className='sequence-choice'><button className='sequence-choice-button' type='button' onClick={toggleDropdown}>{selectedOption}</button></div>
+
                     </div>
                             {isDropdownOpen && (
                                 <div className='dropdown-menu-box'>
@@ -262,7 +213,7 @@ export default function GD() {
                             )}
                 </div>
                 <div className="main">
-                {(category === '' ? viewList : originalList.filter(discussionList => discussionList.discussionType === category))
+                {(category === '전체' ? viewList : originalList.filter(discussionList => discussionList.discussionType === category))
                             .map((discussionList, index) => (
                                 <TableRow
                                     key={index}
@@ -276,11 +227,12 @@ export default function GD() {
                         <Pagination pageList={pageList} currentPage={currentPage} onPageClickHandler={onPageClickHandler} onPreSectionClickHandler={onPreSectionClickHandler} onNextSectionClickHandler={onNextSectionClickHandler} />
                     </div>
                 </div>
-              </div>
-        </div>            
+                
+            </div>
             <div id="floating-write-button" onClick={handleWriteButtonClick}>
                 +
             </div>
+        </div>
         </div >
     )
 }
