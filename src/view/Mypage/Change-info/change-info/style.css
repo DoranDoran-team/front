@@ -54,7 +54,7 @@
     border: 1px solid #B4B4B4;
 
     padding: 10px;
-    margin-bottom: 15px;
+
 }
 
 #change-info .change-pw {
@@ -77,6 +77,25 @@
 }
 
 #change-info .change-pw:hover {
+    background-color: #d4d4d4;
+    border: 1px solid #d4d4d4;
+}
+
+#change-info .changePWbtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #b4b4b4;
+    background-color: #B4B4B4;
+    margin-top: 15px;
+
+    cursor: pointer;
+    font-weight: 500;
+}
+
+#change-info .changePWbtn:hover {
     background-color: #d4d4d4;
     border: 1px solid #d4d4d4;
 }
@@ -179,7 +198,6 @@
     flex-direction: row;
     gap: 10px;
     margin-left: auto;
-    margin-top: 60px;
 }
 
 #change-info .update-btn {
@@ -221,4 +239,130 @@
 #change-info .cancle-btn:hover {
     background-color: #d4d4d4;
     border: 1px solid #d4d4d4;
+}
+
+#change-info .secession-btn {
+    width: 80px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #B4b4b4;
+    border-radius: 6px;
+    border: 1px solid #B4b4b4;
+
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    color: white;
+}
+
+#change-info .secession-btn:hover {
+    background-color: #d4d4d4;
+    border: 1px solid #d4d4d4;
+}
+
+#change-info .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* 반투명 검은 배경 */
+    display: none; /* 기본적으로 숨김 */
+    z-index: 999; /* 모달보다 아래에 위치 */
+}
+
+#change-info .modal-container {
+    position: fixed;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+
+    width: 700px;
+    height: 350px;
+
+    border-radius: 24px;
+    border: 2px solid lightgray;
+
+    top: 50%;
+    left: 55%;
+    transform: translate(-50%, -30%);
+    
+    z-index: 1000; /* overlay보다 위 */
+}
+
+#change-info .modal-title {
+    margin-bottom: 45px;
+    font-size: 25px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+#change-info .modal-btn-container {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+
+    cursor: pointer;
+    margin-top: 45px;
+    margin-right: 45px;
+    align-self: flex-end;
+}
+
+#change-info .modal-patch {
+    border-radius: 6px;
+    background-color: #ABF6BE;
+    border: 1px solid #ABF6BE;
+    padding: 10px;
+    width: 50px;
+    height: 25px;
+
+    display: flex;
+    align-content: center;
+    justify-content: center;
+
+    font-size: 16px;
+    font-weight: 500;
+}
+
+#change-info .modal-patch:hover {
+    background-color: #79eb96;
+    border: 1px solid #79eb96;
+}
+
+#change-info .modal-cancle {
+    border-radius: 6px;
+    background-color: #b4b4b4;
+    border: 1px solid #b4b4b4;
+    padding: 10px;
+    width: 50px;
+    height: 25px;
+
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+
+#change-info .modal-cancle:hover {
+    background-color: #d4d4d4;
+    border: 1px solid #d4d4d4;
+}
+
+#modal .message-true {
+    font-size: 12px;
+    font-weight: 200;
+    color: rgba(0, 128, 0, 0.7);
+    align-self: flex-start;
+    margin-top: 5px;
+}
+
+#modal .message-false {
+    font-size: 12px;
+    font-weight: 200;
+    color: red;
+    margin-top: 5px;
 }

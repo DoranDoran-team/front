@@ -1,13 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import './style.css';
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { MY_ABSOLUTE_ATTENDANCE_CHECK_PATH, MY_ABSOLUTE_MILEAGE_PATH, MY_ABSOLUTE_UPDATE_PATH, MY_INFO_PW_ABSOLUTE_PATH, MY_INFO_UPDATE_ABSOLUTE_PATH, MY_MILEAGE_PATH, MY_UPDATE_PATH } from "../../constants";
 import { FaUserEdit, FaCoins, FaHistory, FaCalendarCheck } from "react-icons/fa";
+import { useSignInUserStore } from "../../stores";
 
 
 // component: 마이페이지 컴포넌트 //
 export default function Mypage() {
+
+    // state: 로그인 유저 정보 상태 //
+    const { signInUser, setSignInUser } = useSignInUserStore();
 
     // state: 마이페이지 상태 //
     // const [menu, setMenu] = useState<boolean>(false);
@@ -63,6 +67,11 @@ export default function Mypage() {
         navigator(MY_ABSOLUTE_ATTENDANCE_CHECK_PATH('songth'));
     }
 
+    // effect: //
+    useEffect(()=> {
+        console.log(signInUser);
+    }, []);
+
     // render: 마이페이지 화면 렌더링 //
     return (
         <div className="mypage-wrapper">
@@ -73,7 +82,7 @@ export default function Mypage() {
                         <li onClick={onChangeInfoClickHandler}><FaUserEdit /> 개인정보 수정</li>
                         <li onClick={navigateToMileage}><FaCoins /> 마일리지 관리</li>
                         <li><FaHistory /> 실시간 토론 참여 이력</li>
-                        <li><FaCalendarCheck /> 출석체크</li>
+                        <li onClick={naviagateToAttendance}><FaCalendarCheck /> 출석체크</li>
                     </ul>
                 </aside>
                 <div className="subscribe-wrapper">
@@ -98,11 +107,11 @@ export default function Mypage() {
             </div>
             <div className="mypage-main-wrapper">
                 <div className="user-box">
-                    <div className="main-profile"></div>
+                    <div id="main-profile" style={{ backgroundImage: `url(${signInUser?.profileImage})` }}></div>
                     <div className="mypage-info">
                         <div className="mypage-info-top">
                             <div className="mypage-info-top-a">
-                                <div className="mypage-nickname">별별이</div>
+                            <div className="mypage-nickname">{signInUser?.nickName}</div>
                                 {!isUser ? <div className="subscribe-button-box" onClick={onSubscribeButtonHandler}>
                                     {subscribe ? <div className="subscribe-button">구독</div>
                                         : <div className="subscribe-button">구독 취소</div>}
@@ -110,16 +119,20 @@ export default function Mypage() {
                             </div>
                             <div className="top-icon-setting" onClick={onUpdateButtonHandler}></div>
                         </div>
-                        <div className="mypage-id">@LiveLive88</div>
+                        <div className="mypage-id">@{signInUser?.userId}</div>
                         <div className="mypage-info-bottom">
                             <div className="mypage-user">구독자 <strong>28</strong></div>
                             <div className="mypage-user">토론방 <strong>9</strong></div>
                         </div>
-                        <div className="mypage-state-message">논쟁을 즐기는 ENTP</div>
-                        <div className="mypage-state-message">주로 시사 교양 분야로 글을 씁니다</div>
+                        <div className="mypage-state-message">{signInUser?.statusMessage}</div>
 
                     </div>
+                    
+                    {!isUser ? <div className="subscribe-button-box" onClick={onSubscribeButtonHandler}>
+                        
+                    </div> : ''}
                 </div>
+                
                 <div className="mypage-discussion-room-top">
                     <div className="mypage-discussion-room">내가 개설한 토론방</div>
                     <div className="discussion-state-box" onClick={onStateTypeButtonHandler}>진행중
@@ -132,7 +145,7 @@ export default function Mypage() {
 
                 <div className="myapge-middle-box">
                     <div className="mypage-middle-icon"></div>
-                    <div className="mypage-middle-nickname">별별이</div>
+                    <div className="mypage-middle-nickname">{signInUser?.nickName}</div>
                 </div>
                 <div className="discussion-room-list">
                     <div className="discussion-image"></div>

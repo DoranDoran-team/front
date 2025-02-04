@@ -11,12 +11,18 @@ import findIdResultResponseDto from "./dto/response/auth/find-id-result.response
 import FindPwRequestDto from "./dto/request/auth/find-pw.request.dto";
 import PatchPwRequestDto from "./dto/request/auth/patch-pw.request.dto";
 import PostDiscussionWirteRequestDto from "./dto/request/gd_discussion/post-discussion-wirte.request.dto";
-import GetSignInResponseDto from "./dto/response/user/get-sign-in.response.dto";
+
 import { PostScheduleRequestDto } from "./dto/request/schedule";
 import { GetScheduleListResponseDto } from "./dto/response/schedule";
 import MyMileageRequestDto from "./dto/request/mileage/my-mileage.request.dto";
 import { GetMileageResponseDto } from "./dto/response/get-mileage.response.dto";
 
+import GetSignInResponseDto from "./dto/response/auth/get-sign-in.response.dto";
+import CheckPwRequestDto from "./dto/request/mypage/myInfo/check-pw.request.dto";
+import PatchProfileRequestDto from "./dto/request/mypage/myInfo/patch-profile.request.dto";
+import GetUserInfoResponseDto from "./dto/response/mypage/myInfo/get-user-info.response.dto";
+import PatchUserInfoRequestDto from "./dto/request/mypage/myInfo/patch-user-info.request.dto";
+import ChangePwRequestDto from "./dto/request/mypage/myInfo/change-pw.request.dto";
 
 // variable: api url 상수//
 const DORANDORAN_API_DOMAIN = process.env.REACT_APP_API_URL;
@@ -42,13 +48,23 @@ const PATCH_PASSWORD_API_URL = `${AUTH_MODULE_URL}/change-pw`;
 
 const WRITE_GENENRAL_DISCUSSION_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}/write`;
 const GET_GENENRAL_DISCUSSION_LIST_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}`;
-const GET_SIGN_IN_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}/sign-in`;  
-const FILE_UPLOAD_URL = `${DORANDORAN_API_DOMAIN}/file/upload`;
 
-const multipart = {headers: { 'Content-Type': 'multipart/form-data' } };
+
+
 
 const MILEAGE_API_URL = `${DORANDORAN_API_DOMAIN}/mypage/mileage`;
 
+
+const GET_SIGN_IN_API_URL = `${AUTH_MODULE_URL}/sign-in`;
+
+const MYPAGE_MODULE_URL = `${DORANDORAN_API_DOMAIN}/mypage`;
+const MYPAGE_USER_INFO_API_URL = `${MYPAGE_MODULE_URL}/user-info`;
+const MYPAGE_PATCH_PROFILE_API_URL = `${MYPAGE_USER_INFO_API_URL}/patch-profile`;
+const MYPAGE_USER_UPDATE_PASSWORD_CHECK_API_URL = `${MYPAGE_USER_INFO_API_URL}/password-check`;
+const MYPAGE_USER_UPDATE_GET_USER_INFO_API_URL = (userId : string) => `${MYPAGE_USER_INFO_API_URL}/${userId}`;
+const MYPAGE_USER_CHANGE_PW_API_URL = `${MYPAGE_USER_INFO_API_URL}/change-pw`;
+const MYPAGE_PATCH_USER_INFO_API_URL = `${MYPAGE_USER_INFO_API_URL}/patch-user`;
+const MYPAGE_USER_DELETE_API_URL = `${MYPAGE_USER_INFO_API_URL}/delete-user`;
 
 // function: Authorization Bearer 헤더값 //
 const bearerAuthorization = (accessToken: String) => ({ headers: { 'Authorization': `Bearer ${accessToken}` } });
@@ -205,3 +221,71 @@ export const refundRequest = async (requestBody: MyMileageRequestDto, accessToke
     return responseBody;
 };
 
+
+
+// function: get sign in 요청 함수 //
+export const GetSignInRequest = async (accessToken: string) => {
+    const responseBody = await axios.get(GET_SIGN_IN_API_URL, bearerAuthorization(accessToken))
+        .then(responseDataHandler<GetSignInResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 개인 정보 수정 비밀번호 확인 user update password check 요청 함수 //
+export const pwCheckRequest = async (requestBody: CheckPwRequestDto, accessToken: string) => {
+    const responseBody = await axios.post(MYPAGE_USER_UPDATE_PASSWORD_CHECK_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 프로필 수정 patch profile 요청 함수 //
+export const patchProfileRequest = async (requestBody: PatchProfileRequestDto, accessToken: string) => {
+    const responseBody = await axios.patch(MYPAGE_PATCH_PROFILE_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 개인 정보 수정 시, 개인 정보 요청 함수 //
+export const getUserInfoRequest = async (userId: string, accessToken: string) => {
+    const responseBody = await axios.get(MYPAGE_USER_UPDATE_GET_USER_INFO_API_URL(userId), bearerAuthorization(accessToken))
+        .then(responseDataHandler<GetUserInfoResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 비밀번호 수정 요청 함수 //
+export const changePwRequest = async(requestBody: ChangePwRequestDto, accessToken: string) => {
+    const responseBody = await axios.patch(MYPAGE_USER_CHANGE_PW_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 개인 정보 수정 요청 함수 //
+export const patchUserInfoRequest = async(requestBody: PatchUserInfoRequestDto, accessToken: string) => {
+    const responseBody = await axios.patch(MYPAGE_PATCH_USER_INFO_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 회원 탈퇴 요청 함수 //
+export const deleteUserRequest = async(accessToken: string) => {
+    const responseBody = await axios.delete(MYPAGE_USER_DELETE_API_URL, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+const FILE_UPLOAD_URL = `${DORANDORAN_API_DOMAIN}/file/upload`;
+const multipart = { headers: { 'Content-Type': 'multipart/form-data' } };
+
+// function: file upload 요청 함수 //
+export const fileUploadRequest = async (requestBody: FormData) => {
+    const url = await axios.post(FILE_UPLOAD_URL, requestBody, multipart)
+        .then(responseDataHandler<string>)
+        .catch(error => null);
+    return url;
+}

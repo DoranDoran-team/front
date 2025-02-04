@@ -3,7 +3,7 @@ import './style.css';
 import { useNavigate } from "react-router-dom";
 import { LOGIN_ABSOLUTE_PATH } from "../../../constants";
 import IdCheckRequestDto from "../../../apis/dto/request/auth/id-check.request.dto";
-import { idCheckRequest, signUpRequest, telAuthCheckRequest, telAuthRequest } from "../../../apis";
+import { fileUploadRequest, idCheckRequest, signUpRequest, telAuthCheckRequest, telAuthRequest } from "../../../apis";
 import ResponseDto from "../../../apis/dto/response/response.dto";
 import TelAuthRequestDto from "../../../apis/dto/request/auth/tel-auth.request.dto";
 import TelAuthCheckRequestDto from "../../../apis/dto/request/auth/tel-auth-check.request.dto";
@@ -229,10 +229,10 @@ export default function SignUp() {
     };
 
     // event handler: 회원가입 버튼 클릭 이벤트 핸들러 //
-    const onSignUpClickHandler = () => {
+    const onSignUpClickHandler = async() => {
 
         if(!signUp) return;
-
+        
         const requestBody: SignUpRequestDto = {
             name,
             userId,
@@ -243,7 +243,6 @@ export default function SignUp() {
             snsId: null,
             birth
         }
-        
         signUpRequest(requestBody).then(signUpResponse);
     }
 
