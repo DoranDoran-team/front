@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import './style.css';
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import { MY_ABSOLUTE_ATTENDANCE_CHECK_PATH, MY_ABSOLUTE_MILEAGE_PATH, MY_ABSOLUTE_UPDATE_PATH, MY_INFO_PW_ABSOLUTE_PATH, MY_INFO_UPDATE_ABSOLUTE_PATH, MY_UPDATE_PATH } from "../../constants";
+import { MY_ABSOLUTE_ATTENDANCE_CHECK_PATH, MY_ABSOLUTE_MILEAGE_PATH, MY_ABSOLUTE_UPDATE_PATH, MY_INFO_PW_ABSOLUTE_PATH, MY_INFO_UPDATE_ABSOLUTE_PATH, MY_MILEAGE_PATH, MY_UPDATE_PATH } from "../../constants";
+import { FaUserEdit, FaCoins, FaHistory, FaCalendarCheck } from "react-icons/fa";
 
 
 // component: 마이페이지 컴포넌트 //
 export default function Mypage() {
 
     // state: 마이페이지 상태 //
-    const [menu, setMenu] = useState<boolean>(false);
+    // const [menu, setMenu] = useState<boolean>(false);
     const [state] = useState<boolean>(true);
     const [subscribe, setSubscribe] = useState<boolean>(false);
     const [user] = useState<boolean>(false);
@@ -19,11 +20,11 @@ export default function Mypage() {
     // variable: 자기자신 확인 //
     const isUser = user && true;
 
-    // event handler: menu 클릭 이벤트 처리 함수 //
-    const onMenuButtonHandler = () => {
+    // // event handler: menu 클릭 이벤트 처리 함수 //
+    // const onMenuButtonHandler = () => {
 
-        setMenu(!menu);
-    }
+    //     setMenu(!menu);
+    // }
 
     // event handler: 구독 버튼 클릭 이벤츠 처리 함수 //
     const onSubscribeButtonHandler = () => {
@@ -49,7 +50,7 @@ export default function Mypage() {
     }
 
     const navigateToMileage = () => {
-        navigator(MY_ABSOLUTE_MILEAGE_PATH(1));
+        navigator(MY_ABSOLUTE_MILEAGE_PATH);
     };
 
     // event handler: 개인 정보 수정 버튼 클릭 이벤트 핸들러 //
@@ -65,34 +66,60 @@ export default function Mypage() {
     // render: 마이페이지 화면 렌더링 //
     return (
         <div className="mypage-wrapper">
-            <div className="mypage-main-wrapper">
-                <div className="top-icon-box">
-                    <div className="top-icons">
-                        <div className="top-icon-setting" onClick={onUpdateButtonHandler}></div>
-                        <div className="top-icon-menu" onClick={onMenuButtonHandler}>
-                            {menu && (<div className='menu-list' >
-                                <div className="menu-item" onClick={onChangeInfoClickHandler}>개인 정보 수정</div>
-                                <div className="menu-item" onClick={navigateToMileage}>마일리지 관리</div>
-                                <div className="menu-item">실시간 토론 참여 이력</div>
-                                <div className="menu-item" onClick={naviagateToAttendance}>출석체크</div>
-                            </div>)}
+            <div className="mypage-left-opstions">
+                <aside className="mypage-sidebar">
+                    <h2>마이페이지</h2>
+                    <ul>
+                        <li onClick={onChangeInfoClickHandler}><FaUserEdit /> 개인정보 수정</li>
+                        <li onClick={navigateToMileage}><FaCoins /> 마일리지 관리</li>
+                        <li><FaHistory /> 실시간 토론 참여 이력</li>
+                        <li><FaCalendarCheck /> 출석체크</li>
+                    </ul>
+                </aside>
+                <div className="subscribe-wrapper">
+                    <div>
+                        <h2 className="subscribe-title">내가 구독한 사람 2명</h2>
+                        <div className="subscribe-search-box">
+                            <input className="input" placeholder="아이디를 입력하세요. " />
+                            <div className="button active">검색</div>
+                        </div>
+                        <div className="subscribe-box">
+                            <div className="subscribe-image"></div>
+                            <div className="subscribe-user-info">
+                                <div className="subscribe-nickname">마이멜로디</div>
+                                <div className="subscribe-user">@1000JEA</div>
+                            </div>
+                            <div className="subscribe-cancel-button">
+                                <div className="subscribe-cancel">구독취소</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
+            </div>
+            <div className="mypage-main-wrapper">
                 <div className="user-box">
                     <div className="main-profile"></div>
                     <div className="mypage-info">
-                        <div className="mypage-nickname">별별이</div>
-                        <div className="mypage-id">@ LiveLive88</div>
+                        <div className="mypage-info-top">
+                            <div className="mypage-info-top-a">
+                                <div className="mypage-nickname">별별이</div>
+                                {!isUser ? <div className="subscribe-button-box" onClick={onSubscribeButtonHandler}>
+                                    {subscribe ? <div className="subscribe-button">구독</div>
+                                        : <div className="subscribe-button">구독 취소</div>}
+                                </div> : ''}
+                            </div>
+                            <div className="top-icon-setting" onClick={onUpdateButtonHandler}></div>
+                        </div>
+                        <div className="mypage-id">@LiveLive88</div>
+                        <div className="mypage-info-bottom">
+                            <div className="mypage-user">구독자 <strong>28</strong></div>
+                            <div className="mypage-user">토론방 <strong>9</strong></div>
+                        </div>
+                        <div className="mypage-state-message">논쟁을 즐기는 ENTP</div>
+                        <div className="mypage-state-message">주로 시사 교양 분야로 글을 씁니다</div>
+
                     </div>
-                    <div className="mypage-user">구독자 <span>28</span>명 / 토론방<span>9</span>개</div>
-                    {!isUser ? <div className="subscribe-button-box" onClick={onSubscribeButtonHandler}>
-                        {subscribe ? <div className="subscribe-button">구독</div>
-                            : <div className="subscribe-button">구독 중</div>}
-                    </div> : ''}
                 </div>
-                <div className="mypage-state-message">논쟁을 즐기는 ENTP</div>
                 <div className="mypage-discussion-room-top">
                     <div className="mypage-discussion-room">내가 개설한 토론방</div>
                     <div className="discussion-state-box" onClick={onStateTypeButtonHandler}>진행중
@@ -139,25 +166,6 @@ export default function Mypage() {
                                 <div className="discussion-like-icon"></div>
                                 <div className="discussion-like">127</div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="subscribe-wrapper">
-                <div>
-                    <div className="subscribe-title">내가 구독한 사람 2명</div>
-                    <div className="subscribe-search-box">
-                        <input className="input" placeholder="아이디를 입력하세요. " />
-                        <div className="button active">검색</div>
-                    </div>
-                    <div className="subscribe-box">
-                        <div className="subscribe-image"></div>
-                        <div className="subscribe-user-info">
-                            <div className="subscribe-nickname">마이멜로디</div>
-                            <div className="subscribe-user">@1000JEA</div>
-                        </div>
-                        <div className="subscribe-cancel-button">
-                            <div className="subscribe-cancel">구독취소</div>
                         </div>
                     </div>
                 </div>

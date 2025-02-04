@@ -33,7 +33,7 @@ export default function Update() {
     }
     // render: 내정보 수정 화면 렌더링 
     return (
-        <div className="mypage-wrapper">
+        <div className="mypage-update-wrapper">
             <div className="mypage-main-wrapper">
                 <div className="user-box">
                     <div className="main-profile"></div>

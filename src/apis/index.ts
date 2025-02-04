@@ -12,6 +12,8 @@ import FindPwRequestDto from "./dto/request/auth/find-pw.request.dto";
 import PatchPwRequestDto from "./dto/request/auth/patch-pw.request.dto";
 import { PostScheduleRequestDto } from "./dto/request/schedule";
 import { GetScheduleListResponseDto } from "./dto/response/schedule";
+import MyMileageRequestDto from "./dto/request/mileage/my-mileage.request.dto";
+import { GetMileageResponseDto } from "./dto/response/get-mileage.response.dto";
 
 // variable: api url 상수//
 const DORANDORAN_API_DOMAIN = process.env.REACT_APP_API_URL;
@@ -32,6 +34,8 @@ const ID_SEARCH_NAME_TEL_API_URL = `${AUTH_MODULE_URL}/find-id`;
 const ID_SEARCH_TEL_AUTH_API_URL = `${AUTH_MODULE_URL}/find-id-check`;
 const FIND_PW_API_URL = `${AUTH_MODULE_URL}/find-pw`;
 const PATCH_PASSWORD_API_URL = `${AUTH_MODULE_URL}/change-pw`;
+
+const MILEAGE_API_URL = `${DORANDORAN_API_DOMAIN}/mypage/mileage`;
 
 // function: Authorization Bearer 헤더값 //
 const bearerAuthorization = (accessToken: String) => ({ headers: { 'Authorization': `Bearer ${accessToken}` } });
@@ -136,3 +140,22 @@ export const getScheduleListRequest = async (accessToken: string) => {
         .catch(responseDataHandler);
     return responseBody;
 }
+
+// function: 마일리지 정보 및 환급 내역을 함께 가져오는 요청 함수 //
+export const getMileageData = async function (accessToken: string) {
+    try {
+        const response = await axios.get(MILEAGE_API_URL, bearerAuthorization(accessToken));
+        return response.data as GetMileageResponseDto;
+    } catch (error) {
+        console.error("마일리지 정보 불러오기 오류:", error);
+        return null;
+    }
+};
+
+// function: 환급 신청 요청 함수 //
+export const refundRequest = async (requestBody: MyMileageRequestDto, accessToken: string) => {
+    const responseBody = await axios.post(`${MILEAGE_API_URL}/request`, requestBody, bearerAuthorization(accessToken) )
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+};
