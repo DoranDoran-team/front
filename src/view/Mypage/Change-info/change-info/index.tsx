@@ -1,10 +1,25 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import './style.css'
 import { useNavigate } from 'react-router-dom';
-import { MY_ABSOLUTE_PATH } from '../../../../constants';
+import { ACCESS_TOKEN, MY_ABSOLUTE_PATH, ROOT_ABSOLUTE_PATH } from '../../../../constants';
+import { useSignInUserStore } from '../../../../stores';
+import { useCookies } from 'react-cookie';
+import { changePwRequest, deleteUserRequest, getUserInfoRequest, patchUserInfoRequest, telAuthCheckRequest, telAuthRequest } from '../../../../apis';
+import GetUserInfoResponseDto from '../../../../apis/dto/response/mypage/myInfo/get-user-info.response.dto';
+import ResponseDto from '../../../../apis/dto/response/response.dto';
+import PatchUserInfoRequestDto from '../../../../apis/dto/request/mypage/myInfo/patch-user-info.request.dto';
+import TelAuthRequestDto from '../../../../apis/dto/request/auth/tel-auth.request.dto';
+import TelAuthCheckRequestDto from '../../../../apis/dto/request/auth/tel-auth-check.request.dto';
+import ChangePwRequestDto from '../../../../apis/dto/request/mypage/myInfo/change-pw.request.dto';
 
 // component: 개인정보 수정 화면 컴포넌트 //
 export default function ChangeInfo() {
+
+    // state: 로그인 유저 정보 상태 //
+    const { signInUser, setSignInUser } = useSignInUserStore();
+
+    // state: 쿠키 상태 //
+    const [cookies, setCookie, removeCookie] = useCookies();
 
     // state: 회원가입 관련 상태 //
     const [name, setName] = useState<string>('');
@@ -14,13 +29,10 @@ export default function ChangeInfo() {
     const [telNumber, setTelNumber] = useState<string>('');
     const [authNumber, setAuthNumber] = useState<string>('');
     const [error, setErrorBool] = useState<boolean>(false);
+    const [telNumberMessage, setTelNumberMessage] = useState<string>('');
     const [authMessage, setAuthMessage] = useState<string>('');
     const [send, setSend] = useState<boolean>(true);
     const [isMatched, setIsMatched] = useState<boolean>(false);
-    const [pwIsMatched, setPwIsMatched] = useState<boolean>(false);
-    const [password, setPassword] = useState<string>('');
-    const [passwordCheck, setPasswordCheck] = useState<string>('');
-    const [isPossible, setIsPossible] = useState<boolean>(false);
     const [message, setMessage] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState<string>('');
 
@@ -33,44 +45,13 @@ export default function ChangeInfo() {
     // state: 비밀번호 변경 모달창 상태 //
     const [open, setOpen] = useState<boolean>(false);
 
-    // variable: 임시 변수 //
-    const authNumber_exam = '123456';
+    // variable: access token //
+    const accessToken = cookies[ACCESS_TOKEN];
 
     // event handler: 이름 변경 이벤트 핸들러 //
     const onNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
         setName(value);
-    }
-
-    // event handler: 비밀번호 변경 이벤트 핸들러 //
-    const onPasswordChangeHandler = (event : ChangeEvent<HTMLInputElement>) => {
-        const {value} = event.target;
-        setPassword(value);
-    
-        const pattern = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,13}$/;
-        let isTrue = pattern.test(value);
-    
-        if(isTrue) {
-            setIsPossible(true);
-            setMessage('');
-        }else {
-            setIsPossible(false);
-            setMessage('영문, 숫자를 혼용하여 8 ~ 13자 입력해주세요.');
-        }
-    }
-
-    // event handler: 비밀번호 확인 변경 이벤트 핸들러 //
-    const onPasswordCheckChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-        const {value} = event.target;
-        setPasswordCheck(value);
-    
-        if(password === value) {
-            setPwIsMatched(true);
-            setErrorMessage('');
-        }else {
-            setPwIsMatched(false);
-            setErrorMessage('비밀번호가 일치하지 않습니다.');
-        }
     }
 
     // event handler: 생년월일 변경 이벤트 핸들러 //
@@ -120,8 +101,10 @@ export default function ChangeInfo() {
 
     // event handler: 전화번호 인증 메시지 전송 클릭 이벤트 핸들러 //
     const onSendClickHandler = () => {
-        setErrorBool(true);
-        setTimer(180);
+        if(!telNumber) return;
+        
+        const requestBody: TelAuthRequestDto = {telNumber};
+        telAuthRequest(requestBody).then(telAuthResponse); 
     }
 
     // event handler: 전화번호 인증번호 변경 이벤트 핸들러 //
@@ -138,29 +121,46 @@ export default function ChangeInfo() {
     // event handler: 인증 번호 확인 버튼 클릭 이벤트 핸들러 //
     const onCheckClickHandler = () => {
         if (!authNumber) return;
+        
+        const requestBody: TelAuthCheckRequestDto = { telNumber, telAuthNumber:authNumber };
+        telAuthCheckRequest(requestBody).then(telAuthCheckResponse);
+    }
 
-        if (authNumber === authNumber_exam) {
-            setIsMatched(true);
-            setStopTimer(true);
-            setAuthMessage('인증번호가 일치합니다.');
-        } else {
-            setIsMatched(false);
-            setAuthMessage('인증번호가 일치하지 않습니다.');
-        }
-
-        //const requestBody: TelAuthCheckRequestDto = { telNumber, telAuthNumber };
-        //idSearchTelAuthRequest(requestBody).then(idSearchtelAuthCheckResponse);
+    // event handler: 비밀번호 변경 버튼 클릭 이벤트 핸들러 //
+    const onChangePwBtnClickHandler = () => {
+        setOpen(true);
     }
 
     // event handler: 수정 버튼 클릭 이벤트 핸들러 //
     const onUpdateClickHandler = () => {
-        alert('수정이 완료되었습니다.');
-        navigator(MY_ABSOLUTE_PATH);
+        if(!name || !birth || !telNumber || !accessToken) return;
+
+        // 전화번호를 변경할 시
+        if(error && isMatched) {
+            if(!name || !birth || !telNumber || !accessToken || !authNumber) return;
+        }
+
+        // 전화번호를 변경하지 않을 시
+        const requestBody : PatchUserInfoRequestDto = {
+            name,
+            telNumber,
+            birth
+        };
+
+        console.log(requestBody);
+        patchUserInfoRequest(requestBody, accessToken).then(patchUserInfoResponse);
     }
 
     // event handler: 취소 버튼 클릭 이벤트 핸들러 //
     const onCancleClickHandler = () => {
         navigator(MY_ABSOLUTE_PATH);
+    }
+
+    // event handler: 탈퇴 버튼 클릭 이벤트 핸들러 //
+    const onSecesstionClickHandler = () => {
+        const isConfirm = window.confirm('정말로 탈퇴하시겠습니까?');
+        if (!isConfirm) return;
+        deleteUserRequest(accessToken).then(deleteUserResponse);
     }
 
     // function: navigator //
@@ -183,6 +183,118 @@ export default function ChangeInfo() {
         const seconds = timer % 60;
         return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
     };
+
+    // function: 개인 정보 get Response 처리 함수 //
+    const getUserInfoResponse = (responseBody: GetUserInfoResponseDto | ResponseDto | null) => {
+    
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'VF' ? '일치하는 정보가 없습니다.' :
+            responseBody.code === 'AF' ? '일치하는 정보가 없습니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' :
+            responseBody.code === 'MP' ? '비밀번호가 일치하지 않습니다.' : '';
+    
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+    
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        } else {
+            const {birth} = responseBody as GetUserInfoResponseDto;
+            setBirth(birth);
+        }
+    };
+
+    // function: 전화번호 인증 response 처리 함수 //
+    const telAuthResponse = (responseBody: ResponseDto | null) => {
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'VF' ? '숫자 11자 입력해주세요.' :
+            responseBody.code === 'DT' ? '중복된 전화번호입니다.' :
+            responseBody.code === 'TF' ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' :
+            responseBody.code === 'SU' ? '인증번호가 전송되었습니다.' : '';
+    
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        setTelNumberMessage(message);
+        if(isSuccessed) {
+            setErrorBool(true);
+            setTimer(180);
+        }
+    };
+
+    // function: 전화번호 인증 확인 resonse 처리 함수 //
+    const telAuthCheckResponse = (responseBody: ResponseDto | null) => {
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'VF' ? '올바른 데이터가 아닙니다.' :
+            responseBody.code === 'TAF' ? '인증번호가 일치하지 않습니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'SU' ? '인증번호가 확인되었습니다.' : '';
+    
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        setAuthMessage(message);
+        setIsMatched(isSuccessed);
+        setStopTimer(true);
+        //setAuthNumberMessageError(!isSuccessed);
+        //setCheckedAuthNumber(isSuccessed);
+    };
+
+    // function: 회원 정보 수정 Response 처리 함수 //
+    const patchUserInfoResponse = (responseBody: ResponseDto | null) => {
+    
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'VF' ? '일치하는 정보가 없습니다.' :
+            responseBody.code === 'AF' ? '일치하는 정보가 없습니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' :
+            responseBody.code === 'MP' ? '비밀번호가 일치하지 않습니다.' : '';
+    
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+    
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        } else {
+            alert('수정이 완료되었습니다.');
+            navigator(MY_ABSOLUTE_PATH);
+        }
+    };
+
+    // function: 회원 탈퇴 Response 처리 함수 //
+    const deleteUserResponse = (responseBody: ResponseDto | null) => {
+    
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'VF' ? '일치하는 정보가 없습니다.' :
+            responseBody.code === 'AF' ? '일치하는 정보가 없습니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' :
+            responseBody.code === 'MP' ? '비밀번호가 일치하지 않습니다.' : '';
+    
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+    
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        } else {
+            alert('탈퇴가 완료되었습니다.');
+            removeCookie(ACCESS_TOKEN, { path: ROOT_ABSOLUTE_PATH });
+            navigator(ROOT_ABSOLUTE_PATH);
+        }
+    };
+
+    // effect: 회원 정보 받기 //
+    useEffect(() => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken || !signInUser) {
+            return;
+        }
+
+        //getNewInfo(accessToken, signInUser.userId).then(getNewInfoResponse);
+    }, [signInUser]);
 
     // useRef로 interval을 관리
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -215,6 +327,125 @@ export default function ChangeInfo() {
         };
     }, [error, stopTimer]);
 
+    // effect: 유저 정보 가져오기 //
+    useEffect(()=> {
+        if(signInUser) {
+            getUserInfoRequest(signInUser.userId, accessToken).then(getUserInfoResponse);
+            setName(signInUser.name);
+            setTelNumber(signInUser.telNumber);
+        }else return;
+        
+    }, [signInUser]);
+
+    // component: 비밀번호 변경 모달창 //
+    function ChangePassword() {
+
+        // state: 비밀번호 관련 상태 //
+        const [password, setPassword] = useState<string>('');
+        const [passwordCheck, setPasswordCheck] = useState<string>('');
+        const [pwIsMatched, setPwIsMatched] = useState<boolean>(false);
+        const [isPossible, setIsPossible] = useState<boolean>(false);
+
+        // state: 모달 관련 상태 //
+        const [modalOpen, setModalOpen] = useState(false);
+        const modalBackground = useRef<HTMLDivElement | null>(null);
+
+        // event handler: 비밀번호 변경 이벤트 핸들러 //
+        const onPasswordChangeHandler = (event : ChangeEvent<HTMLInputElement>) => {
+            const {value} = event.target;
+            setPassword(value);
+            //console.log(value);
+    
+            const pattern = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,13}$/;
+            let isTrue = pattern.test(value);
+    
+            if(isTrue) {
+                setIsPossible(true);
+                setMessage('');
+            }else {
+                setIsPossible(false);
+                setMessage('영문, 숫자를 혼용하여 8 ~ 13자 입력해주세요.');
+            }
+        }
+
+        // event handler: 비밀번호 확인 변경 이벤트 핸들러 //
+        const onPasswordCheckChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+            const {value} = event.target;
+            setPasswordCheck(value);
+    
+            if(password === value) {
+                setPwIsMatched(true);
+                setErrorMessage('');
+            }else {
+                setPwIsMatched(false);
+                setErrorMessage('비밀번호가 일치하지 않습니다.');
+            }
+        }
+
+        // event handler: 수정 버튼 클릭 이벤트 핸들러 //
+        const onChangeClikeHandler = () => {
+            if(!password || !passwordCheck || !accessToken) return;
+
+            const requestBody : ChangePwRequestDto = {
+                password
+            };
+            changePwRequest(requestBody, accessToken).then(changePwResponse);
+        }
+
+        // event handler: 취소 버튼 클릭 이벤트 핸들러 //
+        const onCancleClikeHandler = () => {
+            setOpen(false);
+        }
+
+        // function: 비밀번호 변경 응답 처리 //
+        const changePwResponse = (responseBody: ResponseDto | null) => {
+            const message =
+                !responseBody ? '서버에 문제가 있습니다.' :
+                responseBody.code === 'VF' ? '일치하는 정보가 없습니다.' :
+                responseBody.code === 'AF' ? '일치하는 정보가 없습니다.' :
+                responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
+                responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' :
+                responseBody.code === 'MP' ? '비밀번호가 일치하지 않습니다.' : '';
+    
+            const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+    
+            if (!isSuccessed) {
+                alert(message);
+                return;
+            } else {
+                alert('수정되었습니다');
+                setOpen(false);
+            }
+        };
+
+        // render: 비밀번호 변경 모달창 렌더링 //
+        return (
+            <div id='modal'>
+                <div className='modal-container' ref={modalBackground} onClick={e => {
+                    if (e.target === modalBackground.current) {setModalOpen(false);}}}>
+
+                    <div className='modal-title'>비밀번호 변경</div>
+
+                    <div>
+                        <input className="input-box3" type='password' value={password} onChange={onPasswordChangeHandler} 
+                            placeholder="비밀번호(영문 + 숫자 혼합 8 ~ 13자)"></input>
+                        <div className={isPossible ? 'message-true' : 'message-false'} style={{ marginBottom: "15px"}}>{message}</div>
+
+                        <input className="input-box3" type='password' value={passwordCheck}
+                            onChange={onPasswordCheckChangeHandler} placeholder="비밀번호 확인"></input>
+                        <div className={pwIsMatched ? 'message-true' : 'message-false'}>{errorMessage}</div>
+                    </div>
+                
+            
+                    <div className='modal-btn-container'>
+                        <div className='modal-patch' onClick={onChangeClikeHandler}>수정</div>
+                        <div className='modal-cancle' onClick={onCancleClikeHandler}>취소</div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     // render: 개인 정보 수정 화면 렌더링
     return (
         <div id='change-info'>
@@ -232,15 +463,6 @@ export default function ChangeInfo() {
                 <div className='title'>개인정보 수정</div>
                 <div style={{ display: "flex", flexDirection: "column", marginBottom: "60px"}}>
                     <input className="input-box" value={name} onChange={onNameChangeHandler} placeholder="이름"></input>
-
-                    <input className="input-box3" type='password' value={password} onChange={onPasswordChangeHandler} 
-                            placeholder="비밀번호(영문 + 숫자 혼합 8 ~ 13자)"></input>
-                    <div className={isPossible ? 'message-true' : 'message-false'}
-                        style={{ marginBottom: "15px"}}>{message}</div>
-
-                    <input className="input-box3" type='password' value={passwordCheck}
-                        onChange={onPasswordCheckChangeHandler} placeholder="비밀번호 확인"></input>
-                    <div className={pwIsMatched ? 'message-true' : 'message-false'}>{errorMessage}</div>
                     
                     <input className="input-box3" value={birth} onChange={onBirthChangeHandler} placeholder="생년월일(YYYYMMDD)"
                         maxLength={8} style={{marginTop: "15px"}}></input>
@@ -252,7 +474,7 @@ export default function ChangeInfo() {
                         <div className={telNumber.length === 11 ? "send-btn" : "send-btn-false"}
                             onClick={telNumber.length === 11 ? onSendClickHandler : undefined}>{send ? '전송' : '재전송'}</div>
                     </div>
-                    {error ? <div className="message-true">인증번호가 전송되었습니다.</div> : ''}
+                    <div className={error ? "message-true" : "message-false"}>{telNumberMessage}</div>
 
                     {error ?
                         <>
@@ -267,10 +489,22 @@ export default function ChangeInfo() {
                         </> 
                     : ''}
 
-                    <div className='btn-box'>
-                        <div className='update-btn' onClick={onUpdateClickHandler}>수정</div>
-                        <div className='cancle-btn' onClick={onCancleClickHandler}>취소</div>
+                    <div className='changePWbtn' onClick={onChangePwBtnClickHandler}>비밀번호 변경</div>
+                    {open && (
+                        <>
+                            <div className="modal-overlay" onClick={() => setOpen(false)}></div>
+                            <ChangePassword />
+                        </>
+                    )}
+
+                    <div style={{display: "flex", flexDirection: "row", marginTop: "60px"}}>
+                        <div className='secession-btn' onClick={onSecesstionClickHandler}>탈퇴</div>
+                        <div className='btn-box'>
+                            <div className='update-btn' onClick={onUpdateClickHandler}>수정</div>
+                            <div className='cancle-btn' onClick={onCancleClickHandler}>취소</div>
+                        </div>
                     </div>
+                    
                 </div>
             </div>
         </div>

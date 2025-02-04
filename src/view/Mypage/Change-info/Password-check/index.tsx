@@ -1,15 +1,29 @@
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 import './style.css';
 import { useNavigate } from 'react-router-dom';
-import { MY_INFO_UPDATE_ABSOLUTE_PATH } from '../../../../constants';
+import { ACCESS_TOKEN, MY_INFO_UPDATE_ABSOLUTE_PATH } from '../../../../constants';
+import { useSignInUserStore } from '../../../../stores';
+import CheckPwRequestDto from '../../../../apis/dto/request/mypage/myInfo/check-pw.request.dto';
+import { useCookies } from 'react-cookie';
+import { pwCheckRequest } from '../../../../apis';
+import ResponseDto from '../../../../apis/dto/response/response.dto';
 
 // component: 비밀번호 확인 화면 컴포넌트 //
 export default function PwCheck() {
+
+    // state: 로그인 유저 정보 상태 //
+    const { signInUser, setSignInUser } = useSignInUserStore();
 
     // state: 비밀번호 상태 //
     const [password, setPassword] = useState<string>('');
     const [error, setError] = useState<boolean>(false);
     const [errMsg, setErrMsg] = useState<string>('');
+
+    // state: 쿠키 상태 //
+    const [cookies, setCookie] = useCookies();
+
+    // variable: access token //
+    const accessToken = cookies[ACCESS_TOKEN];
 
     // event handler: 비밀번호 변경 이벤트 핸들러 //
     const onPWchangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -35,12 +49,46 @@ export default function PwCheck() {
         }
     
     // event handler: 개인정보 관리 버튼 클릭 이벤트 핸들러 //
-    const onBtnClickHandler = () => {
-        navigator(MY_INFO_UPDATE_ABSOLUTE_PATH('qwer1234'));
+    const onBtnClickHandler = async() => {
+        
+        if (!password || !accessToken) return;
+
+        if(signInUser) {
+            const requestBody : CheckPwRequestDto = {
+                userId: signInUser?.userId,
+                password
+            };
+            pwCheckRequest(requestBody, accessToken).then(userUpdateResponse);
+            //const responseBody = await pwCheckRequest(requestBody, accessToken);
+            //userUpdateResponse(responseBody);
+        }
     }
 
     // function: navigator //
     const navigator = useNavigate();
+
+    // function: 개인 정보 수정 Response 처리 함수 //
+    const userUpdateResponse = (responseBody: ResponseDto | null) => {
+
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'VF' ? '일치하는 정보가 없습니다.' :
+            responseBody.code === 'AF' ? '일치하는 정보가 없습니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' :
+            responseBody.code === 'MP' ? '비밀번호가 일치하지 않습니다.' : '';
+
+        setErrMsg(message);
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+
+        if (!isSuccessed) {
+            setError(false); // 에러 상태 갱신
+            setPassword(''); // 비밀번호 초기화
+            return;
+        }
+        
+        navigator(MY_INFO_UPDATE_ABSOLUTE_PATH(`${signInUser?.userId}`));
+    };
 
     // render: 비밀번호 확인 화면 렌더링 //
     return (
@@ -61,7 +109,8 @@ export default function PwCheck() {
                 <div className='pw-check-box'>
                     <input className='pw-check-input' type='password' value={password} 
                     placeholder='비밀번호' onChange={onPWchangeHandler} onKeyDown={handleKeyDown}/>
-                    {error ? '' : <div className='errMsg'>{errMsg}</div>}
+                    <div className='errMsg'>{errMsg}</div>
+                    
                 </div>
                 <div className={error ? 'changeBtn' : 'changeBtn-false'} 
                 onClick={error ? onBtnClickHandler : undefined}>개인정보 수정</div>

@@ -5,7 +5,7 @@ import Footer from '../../components/footer';
 
 import { useCookies } from 'react-cookie';
 import { ACCESS_TOKEN, GEN_DISC_ABSOLUTE_PATH, GEN_DISC_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, NOTICE, NOTICE_ABSOLUTE_PATH, ROOT_ABSOLUTE_PATH, ROOT_PATH, RT_DISC_ABSOLUTE_PATH, RT_DISC_PATH, SCHEDULE, SCHEDULE_ABSOLUTE_PATH } from '../../constants';
-import { RankingClickResultStore } from '../../stores';
+import { RankingClickResultStore, useSignInUserStore } from '../../stores';
 //import ArrowToTop from '../../components/arrow-to-top/ArrowToTop';
 
 // component: 로고 컴포넌트 //
@@ -86,6 +86,9 @@ function TopPersonalNavigation() {
     // state: path 상태 //
     const { pathname } = useLocation();
 
+    // state: 로그인 유저 정보 상태 //
+    const { signInUser, setSignInUser } = useSignInUserStore();
+
     // state: cookie 상태 //
     const [cookies, setCookie, removeCookie] = useCookies();
     const accessToken = cookies[ACCESS_TOKEN];
@@ -140,7 +143,9 @@ function TopPersonalNavigation() {
                     onMouseLeave={() => setIsHovered(false)}>
                     <div>
                         <div className='menu' onClick={onLogoutButtonClickHandler}>로그아웃</div>
-                        <div className='menu' onClick={() => navigator('/mypage')}>마이페이지</div>
+                        <div className='menu' onClick={
+                            signInUser?.role ? () => navigator('/admin') :
+                            () => navigator('/mypage')}>마이페이지</div>
                     </div>
                 </div>)
             }
