@@ -10,11 +10,15 @@ import IdSearchNameTelNumberRequestDto from "./dto/request/auth/id-search-name-t
 import findIdResultResponseDto from "./dto/response/auth/find-id-result.response.dto";
 import FindPwRequestDto from "./dto/request/auth/find-pw.request.dto";
 import PatchPwRequestDto from "./dto/request/auth/patch-pw.request.dto";
+import PostDiscussionWirteRequestDto from "./dto/request/gd_discussion/post-discussion-wirte.request.dto";
+import GetSignInResponseDto from "./dto/response/user/get-sign-in.response.dto";
+
 
 // variable: api url 상수//
 const DORANDORAN_API_DOMAIN = process.env.REACT_APP_API_URL;
 
 const AUTH_MODULE_URL = `${DORANDORAN_API_DOMAIN}/api/v1/auth`;
+const GENERAL_DISCUSSION_MODULE_URL = `${DORANDORAN_API_DOMAIN}/api/v1/gen_disc`
 
 const ID_CHECK_API_URL = `${AUTH_MODULE_URL}/id-check`;
 const TEL_AUTH_API_URL = `${AUTH_MODULE_URL}/tel-auth`;
@@ -26,6 +30,15 @@ const ID_SEARCH_NAME_TEL_API_URL = `${AUTH_MODULE_URL}/find-id`;
 const ID_SEARCH_TEL_AUTH_API_URL = `${AUTH_MODULE_URL}/find-id-check`;
 const FIND_PW_API_URL = `${AUTH_MODULE_URL}/find-pw`;
 const PATCH_PASSWORD_API_URL = `${AUTH_MODULE_URL}/change-pw`;
+
+const WRITE_GENENRAL_DISCUSSION_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}/write`;
+const GET_GENENRAL_DISCUSSION_LIST_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}`;
+const GET_SIGN_IN_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}/sign-in`;  
+
+
+const FILE_UPLOAD_URL = `${DORANDORAN_API_DOMAIN}/file/upload`;
+
+const multipart = {headers: { 'Content-Type': 'multipart/form-data' } };
 
 // function: Authorization Bearer 헤더값 //
 const bearerAuthorization = (accessToken: String) => ({headers: {'Authorization': `Bearer ${accessToken}`}});
@@ -43,6 +56,21 @@ const responseErrorHandler = (error: any) => {
     return data as ResponseDto;
 };
 
+// function: file upload 요청 함수 //
+export const fileUploadeRequest = async (requestBody: FormData) => {
+    const url = await axios.post(FILE_UPLOAD_URL, requestBody, multipart)
+        .then(responseDataHandler<string>)
+        .catch(error => null);
+    return url;
+};
+
+// function: get sign in api 요청 함수 //
+export const getSignInRequest = async (accessToken:string) => {
+    const responseBody = await axios.get(GET_SIGN_IN_API_URL, bearerAuthorization(accessToken))
+        .then(responseDataHandler<GetSignInResponseDto>)
+        .catch(responseErrorHandler)
+    return responseBody;
+}
 // function: id check api 요청 함수 //
 export const idCheckRequest = async (requestBody: IdCheckRequestDto) => {
     const responseBody = await axios.post(ID_CHECK_API_URL, requestBody)
@@ -110,6 +138,22 @@ export const findPwRequest = async (requestBody: FindPwRequestDto) => {
 // function: 비밀번호 재설정 patch password 요청 함수 //
 export const patchPasswordRequest = async (requestBody: PatchPwRequestDto) => {
     const responseBody = await axios.patch(PATCH_PASSWORD_API_URL, requestBody)
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 일반 토론방 작성 post discussion 요청 함수 //
+export const postDiscussionRequest = async(requestBody: PostDiscussionWirteRequestDto, accessToken:string) => {
+    const repsonseBody = await axios.post(WRITE_GENENRAL_DISCUSSION_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return repsonseBody;
+}
+
+// function: 일반 토론방 리스트 get discussion List 요청 함수 //
+export const getDiscussionListRequest = async(accessToken:string) => {
+    const responseBody = await axios.get(GET_GENENRAL_DISCUSSION_LIST_API_URL, bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;

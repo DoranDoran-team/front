@@ -110,12 +110,18 @@
     cursor: pointer;
 }
 
+#gd-wrapper .top-category.active span {
+    font-weight: bold;
+}
+
 #gd-wrapper .main {
     margin-top: 40px;
+    
 }
 
 #gd-wrapper .main-box {
     width: 100%;
+    margin-bottom: 20px;
 }
 
 
@@ -168,6 +174,9 @@
     border-radius: 15px;
     text-align: center;
     margin-left: 25px;
+    
+    background-size: cover;
+    background-position: center;
 }
 
 
@@ -300,3 +309,10 @@
 #gd-wrapper .dropdown-item:hover {
     background-color: #f1f1f1;
 }
+
+#gd-wrapper .gd-bottom-pagenation {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+

@@ -167,7 +167,7 @@ export default function Accuse() {
 
                 </div>:''}
             </div>
-            {modalOpen && <Modal content="해당계정을 처리하시겠습니까? " lt_btn="아니요" rt_btn="예" handler={onModalOpenHandler} /> }
+            {modalOpen && <Modal content="해당계정을 처리하시겠습니까? " lt_btn="아니요" rt_btn="예" rt_handler={onModalOpenHandler}lt_handler={onModalOpenHandler} /> }
             <div className="blacklist-wrapper">
                 <div className="blacklist-title">활동 중지 2명</div>
                 <div className="subscribe-search-box">
