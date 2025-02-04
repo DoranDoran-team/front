@@ -315,6 +315,7 @@
     width: 100%;
     display: flex;
     justify-content: center;
+}
 
 #floating-write-button {
     position: fixed;

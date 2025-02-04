@@ -190,9 +190,10 @@
     flex-direction: column;
     width: 70%;
 }
-.mypage-wrapper .main-profile{
-    width: 250px;
-    height: 250px;
+
+.mypage-wrapper #main-profile{
+    width: 150px;
+    height: 150px;
 
     border-radius: 50%;
     background-image: url('/public/mypage/profile1.png');

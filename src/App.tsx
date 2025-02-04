@@ -29,13 +29,11 @@ import PwCheck from './view/Mypage/Change-info/Password-check';
 import ChangeInfo from './view/Mypage/Change-info/change-info';
 import Notice from './view/Notice';
 import MypageMileage from './view/Mypage/Mileage';
-
 import ResponseDto from './apis/dto/response/response.dto';
-import GetSignInResponseDto from './apis/dto/response/user/get-sign-in.response.dto';
-import useStore from './stores/sign-in-user.store';
-import { getSignInRequest } from './apis';
+import GetSignInResponseDto from './apis/dto/response/auth/get-sign-in.response.dto';
+import { GetSignInRequest } from './apis';
+import { useSignInUserStore } from './stores';
 import Attendance from './view/Mypage/Attendance';
-
 
 // component: root path 컴포넌트 //
 function Index() {
@@ -93,42 +91,47 @@ function SnsSuccess() {
 // component: 도란도란 컴포넌트 //
 export default function DoranDoran() {
 
-  // state: 로그인 유저 정보 상태  //
-  const { signInUser, setSignInUser } = useStore();
+  // state: 로그인 유저 정보 상태 //
+  const { signInUser, setSignInUser } = useSignInUserStore();
+
+  // state: cookie 상태 //
   const [cookies, setCookie, removeCookie] = useCookies();
 
-  // function: navigator 처리 함수 //
+  // function: navigator 함수 //
   const navigator = useNavigate();
 
-  // function: get Sign In Response 처리 함수 //
+  // function: get sign in response 처리 함수 //
   const getSignInResponse = (responseBody: GetSignInResponseDto | ResponseDto | null) => {
-
     const message = 
-      !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다. ':
-      responseBody.code === 'NI' ? '로그인 유저 정보가 존재하지 않습니다. ':
-      responseBody.code === 'AF' ? '잘못된 접근입니다. ':
-      responseBody.code === 'DBE' ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다. ':'';
+      !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.' :
+      responseBody.code === 'NI' ? '로그인 유저 정보가 존재하지 않습니다.' :
+      responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+      responseBody.code === 'DBE' ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.' : '';
 
-      const isSuccessed = responseBody !== null && responseBody.code === 'SU'
-      if (!isSuccessed) {
-        alert(message);
-        removeCookie(ACCESS_TOKEN, { path: ROOT_PATH });
-        setSignInUser(null);
-        navigator(LOGIN_ABSOLUTE_PATH);
-        return;
-      }
-      const { userId } = responseBody as GetSignInResponseDto;
-      setSignInUser({ userId });
+    const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+    if(!isSuccessed) {
+      alert(message);
+      removeCookie(ACCESS_TOKEN, {path:ROOT_PATH});
+      setSignInUser(null);
+      navigator(LOGIN_ABSOLUTE_PATH);
+      return ;
+    }
 
-  }
-
-  // effect: cookie의 accessToken 값이 변경될 때마다 로그인 유저 정보 요청 함수 //
-  useEffect(()=>{
-    const accessToken = cookies[ACCESS_TOKEN];
-    if (accessToken) getSignInRequest(accessToken).then(getSignInResponse)
-    else setSignInUser(null)
-  },[cookies[ACCESS_TOKEN]])
+    const {userId, name, telNumber, profileImage, role, nickName, mileage, 
+      statusMessage} = responseBody as GetSignInResponseDto;
+    setSignInUser({userId, name, telNumber, profileImage, role, nickName, mileage, statusMessage});
+  };
   
+  //effect: cookie의 accesstoken 값이 변경될 때 마다 로그인 유저 정보를 요청하는 함수 //
+  useEffect(() => {
+    const accessToken = cookies[ACCESS_TOKEN];
+    if(accessToken) GetSignInRequest(accessToken).then(getSignInResponse);
+    else setSignInUser(null);
+  }, [cookies[ACCESS_TOKEN]]);
+
+  // variable: room id //
+  const roomId = "123"; // 일단 roomId 하드코딩
+
   // render: 메인 화면 렌더링 //
   return (
     <Routes>

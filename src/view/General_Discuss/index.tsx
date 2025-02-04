@@ -1,9 +1,9 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import './style.css';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 
-import { ACCESS_TOKEN, GEN_DISC_DETAIL_ABSOLUTE_PATH } from '../../constants';
+import { ACCESS_TOKEN } from '../../constants';
 import DiscussionList from "../../types/discussionList.interface";
 import { usePagination } from "../../hooks";
 
@@ -91,7 +91,7 @@ export default function GD() {
     const roomId = "123";
     // state: 쿠키 상태 //
     const [cookies] = useCookies();
-    // const [currentPage, setCurrentPage] = useState(1);
+    //const [currentPage, setCurrentPage] = useState(1);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState<string>('정렬순');
     const [selectedCategory, setSelectedCategory] = useState<string>('전체');
@@ -139,12 +139,12 @@ export default function GD() {
     const itemsPerPage = 10;
 
     const handleWriteButtonClick = () => {
-        navigate(GEN_DISC_WRITE_ABSOLUTE_PATH);
+        navigator(GEN_DISC_WRITE_ABSOLUTE_PATH);
     };
 
     const handleCategoryClick = (category: string) => {
         setSelectedCategory(category);
-        setCurrentPage(1); // 카테고리 변경 시 페이지 초기화
+        //setCurrentPage(1); // 카테고리 변경 시 페이지 초기화
     };
 
     // 페이지에 표시할 데이터 계산

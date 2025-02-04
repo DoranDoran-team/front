@@ -1,8 +1,12 @@
 import React, { useState } from 'react'
 import './style.css';
 import AdminSideBar from '../../../components/Admin/Sidebar';
+import { useSignInUserStore } from '../../../stores';
 
 export default function Admin() {
+
+    // state: 로그인 유저 정보 상태 //
+    const { signInUser, setSignInUser } = useSignInUserStore();
 
     // state: 관리자 마이페이지 상태 //
     const [editbutton, setEditButton] = useState<boolean>(false);
@@ -46,8 +50,8 @@ export default function Admin() {
                 <div className="user-box">
                     <div className="main-profile"></div>
                     <div className="mypage-info">
-                        <div className="mypage-nickname">관리자</div>
-                        <div className="mypage-id">@ Admin01</div>
+                        <div className="mypage-nickname">{signInUser?.name}</div>
+                        <div className="mypage-id">@ {signInUser?.userId}</div>
                     </div>
                 </div>
                 <div className="mypage-state-message">관리자 계정 입니다. </div>

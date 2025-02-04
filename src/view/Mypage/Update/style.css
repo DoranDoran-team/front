@@ -37,11 +37,11 @@
     gap: 5px;
 }
 
-.mypage-update-wrapper .main-profile {
+
+#image .main-profile{
     width: 150px;
     height: 150px;
     border-radius: 375px;
-    background-image: url('/public/mypage/profile1.png');
     background-position: 50% 50%;
     background-size: cover;
     margin-bottom: 20px;
