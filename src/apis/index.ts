@@ -11,7 +11,7 @@ import findIdResultResponseDto from "./dto/response/auth/find-id-result.response
 import FindPwRequestDto from "./dto/request/auth/find-pw.request.dto";
 import PatchPwRequestDto from "./dto/request/auth/patch-pw.request.dto";
 import PostDiscussionWirteRequestDto from "./dto/request/gd_discussion/post-discussion-wirte.request.dto";
-import GetSignInResponseDto from "./dto/response/user/get-sign-in.response.dto";
+
 import { PostScheduleRequestDto } from "./dto/request/schedule";
 import { GetScheduleListResponseDto } from "./dto/response/schedule";
 import MyMileageRequestDto from "./dto/request/mileage/my-mileage.request.dto";
@@ -48,10 +48,9 @@ const PATCH_PASSWORD_API_URL = `${AUTH_MODULE_URL}/change-pw`;
 
 const WRITE_GENENRAL_DISCUSSION_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}/write`;
 const GET_GENENRAL_DISCUSSION_LIST_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}`;
-const GET_SIGN_IN_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}/sign-in`;  
-const FILE_UPLOAD_URL = `${DORANDORAN_API_DOMAIN}/file/upload`;
 
-const multipart = {headers: { 'Content-Type': 'multipart/form-data' } };
+
+
 
 const MILEAGE_API_URL = `${DORANDORAN_API_DOMAIN}/mypage/mileage`;
 

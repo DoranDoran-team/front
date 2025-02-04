@@ -82,7 +82,7 @@ export default function Mypage() {
                         <li onClick={onChangeInfoClickHandler}><FaUserEdit /> 개인정보 수정</li>
                         <li onClick={navigateToMileage}><FaCoins /> 마일리지 관리</li>
                         <li><FaHistory /> 실시간 토론 참여 이력</li>
-                        <li><FaCalendarCheck /> 출석체크</li>
+                        <li onClick={naviagateToAttendance}><FaCalendarCheck /> 출석체크</li>
                     </ul>
                 </aside>
                 <div className="subscribe-wrapper">
@@ -124,17 +124,15 @@ export default function Mypage() {
                             <div className="mypage-user">구독자 <strong>28</strong></div>
                             <div className="mypage-user">토론방 <strong>9</strong></div>
                         </div>
-                        <div className="mypage-state-message">논쟁을 즐기는 ENTP</div>
-                        <div className="mypage-state-message">주로 시사 교양 분야로 글을 씁니다</div>
+                        <div className="mypage-state-message">{signInUser?.statusMessage}</div>
 
                     </div>
-                    <div className="mypage-user">구독자 <span>28</span>명 / 토론방<span> 9</span>개</div>
+                    
                     {!isUser ? <div className="subscribe-button-box" onClick={onSubscribeButtonHandler}>
-                        {subscribe ? <div className="subscribe-button">구독</div>
-                            : <div className="subscribe-button">구독 중</div>}
+                        
                     </div> : ''}
                 </div>
-                <div className="mypage-state-message">{signInUser?.statusMessage}</div>
+                
                 <div className="mypage-discussion-room-top">
                     <div className="mypage-discussion-room">내가 개설한 토론방</div>
                     <div className="discussion-state-box" onClick={onStateTypeButtonHandler}>진행중

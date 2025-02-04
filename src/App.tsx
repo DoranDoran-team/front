@@ -33,6 +33,7 @@ import ResponseDto from './apis/dto/response/response.dto';
 import GetSignInResponseDto from './apis/dto/response/auth/get-sign-in.response.dto';
 import { GetSignInRequest } from './apis';
 import { useSignInUserStore } from './stores';
+import Attendance from './view/Mypage/Attendance';
 
 // component: root path 컴포넌트 //
 function Index() {
