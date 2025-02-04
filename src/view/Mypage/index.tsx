@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import './style.css';
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { MY_ABSOLUTE_MILEAGE_PATH, MY_ABSOLUTE_UPDATE_PATH, MY_INFO_PW_ABSOLUTE_PATH, MY_INFO_UPDATE_ABSOLUTE_PATH, MY_MILEAGE_PATH, MY_UPDATE_PATH } from "../../constants";
+import { MY_ABSOLUTE_ATTENDANCE_CHECK_PATH, MY_ABSOLUTE_MILEAGE_PATH, MY_ABSOLUTE_UPDATE_PATH, MY_INFO_PW_ABSOLUTE_PATH, MY_INFO_UPDATE_ABSOLUTE_PATH, MY_MILEAGE_PATH, MY_UPDATE_PATH } from "../../constants";
 import { FaUserEdit, FaCoins, FaHistory, FaCalendarCheck } from "react-icons/fa";
 
 
@@ -56,6 +56,11 @@ export default function Mypage() {
     // event handler: 개인 정보 수정 버튼 클릭 이벤트 핸들러 //
     const onChangeInfoClickHandler = () => {
         navigator(MY_INFO_PW_ABSOLUTE_PATH('qwer1234'));
+    }
+
+    // event handler: 출석체크 버튼 클릭 이벤트 핸들러 //
+    const naviagateToAttendance = () => {
+        navigator(MY_ABSOLUTE_ATTENDANCE_CHECK_PATH('songth'));
     }
 
     // render: 마이페이지 화면 렌더링 //
