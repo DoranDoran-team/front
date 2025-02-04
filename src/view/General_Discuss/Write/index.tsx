@@ -1,9 +1,18 @@
 import React, { useState } from 'react';
 import './style.css';
-import { GEN_DISC_ABSOLUTE_PATH } from '../../../constants';
+import { ACCESS_TOKEN, GEN_DISC_ABSOLUTE_PATH } from '../../../constants';
 import Modal from '../../../components/modal';
+import ResponseDto from '../../../apis/dto/response/response.dto';
+import { useCookies } from 'react-cookie';
+import PostDiscussionWirteRequestDto from '../../../apis/dto/request/gd_discussion/post-discussion-wirte.request.dto';
+import { fileUploadeRequest, postDiscussionRequest } from '../../../apis';
+import useStore from '../../../stores/sign-in-user.store';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export default function GDWrite() {
+
+    const defaultProfileImageUrl = 'https://blog.kakaocdn.net/dn/4CElL/btrQw18lZMc/Q0oOxqQNdL6kZp0iSKLbV1/img.png';
+    
     const [firstOpinion, setFirstOpinion] = useState<string>('');
     const [secondOpinion, setSecondOpinion] = useState<string>('');
     const [title, setTitle] = useState<string>('');
@@ -13,7 +22,15 @@ export default function GDWrite() {
     const [deadline, setDeadline] = useState<string>('');
     const [showModal, setShowModal] = useState<boolean>(false);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [cookies] = useCookies();
+    const {signInUser} = useStore();
 
+    // state: params 상태 관리 //
+    const { roomId } = useParams();
+
+    // function: navigator 함수 처리 //
+    const navigator = useNavigate();
+    
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const first = firstOpinion || '찬성';
@@ -40,6 +57,44 @@ export default function GDWrite() {
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
     const minDate = tomorrow.toISOString().split('T')[0]; // 내일 날짜 가져오기
+
+    // function: 일반 토론방 작성 response 처리 함수 //
+    const writeDiscussionResponse = (responseBody: ResponseDto | null) => {
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다. ':
+            responseBody.code === "VF" ? '값을 모두 입력하세요 ':
+            responseBody.code === "DBE" ? '서버에 문제가 있습니다. ': '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+        navigator(GEN_DISC_ABSOLUTE_PATH)
+    }
+    // event handler: 게시하기 버튼 클릭 이벤트 처리//
+    const onRegisterClickHandler = async() => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if(!accessToken) return;
+
+        if (!signInUser) return;
+
+        let url: string | null = null;
+        if (image) {
+            const formData = new FormData();
+            formData.append('file', image);
+            url = await fileUploadeRequest(formData);
+        };
+        url = url ? url : defaultProfileImageUrl;
+
+        const requestBody: PostDiscussionWirteRequestDto = {
+
+            userId:signInUser.userId, discussionType:category, roomTitle:title,
+            roomDescription:content, discussionImage:url, discussionEnd:deadline, 
+            agreeOpinion:firstOpinion, oppositeOpinion:secondOpinion
+        };
+        postDiscussionRequest(requestBody, accessToken).then(writeDiscussionResponse)
+    }
 
     return (
         <div id="gd-write-wrapper">
@@ -131,14 +186,12 @@ export default function GDWrite() {
             </div>
 
             {showModal && (
-                // <div className="modal">
-                //     <div className="modal-content">
-                //         <p>게시하시겠습니까?</p>
-                //         <button onClick={handleConfirm}>예</button>
-                //         <button onClick={() => setShowModal(false)}>아니오</button>
-                //     </div>
-                // </div>
-                <Modal content="게시하시겠습니까?" lt_btn='아니요' rt_btn='예' handler={()=>setShowModal(false)}/>
+                <Modal 
+                content="게시하시겠습니까?" 
+                lt_btn='아니요' 
+                rt_btn='예' 
+                lt_handler={()=>setShowModal(false)} 
+                rt_handler={onRegisterClickHandler}/>
             )}
         </div>
     );

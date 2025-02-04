@@ -95,8 +95,8 @@ export default function Mileage() {
                     <div className='accuse-tr'>처리 완료</div>
                 </div>:''}
             </div>
-            {accountModalOpen&& <Modal content='해당 계정의 계좌를 승인하시겠습니까?' lt_btn='아니요' rt_btn='예' handler={()=>setAccountModalOpen(!accountModalOpen)}/>}
-            {mileageModalOpen&& <Modal content='해당 계정의 환전을 승인하시겠습니까?' lt_btn='아니요' rt_btn='예' handler={()=>setMileageModalOpen(!mileageModalOpen)}/>}    
+            {accountModalOpen&& <Modal content='해당 계정의 계좌를 승인하시겠습니까?' lt_btn='아니요' rt_btn='예' rt_handler={()=>setAccountModalOpen(!accountModalOpen)} lt_handler={()=>setAccountModalOpen(!accountModalOpen)}/>}
+            {mileageModalOpen&& <Modal content='해당 계정의 환전을 승인하시겠습니까?' lt_btn='아니요' rt_btn='예' rt_handler={()=>setMileageModalOpen(!mileageModalOpen)} lt_handler={()=>setMileageModalOpen(!mileageModalOpen)}/>}    
         </div>
     )
 }
