@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import { BrowserRouter, Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
+import { Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 
 import { ACCESS_TOKEN, GEN_DISC_DETAIL_ABSOLUTE_PATH, GEN_DISC_PATH, GEN_DISC_WRITE_ABSOLUTE_PATH, LOGIN_ABSOLUTE_PATH, LOGIN_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, MY_PATH, NOTICE, OTHERS_PATH, ROOT_PATH, RT_DISC_PATH, SCHEDULE, SNS_SUCCESS_PATH, CHANGE_PW, FIND_ID, FIND_ID_RESULT, FIND_PW, SIGN_UP, ADMIN_PATH, MY_UPDATE_PATH, NOTICE_WRITE, NOTICE_DETAIL, MY_INFO_UPDATE_PATH, MY_INFO_PW_PATH, ADMIN_ABSOLUTE_ACCUSE_PATH, ADMIN_ABSOLUTE_MILEAGE_PATH, MY_MILEAGE_PATH, MY_ATTENDANCE_CHECK_PATH } from './constants';
@@ -29,7 +29,13 @@ import PwCheck from './view/Mypage/Change-info/Password-check';
 import ChangeInfo from './view/Mypage/Change-info/change-info';
 import Notice from './view/Notice';
 import MypageMileage from './view/Mypage/Mileage';
+
+import ResponseDto from './apis/dto/response/response.dto';
+import GetSignInResponseDto from './apis/dto/response/user/get-sign-in.response.dto';
+import useStore from './stores/sign-in-user.store';
+import { getSignInRequest } from './apis';
 import Attendance from './view/Mypage/Attendance';
+
 
 // component: root path 컴포넌트 //
 function Index() {
@@ -87,8 +93,42 @@ function SnsSuccess() {
 // component: 도란도란 컴포넌트 //
 export default function DoranDoran() {
 
-  const roomId = "123"; // 일단 roomId 하드코딩
+  // state: 로그인 유저 정보 상태  //
+  const { signInUser, setSignInUser } = useStore();
+  const [cookies, setCookie, removeCookie] = useCookies();
 
+  // function: navigator 처리 함수 //
+  const navigator = useNavigate();
+
+  // function: get Sign In Response 처리 함수 //
+  const getSignInResponse = (responseBody: GetSignInResponseDto | ResponseDto | null) => {
+
+    const message = 
+      !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다. ':
+      responseBody.code === 'NI' ? '로그인 유저 정보가 존재하지 않습니다. ':
+      responseBody.code === 'AF' ? '잘못된 접근입니다. ':
+      responseBody.code === 'DBE' ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다. ':'';
+
+      const isSuccessed = responseBody !== null && responseBody.code === 'SU'
+      if (!isSuccessed) {
+        alert(message);
+        removeCookie(ACCESS_TOKEN, { path: ROOT_PATH });
+        setSignInUser(null);
+        navigator(LOGIN_ABSOLUTE_PATH);
+        return;
+      }
+      const { userId } = responseBody as GetSignInResponseDto;
+      setSignInUser({ userId });
+
+  }
+
+  // effect: cookie의 accessToken 값이 변경될 때마다 로그인 유저 정보 요청 함수 //
+  useEffect(()=>{
+    const accessToken = cookies[ACCESS_TOKEN];
+    if (accessToken) getSignInRequest(accessToken).then(getSignInResponse)
+    else setSignInUser(null)
+  },[cookies[ACCESS_TOKEN]])
+  
   // render: 메인 화면 렌더링 //
   return (
     <Routes>
@@ -106,7 +146,7 @@ export default function DoranDoran() {
 
       <Route path={GEN_DISC_PATH} element={<MainLayout />}>
         <Route index element={<GD />} />
-        <Route path={GEN_DISC_DETAIL_ABSOLUTE_PATH(roomId)} element={<GDDetail />} />
+        <Route path={GEN_DISC_DETAIL_ABSOLUTE_PATH(':roomId')} element={<GDDetail />} />
         <Route path={GEN_DISC_WRITE_ABSOLUTE_PATH} element={<GDWrite />} />
       </Route>
 
