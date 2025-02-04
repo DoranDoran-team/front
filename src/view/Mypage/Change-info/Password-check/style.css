@@ -7,6 +7,18 @@
 #password-check .mypage-menu {
     display: flex;
     flex-direction: column;
+    flex:2;
+    padding: 80px;
+
+    background-color: #FBFBFB;
+    width: 80%;
+    border-radius: 50px;
+
+}
+
+#password-check .mypage-menu {
+    display: flex;
+    flex-direction: column;
     gap: 30px;
 }
 
@@ -111,3 +123,4 @@
     border: 1px solid #79eb96;
     background-color: #79eb96;
 }
+
