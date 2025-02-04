@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import './style.css';
 import { useNavigate } from "react-router-dom";
 
-import { MY_ABSOLUTE_MILEAGE_PATH, MY_ABSOLUTE_UPDATE_PATH, MY_INFO_PW_ABSOLUTE_PATH, MY_INFO_UPDATE_ABSOLUTE_PATH, MY_UPDATE_PATH } from "../../constants";
+import { MY_ABSOLUTE_ATTENDANCE_CHECK_PATH, MY_ABSOLUTE_MILEAGE_PATH, MY_ABSOLUTE_UPDATE_PATH, MY_INFO_PW_ABSOLUTE_PATH, MY_INFO_UPDATE_ABSOLUTE_PATH, MY_UPDATE_PATH } from "../../constants";
 
 
 // component: 마이페이지 컴포넌트 //
@@ -57,6 +57,11 @@ export default function Mypage() {
         navigator(MY_INFO_PW_ABSOLUTE_PATH('qwer1234'));
     }
 
+    // event handler: 출석체크 버튼 클릭 이벤트 핸들러 //
+    const naviagateToAttendance = () => {
+        navigator(MY_ABSOLUTE_ATTENDANCE_CHECK_PATH('songth'));
+    }
+
     // render: 마이페이지 화면 렌더링 //
     return (
         <div className="mypage-wrapper">
@@ -69,7 +74,7 @@ export default function Mypage() {
                                 <div className="menu-item" onClick={onChangeInfoClickHandler}>개인 정보 수정</div>
                                 <div className="menu-item" onClick={navigateToMileage}>마일리지 관리</div>
                                 <div className="menu-item">실시간 토론 참여 이력</div>
-                                <div className="menu-item">출석체크</div>
+                                <div className="menu-item" onClick={naviagateToAttendance}>출석체크</div>
                             </div>)}
                         </div>
                     </div>

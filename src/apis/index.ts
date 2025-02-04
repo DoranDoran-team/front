@@ -10,11 +10,17 @@ import IdSearchNameTelNumberRequestDto from "./dto/request/auth/id-search-name-t
 import findIdResultResponseDto from "./dto/response/auth/find-id-result.response.dto";
 import FindPwRequestDto from "./dto/request/auth/find-pw.request.dto";
 import PatchPwRequestDto from "./dto/request/auth/patch-pw.request.dto";
+import { PostScheduleRequestDto } from "./dto/request/schedule";
+import { GetScheduleListResponseDto } from "./dto/response/schedule";
 
 // variable: api url 상수//
 const DORANDORAN_API_DOMAIN = process.env.REACT_APP_API_URL;
 
 const AUTH_MODULE_URL = `${DORANDORAN_API_DOMAIN}/api/v1/auth`;
+
+//* ============= 일정관리 
+const POST_SCHEDULE_URL = `${DORANDORAN_API_DOMAIN}/schedule`;
+const GET_SCHEDULE_LIST_URL = `${DORANDORAN_API_DOMAIN}/schedule`;
 
 const ID_CHECK_API_URL = `${AUTH_MODULE_URL}/id-check`;
 const TEL_AUTH_API_URL = `${AUTH_MODULE_URL}/tel-auth`;
@@ -28,18 +34,18 @@ const FIND_PW_API_URL = `${AUTH_MODULE_URL}/find-pw`;
 const PATCH_PASSWORD_API_URL = `${AUTH_MODULE_URL}/change-pw`;
 
 // function: Authorization Bearer 헤더값 //
-const bearerAuthorization = (accessToken: String) => ({headers: {'Authorization': `Bearer ${accessToken}`}});
+const bearerAuthorization = (accessToken: String) => ({ headers: { 'Authorization': `Bearer ${accessToken}` } });
 
 // function: response data 처리 함수 //
 const responseDataHandler = <T>(response: AxiosResponse<T, any>) => {
-    const {data} = response;
+    const { data } = response;
     return data;
 };
 
 // function: response error 처리 함수 //
 const responseErrorHandler = (error: any) => {
-    if(!error.response) return null;
-    const {data} = error.response;
+    if (!error.response) return null;
+    const { data } = error.response;
     return data as ResponseDto;
 };
 
@@ -68,7 +74,7 @@ export const telAuthCheckRequest = async (requestBody: TelAuthCheckRequestDto) =
 };
 
 // function: sign up 요청 함수 //
-export const signUpRequest = async(requestBody: SignUpRequestDto) => {
+export const signUpRequest = async (requestBody: SignUpRequestDto) => {
     const responseBody = await axios.post(SIGN_UP_API_URL, requestBody)
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
@@ -76,7 +82,7 @@ export const signUpRequest = async(requestBody: SignUpRequestDto) => {
 };
 
 // function: sign in 요청 함수 //
-export const signInRequest = async(requestBody: SignInRequestDto) => {
+export const signInRequest = async (requestBody: SignInRequestDto) => {
     const responseBody = await axios.post(SIGN_IN_API_URL, requestBody)
         .then(responseDataHandler<SignInResponseDto>)
         .catch(responseErrorHandler);
@@ -112,5 +118,21 @@ export const patchPasswordRequest = async (requestBody: PatchPwRequestDto) => {
     const responseBody = await axios.patch(PATCH_PASSWORD_API_URL, requestBody)
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 일정 등록 post 요청 함수 //
+export const postScheduleRequest = async (requestBody: PostScheduleRequestDto, accessToken: string) => {
+    const responseBody = await axios.post(POST_SCHEDULE_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 일정 리스트 Get 요청 함수 //
+export const getScheduleListRequest = async (accessToken: string) => {
+    const responseBody = await axios.get(GET_SCHEDULE_LIST_URL, bearerAuthorization(accessToken))
+        .then(responseDataHandler<GetScheduleListResponseDto>)
+        .catch(responseDataHandler);
     return responseBody;
 }

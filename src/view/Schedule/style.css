@@ -133,3 +133,11 @@
 .fc-daygrid-event:hover {
   background-color: #3399ff;
 }
+
+.button-group .delete-schedule {
+  background-color: #E53E3E;
+}
+
+.button-group .delete-schedule:hover {
+  background-color: #C53030;
+}
