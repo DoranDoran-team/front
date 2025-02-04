@@ -2,6 +2,7 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import './style.css';
 import { useNavigate } from 'react-router-dom';
 
+
 import { ACCESS_TOKEN, GEN_DISC_DETAIL_ABSOLUTE_PATH } from '../../constants';
 import DiscussionList from "../../types/discussionList.interface";
 import { usePagination } from "../../hooks";
@@ -12,9 +13,13 @@ import ResponseDto from "../../apis/dto/response/response.dto";
 import { getDiscussionListRequest } from "../../apis";
 import Pagination from "../../components/pagination";
 
+import { GEN_DISC_DETAIL_ABSOLUTE_PATH, GEN_DISC_WRITE_ABSOLUTE_PATH } from '../../constants';
+
+
 const discussionData = Array.from({ length: 30 }, (_, index) => ({
     id: index + 1,
     title: `생성형 AI에게 윤리적 책임을 물을 수 있는가? ${index + 1}`,
+    category: index % 4 === 0 ? '시사·교양' : index % 4 === 1 ? '과학' : index % 4 === 2 ? '경제' : '기타',
     deadline: '2025.01.05',
     userNickname: 'user_nickname',
     commentCount: 5,
@@ -77,6 +82,8 @@ function TableRow({ discussionList, getDiscussionList}:TableRowProps) {
 
 }
 
+const categories = ['전체', '시사·교양', '과학', '경제', '기타'];
+
 // GD: general discussion
 // component: 일반 토론 컴포넌트 //
 export default function GD() {
@@ -87,6 +94,7 @@ export default function GD() {
     // const [currentPage, setCurrentPage] = useState(1);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState<string>('정렬순');
+    const [selectedCategory, setSelectedCategory] = useState<string>('전체');
 
     // state: 검색어 상태 //
     const [searched, setSearched] = useState<string>('');
@@ -130,7 +138,21 @@ export default function GD() {
     };
     const itemsPerPage = 10;
 
+    const handleWriteButtonClick = () => {
+        navigate(GEN_DISC_WRITE_ABSOLUTE_PATH);
+    };
+
+    const handleCategoryClick = (category: string) => {
+        setSelectedCategory(category);
+        setCurrentPage(1); // 카테고리 변경 시 페이지 초기화
+    };
+
     // 페이지에 표시할 데이터 계산
+
+    const filteredData = selectedCategory === '전체'
+        ? discussionData
+        : discussionData.filter(item => item.category === selectedCategory);
+
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = discussionData.slice(indexOfFirstItem, indexOfLastItem);
@@ -206,7 +228,7 @@ export default function GD() {
                 <div className='gd-box'>
                     <div className="top">
                         <div className="top-title">
-                            시사·교양
+                            {selectedCategory}
                         </div>
                         <div className='top-category-box'>   
                             {['시사·교양', '과학','경제','기타'].map((type) => (
@@ -218,6 +240,7 @@ export default function GD() {
                             <span>{type}</span>
                         </div>
                         ))}
+                       
                         </div>
                         <div className="search-bar-and-sequence">
                             <div className='search-bar'>
@@ -228,7 +251,6 @@ export default function GD() {
                                 <div className='search-button' onClick={onSearchButtonClickHandler}>검색</div>
                             </div>
                             <div className='sequence-choice'><button className='sequence-choice-button' type='button' onClick={toggleDropdown}>{selectedOption}</button></div>
-
                     </div>
                             {isDropdownOpen && (
                                 <div className='dropdown-menu-box'>
@@ -254,10 +276,11 @@ export default function GD() {
                         <Pagination pageList={pageList} currentPage={currentPage} onPageClickHandler={onPageClickHandler} onPreSectionClickHandler={onPreSectionClickHandler} onNextSectionClickHandler={onNextSectionClickHandler} />
                     </div>
                 </div>
-                
+              </div>
+        </div>            
+            <div id="floating-write-button" onClick={handleWriteButtonClick}>
+                +
             </div>
-            
-        </div>
         </div >
     )
 }

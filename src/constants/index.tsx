@@ -24,7 +24,9 @@ export const SCHEDULE = '/schedule';
 
 export const MY_PATH = '/mypage';
 export const MY_UPDATE_PATH = (userId: string | number) => `${userId}/update`;
-export const MY_MILEAGE_PATH = (userId: string | number) => `${userId}/mileage`;
+export const MY_ATTENDANCE_CHECK_PATH = (userId: string | number) => `${userId}/attendance`;
+export const MY_MILEAGE_PATH = 'mileage';
+export const MY_MILEAGE_REQUEST_PATH = '/request';
 
 export const ADMIN_PATH = '/admin';
 export const ADMIN_ACCUSE_PATH = 'accuse';
@@ -71,7 +73,8 @@ export const ADMIN_ABSOULTE_PATH = ADMIN_PATH;
 export const ADMIN_ABSOLUTE_ACCUSE_PATH = `${ADMIN_PATH}/${ADMIN_ACCUSE_PATH}`
 export const ADMIN_ABSOLUTE_MILEAGE_PATH = `${ADMIN_PATH}/${ADMIN_MILEAGE_PATH}`
 export const OTHERS_ABSOLUTE_PATH = OTHERS_PATH;
-export const MY_ABSOLUTE_MILEAGE_PATH = MY_MILEAGE_PATH;
+export const MY_ABSOLUTE_MILEAGE_PATH =  `${MY_PATH}/${MY_MILEAGE_PATH}`;
+export const MY_ABSOLUTE_ATTENDANCE_CHECK_PATH = MY_ATTENDANCE_CHECK_PATH;
 
 
 // variable: HTTP BEARER TOKEN COOKIE NAME //
