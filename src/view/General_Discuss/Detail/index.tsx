@@ -1,8 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './style.css';
+import { useParams } from 'react-router';
+import { getDiscussionResquest, postAccuseRequest } from '../../../apis';
+import { useCookies } from 'react-cookie';
+import { ACCESS_TOKEN } from '../../../constants';
+import ResponseDto from '../../../apis/dto/response/response.dto';
+import { GetDiscussionResponseDto } from '../../../apis/dto/response/gd_discussion';
+import DiscussionData from '../../../types/discussionData.interface';
+import { useSignInUserStore } from '../../../stores';
+import { PostAccuseRequestDto } from '../../../apis/dto/request/accuse';
 
 // component: 일반 토론방 컴포넌트 //
 export default function GDDetail() {
+
+    // state: 로그인 유저 정보 상태 //
+    const { signInUser, setSignInUser } = useSignInUserStore();
+    const discussionId = signInUser?.userId;
+
+    const { roomId } = useParams();
+    const roomIdNumber = Number(roomId);
+    const [discussionData, setDiscussionData] = useState<DiscussionData | null>(null);
+    const [cookies] = useCookies();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isDropdownOptionOpen, setIsDropdownOptionOpen] = useState(false);
     const [isDropdownCommentOptionOpen, setIsDropdownCommentOptionOpen] = useState(false);
@@ -15,10 +33,8 @@ export default function GDDetail() {
 
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const [selectedReportReason, setSelectedReportReason] = useState<string | null>(null);
-    const [reportTarget, setReportTarget] = useState<{ type: 'post' | 'comment'; id: number | null }>({ type: 'post', id: null });
 
-    const openReportModal = (type: 'post' | 'comment', id: number | null) => {
-        setReportTarget({ type, id });
+    const openReportModal = () => {
         setIsReportModalOpen(true);
     };
 
@@ -27,15 +43,67 @@ export default function GDDetail() {
         setSelectedReportReason(null);
     };
 
+    // function: 신고 사유 작성 //
     const handleReportSubmit = () => {
         if (!selectedReportReason) {
             alert('신고 사유를 선택해 주세요.');
             return;
         }
-        console.log(`${reportTarget.type === 'post' ? '게시글' : '댓글'} ID ${reportTarget.id} 신고 이유: ${selectedReportReason}`);
         closeReportModal();
+
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) {
+            alert('토큰 오류');
+            return;
+        }
+
+        const formatDate = (date: Date): string => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // 1월 = 0이므로 +1 필요
+            const day = String(date.getDate()).padStart(2, '0');
+
+            const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+            const dayOfWeek = days[date.getDay()];
+
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+
+            return `${year}. ${month}. ${day}. ${dayOfWeek} ${hours}:${minutes}`;
+        };
+
+        const now = new Date();
+        const accuseDate = formatDate(now);
+
+        const requestBody: PostAccuseRequestDto = {
+            reportType: 'POST',
+            reportContents: selectedReportReason,
+            userId: discussionId as string,
+            accuseUserId: discussionData?.userId as string,
+            postId: discussionData?.roomId as number,
+            replyId: null,
+            accuseDate: accuseDate
+        }
+        postAccuseRequest(requestBody, accessToken).then(postAccuseResponse);
     };
 
+    // function: post accuse response 처리 함수 //
+    const postAccuseResponse = (responseBody: ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+                responseBody.code === 'VF' ? '유효하지 않은 데이터입니다.' :
+                    responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+                        responseBody.code === 'NS' ? '자기신이 올린 글은 신고가 불가능 합니다.' :
+                            responseBody.code === 'NT' ? '신고할려는 항목이 존재하지 않습니다.' :
+                                responseBody.code === 'DA' ? '이미 신고를 하셨습니다.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        alert('정상적으로 신고가 접수되었습니다.');
+    }
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -112,6 +180,7 @@ export default function GDDetail() {
         console.log(`댓글 ${commentId} 삭제하기`);
     };
 
+    // function: 찬반 의견 //
     const OpinionSelector = () => {
         const [selectedOpinion, setSelectedOpinion] = useState<string>('');
         const [submitted, setSubmitted] = useState<boolean>(false);
@@ -141,7 +210,7 @@ export default function GDDetail() {
                                 checked={selectedOpinion === 'A'}
                                 onChange={handleOpinionChange}
                             />
-                            의견 A
+                            {discussionData?.agreeOpinion}
                         </label>
                         <label>
                             <input
@@ -150,7 +219,7 @@ export default function GDDetail() {
                                 checked={selectedOpinion === 'B'}
                                 onChange={handleOpinionChange}
                             />
-                            의견 B
+                            {discussionData?.oppositeOpinion}
                         </label>
                     </div>
                     <button className='vote-select-button' onClick={handleSubmit}>선택 완료하기</button>
@@ -172,18 +241,55 @@ export default function GDDetail() {
         );
     };
 
+    // function: get dicussion list response 처리 //
+    const getDiscussionResponse = (responseBody: GetDiscussionResponseDto | ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다. ' :
+                responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+        if ("discussionResultSet" in responseBody) {
+            setDiscussionData(responseBody.discussionResultSet);
+        } else {
+            alert('서버 응답이 올바르지 않습니다.');
+        }
+    }
+
+    // function: 토론 정보 불러 오기 함수 //
+    const getDiscussion = () => {
+
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) {
+            alert('토큰 오류');
+            return;
+        }
+
+        if (roomId) {
+            getDiscussionResquest(roomIdNumber, accessToken).then(getDiscussionResponse);
+        }
+    }
+
+    // Effect: 토론 정보 불러오기 //
+    useEffect(() => {
+        getDiscussion();
+    }, [roomId]);
+
     return (
         <div id="gd-detail-wrapper">
             <div className="gd-detail-wrapper-in">
                 <div className='gd-detail-box'>
                     <div className="gd-detail-category">
-                        <div className="width-line"><span>시사·교양</span></div>
+                        <div className="width-line"><span>{discussionData?.discussionType}</span></div>
                     </div>
                     <div className="post-info">
                         <div className="post-user-info">
-                            <div className="profile-image"></div>
+                            <div className="profile-image" style={{ backgroundImage: `url(${discussionData?.profileImage || `url('../../../image/profile.png');`})` }}></div>
                             <div>
-                                <div className='user-nickname'>user_nickname</div>
+                                <div className='user-nickname'>{discussionData?.nickName}</div>
                                 <div className='post-date-and-modify'>
                                     <div className="post-date">2024.12.30.16:00</div>
                                     <div className="modify">(수정됨)</div>
@@ -192,10 +298,10 @@ export default function GDDetail() {
                         </div>
                         <div className='status-and-option'>
                             <div className='status'>진행 중</div>
-                            {true ? (
+                            {discussionId === discussionData?.userId ? (
                                 <div className='option' onClick={toggleDropdownOption}>⋮</div>
                             ) : (
-                                <div className="siren-button" onClick={() => openReportModal('post', null)}></div>
+                                <div className="siren-button" onClick={() => openReportModal()}></div>
                             )}
                         </div>
                     </div>
@@ -276,9 +382,9 @@ export default function GDDetail() {
                     <div className="discussion-info">
                         <div className="discussion-image">이미지 자리</div>
                         <div className="discussion-text-info">
-                            <div className="discussion-title">생성형 AI에게 윤리적 책임을 물을 수 있는가?</div>
-                            <div className="deadline">마감: 2025.01.05</div>
-                            <div className="discussion-content">최근 몇 년 간 생성형 인공지능(GAI)의 발전은 많은 산업과 사회 전반에 걸쳐 혁신적인 변화를 가져왔습니다. 그러나 이러한 기술의 발전이 가져오는 윤리적, 법적 논란 또한 커지고 있습니다. 특히, 생성형 AI가 창출한 콘텐츠나 결정에 대해 누가 책임을 질 것인지에 대한 질문은 매우 중요합니다.</div>
+                            <div className="discussion-title">{discussionData?.roomTitle}</div>
+                            <div className="deadline">마감: {discussionData?.discussionEnd}</div>
+                            <div className="discussion-content">{discussionData?.roomDescription}</div>
                         </div>
                     </div>
                     <div className="vote-info">
@@ -290,7 +396,7 @@ export default function GDDetail() {
                         <div className="recommendation-icon"></div>
                         <div className="recommendation-count">127</div>
                     </div>
-                    <hr/>
+                    <hr />
                     <div className='comment-box'>
                         <div className='comment-input-and-button'>
                             <div className='input-comment'>
@@ -338,7 +444,7 @@ export default function GDDetail() {
                                     {comment.user === 'comment_user' ? (
                                         <div className='comment-option' onClick={() => toggleCommentOptions(comment.id)}>⋮</div>
                                     ) : (
-                                        <div className='siren-button' onClick={() => openReportModal('comment', comment.id)}></div>
+                                        <div className='siren-button' onClick={() => openReportModal()}></div>
                                     )}
                                 </div>
                             </div>
