@@ -9,5 +9,13 @@ export interface GetMileageResponseDto {
     message: string;
     totalMileage: number;
     totalRefundedMileage: number;
+    availableMileage: number;
     refundHistory: RefundHistoryItem[];
+    earningHistory: EarningHistoryItem[];
+}
+
+export interface EarningHistoryItem {
+    transactionDate: string; 
+    reason: string; 
+    amount: number;
 }

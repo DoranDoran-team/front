@@ -8,7 +8,7 @@
 /* mypage 유저 정보 CSS */
 .mypage-update-wrapper {
     display: flex;
-    width: 100%;
+    width: 80%;
     height: 100%;
     margin: 100px;
 }

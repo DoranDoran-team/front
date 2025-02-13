@@ -159,7 +159,7 @@ export default function MyCalendar() {
         }
 
         return (
-            <>
+            <div id='schedule-modal'>
                 <button type="submit" onClick={() => setModalOpen(true)}>일정 추가</button>
                 {
                     modalOpen &&
@@ -214,7 +214,7 @@ export default function MyCalendar() {
 
                     </div>
                 }
-            </>
+            </div>
         );
     }
 

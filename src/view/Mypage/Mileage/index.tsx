@@ -34,13 +34,28 @@ export default function MypageMileage() {
 
         const fetchMileageData = async () => {
             const data: GetMileageResponseDto | null = await getMileageData(accessToken);
+            
             if (data) {
-                setCurrentMileage(data.totalMileage || 0);
+                setCurrentMileage(data.availableMileage || 0);
                 setTotalEarnedMileage(data.totalMileage || 0);
                 setTotalRefundedMileage(data.totalRefundedMileage || 0);
-                setRefundHistory(data.refundHistory || []);
+                setRefundHistory(data.refundHistory ?? []);
+        
+                const earningHistory = data.earningHistory ?? [];
+                
+                setMileageHistory(
+                    earningHistory.map(entry => ({
+                        date: new Date(entry.transactionDate).toISOString().split('T')[0], // ✅ 날짜 변환
+                        detail: entry.reason,
+                        mileage: entry.amount
+                    }))
+                );
             }
         };
+        
+        
+
+
 
         fetchMileageData();
     }, [accessToken]);
@@ -51,7 +66,9 @@ export default function MypageMileage() {
         { date: '2024-12-15', detail: '금주 추천수 1위 토론 게시', mileage: 1000 },
         { date: '2024-12-28', detail: '일반 토론 투표 참여', mileage: 300 },
     ];
-    const [mileageHistory, setMileageHistory] = useState(initialMileageHistory);
+    // const [mileageHistory, setMileageHistory] = useState(initialMileageHistory);
+    const [mileageHistory, setMileageHistory] = useState<{ date: string; detail: string; mileage: number; }[]>([]);
+
 
     const filterMileageHistory = (start: string, end: string) => {
         const filteredData = initialMileageHistory.filter((entry) => {
@@ -192,13 +209,19 @@ export default function MypageMileage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {mileageHistory.map((entry, index) => (
-                            <tr key={index}>
-                                <td>{entry.date}</td>
-                                <td>{entry.detail}</td>
-                                <td>{entry.mileage}p</td>
+                        {mileageHistory.length > 0 ? (
+                            mileageHistory.map((entry, index) => (
+                                <tr key={index}>
+                                    <td>{new Date(entry.date).toLocaleString()}</td>
+                                    <td>{entry.detail}</td>
+                                    <td>{entry.mileage}p</td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={3}>적립 내역이 없습니다.</td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>
