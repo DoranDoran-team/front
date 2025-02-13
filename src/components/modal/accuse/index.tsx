@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
 import './style.css';
+import AccuseComponentProps from '../../../types/accuseList.interface';
 interface accuseModalProps {
     cancelHandler: ()=>void;
+    accuse?: AccuseComponentProps;
 }
 
 // component: 신고하기 모달창 컴포넌트 //
-export default function AccuseModal({cancelHandler}:accuseModalProps) {
+export default function AccuseModal({accuse,cancelHandler}:accuseModalProps) {
 
     const [selectedReportReason, setSelectedReportReason] = useState<string | null>(null);
     const [reportTarget, setReportTarget] = useState<{ type: 'post' | 'comment'; id: number | null }>({ type: 'post', id: null });
