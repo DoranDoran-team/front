@@ -3,7 +3,7 @@ import './style.css';
 import { useNavigate } from "react-router-dom";
 import { LOGIN_ABSOLUTE_PATH } from "../../../constants";
 import IdCheckRequestDto from "../../../apis/dto/request/auth/id-check.request.dto";
-import { fileUploadRequest, idCheckRequest, signUpRequest, telAuthCheckRequest, telAuthRequest } from "../../../apis";
+import { idCheckRequest, signUpRequest, telAuthCheckRequest, telAuthRequest } from "../../../apis";
 import ResponseDto from "../../../apis/dto/response/response.dto";
 import TelAuthRequestDto from "../../../apis/dto/request/auth/tel-auth.request.dto";
 import TelAuthCheckRequestDto from "../../../apis/dto/request/auth/tel-auth-check.request.dto";
@@ -55,6 +55,11 @@ export default function SignUp() {
 
     // variable: 회원가입 가능 여부 //
     const signUp = name && idErr && isMatched && birthMsgBool && isMatched2 && allChecked;
+
+    // event handler: SNS 버튼 클릭 시 SNS 로그인 창으로 이동 //
+	const onSnsButtonClickHandler = (sns: 'kakao' | 'naver' | 'google') => {
+		window.location.href = `${process.env.REACT_APP_API_URL}/api/v1/auth/sns-sign-in/${sns}`;
+	};
 
     // event handler: 이름 변경 이벤트 핸들러 //
     const onNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -168,24 +173,31 @@ export default function SignUp() {
     const onBirthChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
         setBirth(value);
-
+    
         if (value.length === 8) {
             const year = parseInt(value.substring(0, 4), 10);
             const month = parseInt(value.substring(4, 6), 10) - 1; // 월은 0부터 시작
             const day = parseInt(value.substring(6, 8), 10);
-
+    
             const inputDate = new Date(year, month, day);
             const today = new Date();
             today.setHours(0, 0, 0, 0); // 오늘의 시간 초기화
-
+    
+            // 만 14세 이상인지 확인
+            const fourteenYearsAgo = new Date();
+            fourteenYearsAgo.setFullYear(today.getFullYear() - 14); // 현재 날짜에서 14년 전 날짜
+    
             if (inputDate > today) {
                 setBirthMessage('일치하지 않는 형식입니다.');
+                setBirthMsgBool(false);
+            } else if (inputDate > fourteenYearsAgo) {
+                setBirthMessage('만 14세 이상만 가입할 수 있습니다.');
                 setBirthMsgBool(false);
             } else {
                 setBirthMessage('');
                 setBirthMsgBool(true);
             }
-
+    
         } else if (value.length === 0) {
             setBirthMessage('');
             setBirthMsgBool(false);
@@ -388,9 +400,9 @@ export default function SignUp() {
                 <div className="sns-container">
                     <div className="sns-title">SNS 회원가입</div>
                     <div className="sns">
-                        <div className="kakao"></div>
-                        <div className="google"></div>
-                        <div className="naver"></div>
+                        <div className="kakao" onClick={() => onSnsButtonClickHandler('kakao')}></div>
+                        <div className="google" onClick={() => onSnsButtonClickHandler('google')}></div>
+                        <div className="naver" onClick={() => onSnsButtonClickHandler('naver')}></div>
                     </div>
                     <hr className="custom-hr"></hr>
                 </div>

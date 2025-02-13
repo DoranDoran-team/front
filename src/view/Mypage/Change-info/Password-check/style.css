@@ -85,6 +85,10 @@
     margin-right: auto;
 }
 
+#password-check .background .message-true {
+    
+}
+
 #password-check .background .changeBtn-false {
     border-radius: 6px;
     border: 1px solid #b4b4b4;

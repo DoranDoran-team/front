@@ -88,3 +88,16 @@
     background-color: #d4d4d4;
     border: 1px solid #d4d4d4;
 }
+
+#notice-write .top-box {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+#notice-write .topPin {
+    
+    font-size: 15px;
+    font-weight: 400;
+}

@@ -143,10 +143,6 @@ export default function Mypage() {
                     </div>
                 </div>
 
-                <div className="myapge-middle-box">
-                    <div className="mypage-middle-icon"></div>
-                    <div className="mypage-middle-nickname">{signInUser?.nickName}</div>
-                </div>
                 <div className="discussion-room-list">
                     <div className="discussion-image"></div>
                     <div className="discussion-info">

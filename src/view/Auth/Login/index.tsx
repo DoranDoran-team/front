@@ -23,6 +23,11 @@ export default function Login() {
     // function: 네비게이터 함수 //
     const navigator = useNavigate();
 
+    // event handler: SNS 버튼 클릭 시 SNS 로그인 창으로 이동 //
+	const onSnsButtonClickHandler = (sns: 'kakao' | 'naver' | 'google') => {
+		window.location.href = `${process.env.REACT_APP_API_URL}/api/v1/auth/sns-sign-in/${sns}`;
+	};
+
     // event handler: 아이디 변경 이벤트 핸들러 //
     const onIdChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
@@ -121,9 +126,9 @@ export default function Login() {
                 </div>
                 
                 <div className="sns-container">
-                    <div className="kakao"></div>
-                    <div className="google"></div>
-                    <div className="naver"></div>
+                    <div className="kakao" onClick={() => onSnsButtonClickHandler('kakao')}></div>
+                    <div className="google" onClick={() => onSnsButtonClickHandler('google')}></div>
+                    <div className="naver" onClick={() => onSnsButtonClickHandler('naver')}></div>
                 </div>
 
             </div>
