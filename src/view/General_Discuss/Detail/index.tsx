@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import './style.css';
 import AccuseModal from '../../../components/modal/accuse';
-import { useParams } from 'react-router-dom';
-import GetDiscussionResponseDto from '../../../apis/dto/response/gd_discussion/get-discussion.response.dto';
-import ResponseDto from '../../../apis/dto/response/response.dto';
 import { getDiscussionRequest, postCommentRequest} from '../../../apis';
-import { useCookies } from 'react-cookie';
-import { ACCESS_TOKEN } from '../../../constants';
-import defaultImage from '../../../image/profile.png';
 import Comment from '../../../types/Comment.interface';
 import { usePagination } from '../../../hooks';
-import { useSignInUserStore } from '../../../stores';
 import PostCommentRequestDto from '../../../apis/dto/request/comment/post-comment.request.dto';
 import { useParams } from 'react-router';
-import { getDiscussionResquest, postAccuseRequest } from '../../../apis';
+import { postAccuseRequest } from '../../../apis';
 import { useCookies } from 'react-cookie';
 import { ACCESS_TOKEN } from '../../../constants';
 import ResponseDto from '../../../apis/dto/response/response.dto';
@@ -23,8 +16,8 @@ import { useSignInUserStore } from '../../../stores';
 import { PostAccuseRequestDto } from '../../../apis/dto/request/accuse';
 
 interface voteProps {
-    agreeOpinion:string;
-    oppositeOpinion:string;
+    agreeOpinion:string|undefined;
+    oppositeOpinion:string|undefined;
 }
 
 // component: 찬/반 의견 선택 컴포넌트 //
@@ -35,7 +28,7 @@ function OpinionSelector ({agreeOpinion,oppositeOpinion}:voteProps){
     const [opinionBUsers, setOpinionBUsers] = useState<number>(73); // 의견 B 유저 비율
 
     const handleOpinionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-     
+
         setSelectedOpinion(event.target.value);
     };
 
@@ -55,8 +48,7 @@ function OpinionSelector ({agreeOpinion,oppositeOpinion}:voteProps){
                         <input
                             type="radio"
                             value="A"
-                            checked={selectedOpinion 
-                   'A'}
+                            checked={selectedOpinion === 'A'}
                             onChange={handleOpinionChange}
                         />
                         {agreeOpinion}
@@ -94,7 +86,7 @@ function OpinionSelector ({agreeOpinion,oppositeOpinion}:voteProps){
 export default function GDDetail() {
 
     // state: 로그인 유저 정보 상태 //
-    const { signInUser, setSignInUser } = useSignInUserStore();
+    const { signInUser } = useSignInUserStore();
     const discussionId = signInUser?.userId;
 
     const { roomId } = useParams();
@@ -110,35 +102,14 @@ export default function GDDetail() {
     const [newComment, setNewComment] = useState<string>('');
     const [replyContent, setReplyContent] = useState<{ [key: number]: string }>({});
     const [replyTo, setReplyTo] = useState<number | null>(null);
-
-    // state: 로그인 유저 상태 //
-    const { signInUser } = useSignInUserStore();
-
-    // variable: 로그인 유저 변수 //
-    const discussionId = signInUser?.userId;
-
-    // state: 토론방 상태 //
-    const [category, setCategory] = useState<string>('');
-    const [nickName, setNickName] = useState<string>('');
-    const [discussionImage, setDiscussionImage] = useState<string|null>(null);
-    const [profileImage, setProfileImage] = useState<string|null>(defaultImage);
-    const [roomTitle, setRoomTitle] = useState<string>('');
-    const [roomDescription, setRoomDescription] = useState<string>('')
-    const [roomEnd, setRoomEnd] = useState<string>('')
-    const [createdRoom, setCreatedRoom] = useState<string>('')
-    const [updateStatus, setUpdateStatus] = useState<boolean>(false)
-    const [agreeOpinion, setAgreeOpinion] = useState<string>('')
-    const [oppositeOpinion, setOppositeOpinion] = useState<string>('');
-    const [commentCount, setCommentCount] = useState<number>();
-    const [likeCount, setLikeCount] = useState<number>();
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const [selectedReportReason, setSelectedReportReason] = useState<string | null>(null);
     const [clicked, setClicked] = useState<boolean>(false);
 
-    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-    // state: 토론방 번호 경로 변수 상태 //
-    const { roomId } = useParams();
 
     // state: 원본 리스트 상태 //
     const [originalList, setOriginalList] = useState<Comment[]>([]);
+    
     // state: 페이징 관련 상태 //
     const {
         currentPage,
@@ -146,7 +117,6 @@ export default function GDDetail() {
         pageList,
         setTotalList,
         initViewList} = usePagination<Comment>();
-    const [selectedReportReason, setSelectedReportReason] = useState<string | null>(null);
 
     const openReportModal = () => {
         setIsReportModalOpen(!isReportModalOpen);
@@ -247,7 +217,6 @@ export default function GDDetail() {
     };
 
     
-
     const handleReplySubmit = (commentId: number) => {
         const currentDate = new Date().toLocaleString();
         const newReply = {
@@ -282,71 +251,6 @@ export default function GDDetail() {
         console.log(`댓글 ${commentId} 삭제하기`);
     };
 
-
-    // function: get discussion response 처리 //
-    const getDiscussionResponse = (responseBody:GetDiscussionResponseDto | ResponseDto | null) => {
-        const message = 
-            !responseBody ? '서버에 문제가 있습니다. ' :
-            responseBody.code === 'AF' ? '접근이 잘못되었습니다. ':
-            responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ' : '';
-
-    // function: 찬반 의견 //
-    const OpinionSelector = () => {
-        const [selectedOpinion, setSelectedOpinion] = useState<string>('');
-        const [submitted, setSubmitted] = useState<boolean>(false);
-        const [opinionAUsers, setOpinionAUsers] = useState<number>(27); // 의견 A 유저 비율
-        const [opinionBUsers, setOpinionBUsers] = useState<number>(73); // 의견 B 유저 비율
-
-        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
-        if (!isSuccessed) {
-            alert(message);
-            return;
-        }
-        const {discussionResultSet, comments} = responseBody as GetDiscussionResponseDto;
-
-        setCategory(discussionResultSet.discussionType);
-        setProfileImage(discussionResultSet.profileImage === null ? defaultImage : discussionResultSet.profileImage);
-        setNickName(discussionResultSet.nickName);
-        setCreatedRoom(discussionResultSet.createdRoom);
-        setUpdateStatus(discussionResultSet.updateStatus);
-        setDiscussionImage(discussionResultSet.discussionImage);
-        setRoomTitle(discussionResultSet.roomTitle);
-        setRoomEnd(discussionResultSet.discussionEnd);
-        setRoomDescription(discussionResultSet.roomDescription);
-        setAgreeOpinion(discussionResultSet.agreeOpinion);
-        setOppositeOpinion(discussionResultSet.oppositeOpinion);
-        setCommentCount(discussionResultSet.commentCount);
-        setLikeCount(discussionResultSet.likeCount);
-        setTotalList(comments);
-        setOriginalList(comments);
-    }
-
-        return (
-            <div>
-                <div className='vote-opinions'>
-                    <div>
-                        <label>
-                            <input
-                                type="radio"
-                                value="A"
-                                checked={selectedOpinion === 'A'}
-                                onChange={handleOpinionChange}
-                            />
-                            {discussionData?.agreeOpinion}
-                        </label>
-                        <label>
-                            <input
-                                type="radio"
-                                value="B"
-                                checked={selectedOpinion === 'B'}
-                                onChange={handleOpinionChange}
-                            />
-                            {discussionData?.oppositeOpinion}
-                        </label>
-                    </div>
-                    <button className='vote-select-button' onClick={handleSubmit}>선택 완료하기</button>
-                </div>
-
     // function: post comment response 처리 함수 //
     const postCommentResponse = (responseBody:ResponseDto|null) => {
         const message = 
@@ -376,14 +280,6 @@ export default function GDDetail() {
         setClicked(!clicked);
     };
 
-    useEffect(()=>{
-        if (!roomId) return;
-        const accessToken = cookies[ACCESS_TOKEN];
-        if (!accessToken) return;
-        getDiscussionRequest(roomId, accessToken).then(getDiscussionResponse);
-        setOriginalList(comments);
-    },[roomId, clicked])
-
     // function: get dicussion list response 처리 //
     const getDiscussionResponse = (responseBody: GetDiscussionResponseDto | ResponseDto | null) => {
         const message =
@@ -397,6 +293,10 @@ export default function GDDetail() {
         }
         if ("discussionResultSet" in responseBody) {
             setDiscussionData(responseBody.discussionResultSet);
+            setComments(responseBody.comments);
+            console.log(responseBody.comments);
+            setTotalList(responseBody.comments);
+            setOriginalList(responseBody.comments);
         } else {
             alert('서버 응답이 올바르지 않습니다.');
         }
@@ -412,7 +312,7 @@ export default function GDDetail() {
         }
 
         if (roomId) {
-            getDiscussionResquest(roomIdNumber, accessToken).then(getDiscussionResponse);
+            getDiscussionRequest(roomIdNumber, accessToken).then(getDiscussionResponse);
         }
     }
 
@@ -435,8 +335,8 @@ export default function GDDetail() {
                             <div>
                                 <div className='user-nickname'>{discussionData?.nickName}</div>
                                 <div className='post-date-and-modify'>
-                                    <div className="post-date">{createdRoom}</div>
-                                    <div className="modify">{updateStatus ? '(수정됨)' : ''}</div>
+                                    <div className="post-date">{discussionData?.createdRoom}</div>
+                                    <div className="modify">{discussionData?.updateStatus ? '(수정됨)' : ''}</div>
                                 </div>
                             </div>
                         </div>
@@ -462,7 +362,7 @@ export default function GDDetail() {
                         <AccuseModal cancelHandler={closeReportModal}/>
                     )}
                     <div className="discussion-info">
-                        <div className="discussion-image" style={{backgroundImage:`url(${discussionImage})`}}></div>
+                        <div className="discussion-image" style={{backgroundImage:`url(${discussionData?.discussionImage})`}}></div>
                         <div className="discussion-text-info">
                             <div className="discussion-title">{discussionData?.roomTitle}</div>
                             <div className="deadline">마감: {discussionData?.discussionEnd}</div>
@@ -470,13 +370,13 @@ export default function GDDetail() {
                         </div>
                     </div>
                     <div className="vote-info">
-                        <OpinionSelector agreeOpinion={agreeOpinion} oppositeOpinion={oppositeOpinion}/>
+                        <OpinionSelector agreeOpinion={discussionData?.agreeOpinion} oppositeOpinion={discussionData?.oppositeOpinion}/>
                     </div>
                     <div className="comment-and-recommendation">
                         <div className="comment-icon"></div>
-                        <div className="comment-count">{commentCount}</div> {/* 댓글 수 */}
+                        <div className="comment-count">{discussionData?.commentCount}</div> {/* 댓글 수 */}
                         <div className="recommendation-icon"></div>
-                        <div className="recommendation-count">{likeCount}</div>
+                        <div className="recommendation-count">{discussionData?.likeCount}</div>
                     </div>
                     <hr />
                     <div className='comment-box'>
@@ -596,4 +496,5 @@ export default function GDDetail() {
         </div>
     );
 }
+
 
