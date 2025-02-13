@@ -8,6 +8,7 @@ import PostDiscussionWirteRequestDto from '../../../apis/dto/request/gd_discussi
 import { fileUploadeRequest, postDiscussionRequest } from '../../../apis';
 import useStore from '../../../stores/sign-in-user.store';
 import { useNavigate, useParams } from 'react-router-dom';
+import { access } from 'fs';
 
 export default function GDWrite() {
 
@@ -63,7 +64,8 @@ export default function GDWrite() {
         const message = 
             !responseBody ? '서버에 문제가 있습니다. ':
             responseBody.code === "VF" ? '값을 모두 입력하세요 ':
-            responseBody.code === "DBE" ? '서버에 문제가 있습니다. ': '';
+            responseBody.code === "DBE" ? '서버에 문제가 있습니다. ':
+            responseBody.code === "AF" ? '서버에 문제가 있습니다.' : '';
 
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
@@ -72,6 +74,7 @@ export default function GDWrite() {
         }
         navigator(GEN_DISC_ABSOLUTE_PATH)
     }
+
     // event handler: 게시하기 버튼 클릭 이벤트 처리//
     const onRegisterClickHandler = async() => {
         const accessToken = cookies[ACCESS_TOKEN];
@@ -93,7 +96,7 @@ export default function GDWrite() {
             roomDescription:content, discussionImage:url, discussionEnd:deadline, 
             agreeOpinion:firstOpinion, oppositeOpinion:secondOpinion
         };
-        postDiscussionRequest(requestBody, accessToken).then(writeDiscussionResponse)
+        postDiscussionRequest(requestBody, accessToken).then(writeDiscussionResponse);
     }
 
     return (

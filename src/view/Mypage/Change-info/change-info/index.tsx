@@ -33,8 +33,6 @@ export default function ChangeInfo() {
     const [authMessage, setAuthMessage] = useState<string>('');
     const [send, setSend] = useState<boolean>(true);
     const [isMatched, setIsMatched] = useState<boolean>(false);
-    const [message, setMessage] = useState<string>('');
-    const [errorMessage, setErrorMessage] = useState<string>('');
 
     // state: 타이머 상태 //
     const [timer, setTimer] = useState(5);
@@ -43,7 +41,7 @@ export default function ChangeInfo() {
     const [stopTimer, setStopTimer] = useState(false);
 
     // state: 비밀번호 변경 모달창 상태 //
-    const [open, setOpen] = useState<boolean>(false);
+    const [modalOpen, setModalOpen] = useState(false);
 
     // variable: access token //
     const accessToken = cookies[ACCESS_TOKEN];
@@ -89,9 +87,6 @@ export default function ChangeInfo() {
     const onTelNumberChangeHandler = (e: { target: { value: string } }) => {
         const numbersOnly = e.target.value.replace(/\D/g, "");
         if (numbersOnly.length <= 11) setTelNumber(numbersOnly);
-        
-        //setSend(false);
-        //setTelMessage('');
     }
 
     // event handler: 엔터키로 인증번호 전송 버튼 동작 //
@@ -128,7 +123,7 @@ export default function ChangeInfo() {
 
     // event handler: 비밀번호 변경 버튼 클릭 이벤트 핸들러 //
     const onChangePwBtnClickHandler = () => {
-        setOpen(true);
+        setModalOpen(true);
     }
 
     // event handler: 수정 버튼 클릭 이벤트 핸들러 //
@@ -237,8 +232,6 @@ export default function ChangeInfo() {
         setAuthMessage(message);
         setIsMatched(isSuccessed);
         setStopTimer(true);
-        //setAuthNumberMessageError(!isSuccessed);
-        //setCheckedAuthNumber(isSuccessed);
     };
 
     // function: 회원 정보 수정 Response 처리 함수 //
@@ -345,9 +338,10 @@ export default function ChangeInfo() {
         const [passwordCheck, setPasswordCheck] = useState<string>('');
         const [pwIsMatched, setPwIsMatched] = useState<boolean>(false);
         const [isPossible, setIsPossible] = useState<boolean>(false);
+        const [message, setMessage] = useState<string>('');
+        const [errorMessage, setErrorMessage] = useState<string>('');
 
         // state: 모달 관련 상태 //
-        const [modalOpen, setModalOpen] = useState(false);
         const modalBackground = useRef<HTMLDivElement | null>(null);
 
         // event handler: 비밀번호 변경 이벤트 핸들러 //
@@ -394,7 +388,7 @@ export default function ChangeInfo() {
 
         // event handler: 취소 버튼 클릭 이벤트 핸들러 //
         const onCancleClikeHandler = () => {
-            setOpen(false);
+            setModalOpen(false);
         }
 
         // function: 비밀번호 변경 응답 처리 //
@@ -413,37 +407,48 @@ export default function ChangeInfo() {
                 alert(message);
                 return;
             } else {
-                alert('수정되었습니다');
-                setOpen(false);
+                alert('수정되었습니다.');
+                setModalOpen(false);
             }
         };
+
+        // effect: 모달 오픈 상태 //
+        useEffect(() => {
+            console.log("modalOpen 상태:", modalOpen);
+        }, [modalOpen]);
+        
 
         // render: 비밀번호 변경 모달창 렌더링 //
         return (
             <div id='modal'>
-                <div className='modal-container' ref={modalBackground} onClick={e => {
-                    if (e.target === modalBackground.current) {setModalOpen(false);}}}>
-
-                    <div className='modal-title'>비밀번호 변경</div>
-
-                    <div>
-                        <input className="input-box3" type='password' value={password} onChange={onPasswordChangeHandler} 
-                            placeholder="비밀번호(영문 + 숫자 혼합 8 ~ 13자)"></input>
-                        <div className={isPossible ? 'message-true' : 'message-false'} style={{ marginBottom: "15px"}}>{message}</div>
-
-                        <input className="input-box3" type='password' value={passwordCheck}
-                            onChange={onPasswordCheckChangeHandler} placeholder="비밀번호 확인"></input>
-                        <div className={pwIsMatched ? 'message-true' : 'message-false'}>{errorMessage}</div>
+                {modalOpen && 
+                    <>
+                        <div className="modal-overlay" onClick={() => setModalOpen(false)}></div>
+                        <div>
+                            <div className='modal-container' ref={modalBackground} onClick={e => {
+                                if (e.target === modalBackground.current) { setModalOpen(false); }
+                            }}>
+                            <div className='modal-title'>비밀번호 변경</div>
+                            <div>
+                                <input className="input-box3" type='password' value={password} onChange={onPasswordChangeHandler} 
+                                    placeholder="비밀번호(영문 + 숫자 혼합 8 ~ 13자)"/>
+                                <div className={isPossible ? 'message-true' : 'message-false'} style={{ marginBottom: "15px"}}>{message}</div>
+        
+                                <input className="input-box3" type='password' value={passwordCheck}
+                                    onChange={onPasswordCheckChangeHandler} placeholder="비밀번호 확인"/>
+                                <div className={pwIsMatched ? 'message-true' : 'message-false'}>{errorMessage}</div>
+                            </div>
+                    
+                            <div className='modal-btn-container'>
+                                <div className='modal-patch' onClick={onChangeClikeHandler}>수정</div>
+                                <div className='modal-cancle' onClick={onCancleClikeHandler}>취소</div>
+                            </div>
+                        </div>
                     </div>
-                
-            
-                    <div className='modal-btn-container'>
-                        <div className='modal-patch' onClick={onChangeClikeHandler}>수정</div>
-                        <div className='modal-cancle' onClick={onCancleClikeHandler}>취소</div>
-                    </div>
-                </div>
+                </>
+            }
             </div>
-        )
+        );
     }
 
     // render: 개인 정보 수정 화면 렌더링
@@ -490,12 +495,7 @@ export default function ChangeInfo() {
                     : ''}
 
                     <div className='changePWbtn' onClick={onChangePwBtnClickHandler}>비밀번호 변경</div>
-                    {open && (
-                        <>
-                            <div className="modal-overlay" onClick={() => setOpen(false)}></div>
-                            <ChangePassword />
-                        </>
-                    )}
+                    {modalOpen && <ChangePassword />}
 
                     <div style={{display: "flex", flexDirection: "row", marginTop: "60px"}}>
                         <div className='secession-btn' onClick={onSecesstionClickHandler}>탈퇴</div>

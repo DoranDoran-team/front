@@ -55,6 +55,50 @@
     margin-bottom: 50px;
 }
 
+#notice-detail .btn-box {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    margin-left: auto;
+    margin-bottom: 30px;
+}
+
+#notice-detail .patch-btn {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    padding: 10px;
+    border: 1px solid #d4d4d4;
+    border-radius: 6px;
+    background-color: #d4d4d4;
+    width: 70px;
+
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+#notice-detail .delete-btn {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    padding: 10px;
+    border: 1px solid #d4d4d4;
+    border-radius: 6px;
+    background-color: #d4d4d4;
+    width: 70px;
+
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+#notice-detail .patch-btn:hover,
+#notice-detail .delete-btn:hover {
+    background-color: #79eb96;
+    border: 1px solid #79eb96;
+}
+
 #notice-detail .table {
     display: flex;
     flex-direction: column;

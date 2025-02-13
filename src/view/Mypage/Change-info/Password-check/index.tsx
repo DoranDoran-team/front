@@ -61,8 +61,6 @@ export default function PwCheck() {
                 password
             };
             pwCheckRequest(requestBody, accessToken).then(userUpdateResponse);
-            //const responseBody = await pwCheckRequest(requestBody, accessToken);
-            //userUpdateResponse(responseBody);
         }
     }
 
@@ -93,13 +91,13 @@ export default function PwCheck() {
             responseBody.code === 'AF' ? '일치하는 정보가 없습니다.' :
             responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
             responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' :
-            responseBody.code === 'MP' ? '비밀번호가 일치하지 않습니다.' : '';
+            responseBody.code === 'MT' ? '비밀번호가 일치하지 않습니다.' : '';
 
-        setErrMsg(message);
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
 
         if (!isSuccessed) {
             setError(false); // 에러 상태 갱신
+            setErrMsg(message);
             setPassword(''); // 비밀번호 초기화
             return;
         }
@@ -149,7 +147,8 @@ export default function PwCheck() {
                 <div className='pw-check-box'>
                     <input className='pw-check-input' type='password' value={password} 
                     placeholder='비밀번호' onChange={onPWchangeHandler} onKeyDown={handleKeyDown}/>
-                    <div className='errMsg'>{errMsg}</div>
+                    {/*error ? '' : <div className='errMsg'>{errMsg}</div>*/}
+                    <div className={error ? 'message-true' : 'errMsg'}>{errMsg}</div>
                     
                 </div>
                 <div className={error ? 'changeBtn' : 'changeBtn-false'}

@@ -19,6 +19,7 @@ export const RT_DISC_PATH = '/rt_disc';
 export const NOTICE = '/notice';
 export const NOTICE_WRITE = 'write';
 export const NOTICE_DETAIL = (noticeNumber: string | number) => `${noticeNumber}`;
+export const NOTICE_PATCH = (noticeNumber: string | number) => `patch/${noticeNumber}`;
 
 export const SCHEDULE = '/schedule';
 
@@ -61,6 +62,7 @@ export const RT_DISC_ABSOLUTE_PATH = RT_DISC_PATH;
 export const NOTICE_ABSOLUTE_PATH = NOTICE;
 export const NOTICE_WRITE_ABSOLUTE_PATH = `${NOTICE}/${NOTICE_WRITE}`;
 export const NOTICE_DETAIL_ABSOLUTE_PATH = (noticeNumber: string | number) => `${NOTICE}/${noticeNumber}`;
+export const NOTICE_PATCH_ABSOLUTE_PATH = (noticeNumber: string | number) => `${NOTICE}/${NOTICE_PATCH}`;
 
 export const SCHEDULE_ABSOLUTE_PATH = SCHEDULE;
 

@@ -23,12 +23,13 @@ import PatchProfileRequestDto from "./dto/request/mypage/myInfo/patch-profile.re
 import GetUserInfoResponseDto from "./dto/response/mypage/myInfo/get-user-info.response.dto";
 import PatchUserInfoRequestDto from "./dto/request/mypage/myInfo/patch-user-info.request.dto";
 import ChangePwRequestDto from "./dto/request/mypage/myInfo/change-pw.request.dto";
-
-import GetDiscussionResponseDto from "./dto/response/gd_discussion/get-discussion.response.dto";
+import PostNoticeRequestDto from "./dto/request/notice/Post-notice.request.dto";
+import GetNoticeListResponseDto from "./dto/response/notice/Get-notice-list.response.dto";
+import GetNoticeDetailResponseDto from "./dto/response/notice/Get-notice-detail.response.dto";
+import GetMainGenDiscListResponseDto from "./dto/response/main/get-main-gen-disc-list.response.dto";
+import { GetDiscussionResponseDto } from "./dto/response/gd_discussion";
 import PostCommentRequestDto from "./dto/request/comment/post-comment.request.dto";
 import PatchCommentRequestDto from "./dto/request/comment/patch-comment.request.dto";
-
-
 import { PostAccuseRequestDto } from "./dto/request/accuse";
 import GetAccuseListResponseDto from "./dto/response/accuse/get-accuse-list.response.dto";
 
@@ -38,6 +39,7 @@ const DORANDORAN_API_DOMAIN = process.env.REACT_APP_API_URL;
 const AUTH_MODULE_URL = `${DORANDORAN_API_DOMAIN}/api/v1/auth`;
 const GENERAL_DISCUSSION_MODULE_URL = `${DORANDORAN_API_DOMAIN}/api/v1/gen_disc`
 const COMMENT_MODULE_URL = `${DORANDORAN_API_DOMAIN}/api/v1/comment`
+const MAIN_GENERAL_DISC_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}/main`;
 
 //* ============= 일정관리 
 const POST_SCHEDULE_URL = `${DORANDORAN_API_DOMAIN}/schedule`;
@@ -85,6 +87,12 @@ const MYPAGE_USER_CHANGE_PW_API_URL = `${MYPAGE_USER_INFO_API_URL}/change-pw`;
 const MYPAGE_PATCH_USER_INFO_API_URL = `${MYPAGE_USER_INFO_API_URL}/patch-user`;
 const MYPAGE_USER_DELETE_API_URL = `${MYPAGE_USER_INFO_API_URL}/delete-user`;
 
+const NOTICE_API_URL = `${DORANDORAN_API_DOMAIN}/notice`;
+const POST_NOTICE_API_URL = `${NOTICE_API_URL}/post`;
+const NOTICE_DETAIL_API_URL = (noticeId: number | string) => `${NOTICE_API_URL}/${noticeId}`;
+const NOTICE_DELETE_API_URL = (noticeId: number | string) => `${NOTICE_API_URL}/delete/${noticeId}`;
+
+
 // function: Authorization Bearer 헤더값 //
 const bearerAuthorization = (accessToken: String) => ({ headers: { 'Authorization': `Bearer ${accessToken}` } });
 
@@ -116,6 +124,7 @@ export const getSignInRequest = async (accessToken: string) => {
         .catch(responseErrorHandler)
     return responseBody;
 }
+
 // function: id check api 요청 함수 //
 export const idCheckRequest = async (requestBody: IdCheckRequestDto) => {
     const responseBody = await axios.post(ID_CHECK_API_URL, requestBody)
@@ -188,7 +197,13 @@ export const patchPasswordRequest = async (requestBody: PatchPwRequestDto) => {
     return responseBody;
 }
 
-// 토론방 관련 API //
+// function: 메인 화면 일반 토론 게시글 get 요청 함수 //
+export const getMainGenDiscListRequest = async(accessToken: String) => {
+    const responseBody = await axios.get(MAIN_GENERAL_DISC_API_URL, bearerAuthorization(accessToken))
+        .then(responseDataHandler<GetMainGenDiscListResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
 
 // function: 일반 토론방 작성 post discussion 요청 함수 //
 export const postDiscussionRequest = async (requestBody: PostDiscussionWirteRequestDto, accessToken: string) => {
@@ -292,8 +307,6 @@ export const refundRequest = async (requestBody: MyMileageRequestDto, accessToke
     return responseBody;
 };
 
-
-
 // function: get sign in 요청 함수 //
 export const GetSignInRequest = async (accessToken: string) => {
     const responseBody = await axios.get(GET_SIGN_IN_API_URL, bearerAuthorization(accessToken))
@@ -345,6 +358,38 @@ export const patchUserInfoRequest = async (requestBody: PatchUserInfoRequestDto,
 // function: 회원 탈퇴 요청 함수 //
 export const deleteUserRequest = async (accessToken: string) => {
     const responseBody = await axios.delete(MYPAGE_USER_DELETE_API_URL, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 공지사항 작성 요청 함수 //
+export const postNoticeRequest = async(requestBody: PostNoticeRequestDto, accessToken: string) => {
+    const responseBody = await axios.post(POST_NOTICE_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: get notice list 요청 함수 //
+export const getNoticeListRequest = async (accessToken: string) => {
+    const responseBody = await axios.get(NOTICE_API_URL, bearerAuthorization(accessToken))
+        .then(responseDataHandler<GetNoticeListResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: get notice detail 요청 함수 //
+export const getNoticeDetailRequest = async(noticeId: number | string, accessToken: string) => {
+    const responseBody = await axios.get(NOTICE_DETAIL_API_URL(noticeId), bearerAuthorization(accessToken))
+        .then(responseDataHandler<GetNoticeDetailResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 공지사항 삭제 요청 함수 //
+export const deleteNoticeRequest = async(noticeId: number | string, accessToken: string) => {
+    const responseBody = await axios.delete(NOTICE_DELETE_API_URL(noticeId), bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
