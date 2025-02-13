@@ -7,7 +7,7 @@ import DiscussionList from "../../types/discussionList.interface";
 import { usePagination } from "../../hooks";
 
 import { useCookies } from "react-cookie";
-import GetDiscussionListResponseDto from "../../apis/dto/response/gd_discussion/get-discussion.response.dto";
+import GetDiscussionListResponseDto from "../../apis/dto/response/gd_discussion/get-discussion-list.response.dto";
 import ResponseDto from "../../apis/dto/response/response.dto";
 import { getDiscussionListRequest } from "../../apis";
 import Pagination from "../../components/pagination";

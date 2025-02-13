@@ -23,12 +23,17 @@ import PatchProfileRequestDto from "./dto/request/mypage/myInfo/patch-profile.re
 import GetUserInfoResponseDto from "./dto/response/mypage/myInfo/get-user-info.response.dto";
 import PatchUserInfoRequestDto from "./dto/request/mypage/myInfo/patch-user-info.request.dto";
 import ChangePwRequestDto from "./dto/request/mypage/myInfo/change-pw.request.dto";
+import GetDiscussionResponseDto from "./dto/response/gd_discussion/get-discussion.response.dto";
+import PostCommentRequestDto from "./dto/request/comment/post-comment.request.dto";
+import PatchCommentRequestDto from "./dto/request/comment/patch-comment.request.dto";
+
 
 // variable: api url 상수//
 const DORANDORAN_API_DOMAIN = process.env.REACT_APP_API_URL;
 
 const AUTH_MODULE_URL = `${DORANDORAN_API_DOMAIN}/api/v1/auth`;
 const GENERAL_DISCUSSION_MODULE_URL = `${DORANDORAN_API_DOMAIN}/api/v1/gen_disc`
+const COMMENT_MODULE_URL = `${DORANDORAN_API_DOMAIN}/api/v1/comment`
 
 //* ============= 일정관리 
 const POST_SCHEDULE_URL = `${DORANDORAN_API_DOMAIN}/schedule`;
@@ -45,11 +50,15 @@ const ID_SEARCH_TEL_AUTH_API_URL = `${AUTH_MODULE_URL}/find-id-check`;
 const FIND_PW_API_URL = `${AUTH_MODULE_URL}/find-pw`;
 const PATCH_PASSWORD_API_URL = `${AUTH_MODULE_URL}/change-pw`;
 
-
+// 토론방 API URL //
 const WRITE_GENENRAL_DISCUSSION_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}/write`;
 const GET_GENENRAL_DISCUSSION_LIST_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}`;
+const GET_GENERAL_DISCUSSION_API_URL = (roomId:number|string) => `${GENERAL_DISCUSSION_MODULE_URL}/${roomId}`;
 
-
+// 댓글 및 대댓글 API URL //
+const POST_COMMENT_API_URL = (roomId:number|string) => `${COMMENT_MODULE_URL}/${roomId}`;
+const PATCH_COMMENT_API_URL = (roomId:number|string, commentId:number|string) => `${COMMENT_MODULE_URL}/${roomId}/${commentId}`;
+const DELETE_COMMENT_API_URL = (roomId:number|string, commentId:number|string) => `${COMMENT_MODULE_URL}/delete/${roomId}/${commentId}`;
 
 
 const MILEAGE_API_URL = `${DORANDORAN_API_DOMAIN}/mypage/mileage`;
@@ -169,6 +178,7 @@ export const patchPasswordRequest = async (requestBody: PatchPwRequestDto) => {
     return responseBody;
 }
 
+// 토론방 관련 API //
 
 // function: 일반 토론방 작성 post discussion 요청 함수 //
 export const postDiscussionRequest = async(requestBody: PostDiscussionWirteRequestDto, accessToken:string) => {
@@ -181,6 +191,40 @@ export const postDiscussionRequest = async(requestBody: PostDiscussionWirteReque
 // function: 일반 토론방 리스트 get discussion List 요청 함수 //
 export const getDiscussionListRequest = async(accessToken:string) => {
     const responseBody = await axios.get(GET_GENENRAL_DISCUSSION_LIST_API_URL, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 토론방 상세보기 get discussion 요청 함수 //
+export const getDiscussionRequest = async(roomId:number|string, accessToken:string) => {
+    const responseBody = await axios.get(GET_GENERAL_DISCUSSION_API_URL(roomId), bearerAuthorization(accessToken))
+        .then(responseDataHandler<GetDiscussionResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// 댓글 및 대댓글 관련 API //
+
+// function: 댓글 등록 post comment 요청 함수 //
+export const postCommentRequest = async(requestBody:PostCommentRequestDto, roomId:number|string, accessToken:string) => {
+    const responseBody = await axios.post(POST_COMMENT_API_URL(roomId), requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 댓글 수정 patch comment 요청 함수 //
+export const patchCommentRequest = async(requestBody:PatchCommentRequestDto, roomId:number|string, commentId:number|string, accessToken:string) => {
+    const responseBody = await axios.patch(PATCH_COMMENT_API_URL(roomId,commentId), requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 댓글 삭제 patch comment 요청 함수 //
+export const deleteCommentRequest = async(roomId:number|string, commentId:number|string, accessToken:string) => {
+    const responseBody = await axios.patch(DELETE_COMMENT_API_URL(roomId,commentId), bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
