@@ -1,4 +1,75 @@
-.accuse-title {
+#admin-mypage-wrapper {
+    display: flex;
+    gap: 20px;
+}
+
+#admin-mypage-wrapper .send-mileage-box {
+    display: flex;
+    flex-direction: column;
+    width: 1000px;
+    gap: 20px;
+}
+
+#admin-mypage-wrapper .send-mileage {
+    box-sizing: border-box;
+    width: 100%;
+    border-radius: 50px;
+    background-color: #FBFBFB;
+    padding: 80px;
+}
+
+#admin-mypage-wrapper .input-box {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 100%;
+}
+
+#admin-mypage-wrapper .input-box div {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 16px;
+}
+
+
+#admin-mypage-wrapper .input-box input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+
+}
+
+#admin-mypage-wrapper .send-mileage-button-box {
+    display: flex;
+    align-items: end;
+    width: 100%;
+}
+
+#admin-mypage-wrapper .send-mileage-button {
+    margin-top: 20px;
+    width: 150px;
+    height: 40px;
+    border-radius: 8px;
+    border: none;
+    /* background-color: #b1d7ff; */
+    background-color: rgb(92, 123, 218);
+    color: #ffffff;
+}
+
+#admin-mypage-wrapper .mypage-main-wrapper {
+    box-sizing: border-box;
+    width: 100%;
+    border-radius: 50px;
+    background-color: #FBFBFB;
+    padding: 80px;
+
+}
+
+#admin-mypage-wrapper .accuse-title {
     font-weight: bold;
     font-size: 24px;
 
@@ -7,19 +78,19 @@
     padding-bottom: 10px;
 }
 
-.accuse-box {
+#admin-mypage-wrapper .accuse-box {
     display: flex;
+    gap: 20px;
     gap: 20px;
     margin-bottom: 20px;
 }
-
 .accuse-type {
     position: relative;
     font-size: 16px;
     cursor: pointer;
 }
 
-.accuse-type::after {
+#admin-mypage-wrapper .accuse-type::after {
     content: '';
 
     position: absolute;
@@ -35,24 +106,45 @@
     transition: width 0.3s ease;
 }
 
-.accuse-type.active::after {
+#admin-mypage-wrapper .accuse-type.active::after {
     width: 100%;
 }
 
-.accuse-table {
+.accuse-table{
     display: flex;
     width: 900px;
     height: 50px;
     justify-content: space-around;
-    border: 1px solid rgba(0, 0, 0, 1);
+    border: 1px solid rgba(0,0,0,1);
 }
 
-.accuse-th,
-.accuse-tr {
+#admin-mypage-wrapper .accuse-th,
+#admin-mypage-wrapper .accuse-tr {
     flex: 1;
     border-right: 1px solid rgba(0, 0, 0, 1);
     text-align: center;
     line-height: 50px;
 
     font-size: 15px;
+}
+
+/* 신고 사유가 6번째 div라면 nth-child를 사용 */
+.accuse-table > .accuse-th:nth-child(1),
+.accuse-table > .accuse-tr:nth-child(1) { 
+    flex: none;
+    width: 50px;
+}
+
+.accuse-table > .accuse-th:nth-child(3),
+.accuse-table > .accuse-th:nth-child(4),
+.accuse-table > .accuse-th:nth-child(5),
+.accuse-table > .accuse-tr:nth-child(3),
+.accuse-table > .accuse-tr:nth-child(4),
+.accuse-table > .accuse-tr:nth-child(5) { 
+    flex: none;
+    width: 100px;
+}
+
+.accuse-box.complete {
+    
 }

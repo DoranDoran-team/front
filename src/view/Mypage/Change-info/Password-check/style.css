@@ -1,24 +1,15 @@
 #password-check {
     display: flex;
-    flex-direction: row;
-    gap: 50px;
+    justify-content: center;
+    gap: 20px;
 }
 
 #password-check .mypage-menu {
     display: flex;
     flex-direction: column;
-    flex:2;
-    padding: 80px;
-
-    background-color: #FBFBFB;
+    flex: 2;
     width: 80%;
     border-radius: 50px;
-
-}
-
-#password-check .mypage-menu {
-    display: flex;
-    flex-direction: column;
     gap: 30px;
 }
 
@@ -39,15 +30,32 @@
     gap: 17px;
 }
 
-#password-check .background {
-    width: 1000px;
-    border-radius: 50px;
+#password-check .mypage-left-opstions {
     display: flex;
     flex-direction: column;
-    justify-items: center;
-    align-items: center;
+    flex: 1;
+    width: 100%;
+    gap: 20px;
+}
 
-    background-color: #D7FFE1;
+#password-check .background {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 80px;
+
+    background-color: #FBFBFB;
+    width: 1000px;
+    border-radius: 50px;
+}
+
+#password-check .background-in {
+    width: 400px;
+}
+
+#password-check .background-in div {
+    width: 100%;
 }
 
 #password-check .background .title {
@@ -71,18 +79,22 @@
 }
 
 #password-check .background .pw-check-input {
-    width: 250px;
-    height: 25px;
+    box-sizing: border-box;
+    width: 100%;
+    height: 48px;
     padding: 10px;
     border-radius: 6px;
     border: 1px solid #b4b4b4;
 }
 
 #password-check .background .errMsg {
+    display: flex;
+    flex: start;
     margin-top: 5px;
     font-size: 12px;
     color: red;
     margin-right: auto;
+    width: 100%;
 }
 
 #password-check .background .message-true {
@@ -93,11 +105,11 @@
     border-radius: 6px;
     border: 1px solid #b4b4b4;
     background-color: #b4b4b4;
-    width: 270px;
+    width: 200px;
     height: 45px;
 
-    font-size: 20px;
-    font-weight: 600;
+    font-size: 16px;
+    font-weight: 500;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -113,8 +125,8 @@
     width: 270px;
     height: 45px;
 
-    font-size: 20px;
-    font-weight: 600;
+    font-size: 16px;
+    font-weight: 500;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -128,3 +140,10 @@
     background-color: #79eb96;
 }
 
+
+#password-check .for-changeBtn-center {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    
+}

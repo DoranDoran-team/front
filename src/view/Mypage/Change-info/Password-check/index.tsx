@@ -51,12 +51,12 @@ export default function PwCheck() {
     }
 
     // event handler: 개인정보 관리 버튼 클릭 이벤트 핸들러 //
-    const onBtnClickHandler = async() => {
-        
+    const onBtnClickHandler = async () => {
+
         if (!password || !accessToken) return;
 
-        if(signInUser) {
-            const requestBody : CheckPwRequestDto = {
+        if (signInUser) {
+            const requestBody: CheckPwRequestDto = {
                 userId: signInUser?.userId,
                 password
             };
@@ -87,11 +87,11 @@ export default function PwCheck() {
 
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
-            responseBody.code === 'VF' ? '일치하는 정보가 없습니다.' :
-            responseBody.code === 'AF' ? '일치하는 정보가 없습니다.' :
-            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
-            responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' :
-            responseBody.code === 'MT' ? '비밀번호가 일치하지 않습니다.' : '';
+                responseBody.code === 'VF' ? '일치하는 정보가 없습니다.' :
+                    responseBody.code === 'AF' ? '일치하는 정보가 없습니다.' :
+                        responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
+                            responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' :
+                                responseBody.code === 'MT' ? '비밀번호가 일치하지 않습니다.' : '';
 
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
 
@@ -101,7 +101,7 @@ export default function PwCheck() {
             setPassword(''); // 비밀번호 초기화
             return;
         }
-        
+
         navigator(MY_INFO_UPDATE_ABSOLUTE_PATH(`${signInUser?.userId}`));
     };
 
@@ -145,14 +145,16 @@ export default function PwCheck() {
                 <div className='title'>개인정보 수정</div>
                 <div className='sub-title'>비밀번호 확인</div>
                 <div className='pw-check-box'>
-                    <input className='pw-check-input' type='password' value={password} 
-                    placeholder='비밀번호' onChange={onPWchangeHandler} onKeyDown={handleKeyDown}/>
+                    <input className='pw-check-input' type='password' value={password}
+                        placeholder='비밀번호' onChange={onPWchangeHandler} onKeyDown={handleKeyDown} />
                     {/*error ? '' : <div className='errMsg'>{errMsg}</div>*/}
                     <div className={error ? 'message-true' : 'errMsg'}>{errMsg}</div>
-                    
+
                 </div>
-                <div className={error ? 'changeBtn' : 'changeBtn-false'}
-                    onClick={error ? onBtnClickHandler : undefined}>개인정보 수정</div>
+                <div className='for-changeBtn-center'>
+                    <div className={error ? 'changeBtn' : 'changeBtn-false'}
+                        onClick={error ? onBtnClickHandler : undefined}>개인정보 수정</div>
+                </div>
             </div>
         </div>
     )

@@ -1,11 +1,12 @@
 .mypage-attendance-wrapper {
-  flex: 3;
-  padding: 30px;
+  /* box-sizing: border-box; */
+  width: 1000px;
+  padding: 80px;
 
-  background-color: #D7FFE1;
+  background-color: #FBFBFB;
   border-radius: 50px;
 
-  height: 120vh;
+  height: 70vh;
 
   display: flex;
   justify-content: center;
