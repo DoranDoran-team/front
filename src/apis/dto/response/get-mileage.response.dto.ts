@@ -19,3 +19,13 @@ export interface EarningHistoryItem {
     reason: string; 
     amount: number;
 }
+
+export interface MileageRequestDto {
+    mileageId: number;
+    userId: string;
+    accountNumber: string;
+    bankName: string;
+    amount: number;
+    status: string;
+    transactionDate: string;
+}
