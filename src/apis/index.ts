@@ -259,8 +259,8 @@ export const patchCommentRequest = async(requestBody:PatchCommentRequestDto, roo
 }
 
 // function: 댓글 삭제 patch comment 요청 함수 //
-export const deleteCommentRequest = async(roomId:number|string, commentId:number|string, accessToken:string) => {
-    const responseBody = await axios.patch(DELETE_COMMENT_API_URL(roomId,commentId), bearerAuthorization(accessToken))
+export const deleteCommentRequest = async(roomId:number|string, commentId:number|string,userId:string, accessToken:string) => {
+    const responseBody = await axios.patch(DELETE_COMMENT_API_URL(roomId,commentId), userId, bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
@@ -495,3 +495,8 @@ export const fileUploadRequest = async (requestBody: FormData) => {
         .catch(error => null);
     return url;
 }
+
+
+
+
+

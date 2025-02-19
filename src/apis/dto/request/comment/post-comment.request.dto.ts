@@ -2,7 +2,8 @@
 export default interface PostCommentRequestDto {
 
     userId:string;
-    commentContents:string;
+    contents:string;
     discussionType:string;
+    parentId?:number
     
 }
