@@ -367,13 +367,14 @@
     padding: 20px;
     height: 160px;
     justify-content: space-around;
+    margin-bottom: 20px;
 
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.2);
 }
 
 .discussion-room-list .discussion-image {
 
-    background-image: url('/public/mypage/profile1.png');
+    /* background-image: url('/public/mypage/profile1.png'); */
     border-radius: 375px;
     width: 130px;
     height: 130px;

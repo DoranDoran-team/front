@@ -139,7 +139,7 @@
 #gd-wrapper .profile-image {
     width: 30px;
     height: 30px;
-    background-image: url('../../image/profile.png');
+    /* background-image: url('../../image/profile.png'); */
     background-size: cover;
     background-position: center;
     flex: 1;

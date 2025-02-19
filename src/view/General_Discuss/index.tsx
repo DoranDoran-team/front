@@ -36,7 +36,10 @@ function TableRow({ discussionList, getDiscussionList }: TableRowProps) {
             <div className='main-box' onClick={onDiscussionClickHandler}>
                 <div className="box1">
                     <div>
-                        <div className="profile-image"></div>
+                    <div className="profile-image"
+                        style={{backgroundImage: `url(${discussionList.profileImage ? 
+                            discussionList.profileImage : '/defaultProfile.png'})`}}
+                    ></div>
                     </div>
                     <div className='user-nickname'>{discussionList.nickName}</div>
                 </div>
@@ -136,6 +139,7 @@ export default function GD() {
         }
 
         const { discussionList } = responseBody as GetDiscussionListResponseDto
+        console.log(discussionList);
         setTotalList(discussionList);
         setOriginalList(discussionList);
     }

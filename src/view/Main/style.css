@@ -463,3 +463,10 @@
   work-break: break-all;
   -webkit-box-orient: vertical;
 }
+
+.main-category {
+  cursor: pointer;
+}
+/* .main-category:hover {
+  text-decoration: underline;
+} */
