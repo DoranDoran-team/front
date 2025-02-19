@@ -331,7 +331,7 @@ export default function GDDetail() {
                     </div>
                     <div className="post-info">
                         <div className="post-user-info">
-                            <div className="profile-image" style={{ backgroundImage: `url(${discussionData?.profileImage || `url('../../../image/profile.png');`})` }}></div>
+                            <div className="profile-image" style={{ backgroundImage: `url(${discussionData?.profileImage || '/defaultProfile.png'})` }}></div>
                             <div>
                                 <div className='user-nickname'>{discussionData?.nickName}</div>
                                 <div className='post-date-and-modify'>

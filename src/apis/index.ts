@@ -32,6 +32,7 @@ import PostCommentRequestDto from "./dto/request/comment/post-comment.request.dt
 import PatchCommentRequestDto from "./dto/request/comment/patch-comment.request.dto";
 import { PostAccuseRequestDto } from "./dto/request/accuse";
 import GetAccuseListResponseDto from "./dto/response/accuse/get-accuse-list.response.dto";
+import GetMyDiscussionListResposneDto from "./dto/response/mypage/myInfo/get-my-discussion-list.response.dto";
 
 // variable: api url 상수//
 const DORANDORAN_API_DOMAIN = process.env.REACT_APP_API_URL;
@@ -86,6 +87,9 @@ const MYPAGE_USER_UPDATE_GET_USER_INFO_API_URL = (userId: string) => `${MYPAGE_U
 const MYPAGE_USER_CHANGE_PW_API_URL = `${MYPAGE_USER_INFO_API_URL}/change-pw`;
 const MYPAGE_PATCH_USER_INFO_API_URL = `${MYPAGE_USER_INFO_API_URL}/patch-user`;
 const MYPAGE_USER_DELETE_API_URL = `${MYPAGE_USER_INFO_API_URL}/delete-user`;
+const MYPAGE_MY_DISCUSSION_LIST_API_URL = `${MYPAGE_USER_INFO_API_URL}/get-my-discussion`;
+const MYPAGE_DELETE_MY_DISCUSSION_API_URL = (roomId: number | string) => 
+    `${MYPAGE_USER_INFO_API_URL}/delete/${roomId}`;
 
 const NOTICE_API_URL = `${DORANDORAN_API_DOMAIN}/notice`;
 const POST_NOTICE_API_URL = `${NOTICE_API_URL}/post`;
@@ -358,6 +362,22 @@ export const patchUserInfoRequest = async (requestBody: PatchUserInfoRequestDto,
 // function: 회원 탈퇴 요청 함수 //
 export const deleteUserRequest = async (accessToken: string) => {
     const responseBody = await axios.delete(MYPAGE_USER_DELETE_API_URL, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 마이페이지 - 내가 작성한 게시글 불러오기 함수 //
+export const getMyDiscussionRequest = async(accessToken: string) => {
+    const responseBody = await axios.get(MYPAGE_MY_DISCUSSION_LIST_API_URL, bearerAuthorization(accessToken))
+        .then(responseDataHandler<GetMyDiscussionListResposneDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 내가 작성한 게시글 삭제하기 요청 함수 //
+export const deleteMyDiscussionRequest = async(accessToken: string, roomId: string | number) => {
+    const responseBody = await axios.delete(MYPAGE_DELETE_MY_DISCUSSION_API_URL(roomId), bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
