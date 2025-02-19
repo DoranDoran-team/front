@@ -8,6 +8,7 @@ import CheckPwRequestDto from '../../../../apis/dto/request/mypage/myInfo/check-
 import { useCookies } from 'react-cookie';
 import { pwCheckRequest } from '../../../../apis';
 import ResponseDto from '../../../../apis/dto/response/response.dto';
+import MypageSidebar from '../../../../components/mypage/sidebar';
 
 // component: 비밀번호 확인 화면 컴포넌트 //
 export default function PwCheck() {
@@ -109,36 +110,7 @@ export default function PwCheck() {
     return (
         <div id='password-check'>
             <div className='mypage-menu'>
-                <div className="mypage-left-opstions">
-                    <aside className="mypage-sidebar">
-                        <h2>마이페이지</h2>
-                        <ul>
-                            <li onClick={onChangeInfoClickHandler}><FaUserEdit /> 개인정보 수정</li>
-                            <li onClick={navigateToMileage}><FaCoins /> 마일리지 관리</li>
-                            <li><FaHistory /> 실시간 토론 참여 이력</li>
-                            <li><FaCalendarCheck /> 출석체크</li>
-                        </ul>
-                    </aside>
-                    <div className="subscribe-wrapper">
-                        <div>
-                            <h2 className="subscribe-title">내가 구독한 사람 2명</h2>
-                            <div className="subscribe-search-box">
-                                <input className="input" placeholder="아이디를 입력하세요. " />
-                                <div className="button active">검색</div>
-                            </div>
-                            <div className="subscribe-box">
-                                <div className="subscribe-image"></div>
-                                <div className="subscribe-user-info">
-                                    <div className="subscribe-nickname">마이멜로디</div>
-                                    <div className="subscribe-user">@1000JEA</div>
-                                </div>
-                                <div className="subscribe-cancel-button">
-                                    <div className="subscribe-cancel">구독취소</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <MypageSidebar />
             </div>
 
             <div className='background'>

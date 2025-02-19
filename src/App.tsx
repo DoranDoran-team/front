@@ -3,7 +3,7 @@ import './App.css';
 import { Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 
-import { ACCESS_TOKEN, GEN_DISC_DETAIL_ABSOLUTE_PATH, GEN_DISC_PATH, GEN_DISC_WRITE_ABSOLUTE_PATH, LOGIN_ABSOLUTE_PATH, LOGIN_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, MY_PATH, NOTICE, OTHERS_PATH, ROOT_PATH, RT_DISC_PATH, SCHEDULE, SNS_SUCCESS_PATH, CHANGE_PW, FIND_ID, FIND_ID_RESULT, FIND_PW, SIGN_UP, ADMIN_PATH, MY_UPDATE_PATH, NOTICE_WRITE, NOTICE_DETAIL, MY_INFO_UPDATE_PATH, MY_INFO_PW_PATH, ADMIN_ABSOLUTE_ACCUSE_PATH, ADMIN_ABSOLUTE_MILEAGE_PATH, MY_MILEAGE_PATH, MY_ATTENDANCE_CHECK_PATH, NOTICE_PATCH } from './constants';
+import { ACCESS_TOKEN, GEN_DISC_DETAIL_ABSOLUTE_PATH, GEN_DISC_PATH, GEN_DISC_WRITE_ABSOLUTE_PATH, LOGIN_ABSOLUTE_PATH, LOGIN_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, MY_PATH, NOTICE, OTHERS_PATH, ROOT_PATH, RT_DISC_PATH, SCHEDULE, SNS_SUCCESS_PATH, CHANGE_PW, FIND_ID, FIND_ID_RESULT, FIND_PW, SIGN_UP, ADMIN_PATH, MY_UPDATE_PATH, NOTICE_WRITE, NOTICE_DETAIL, MY_INFO_UPDATE_PATH, MY_INFO_PW_PATH, ADMIN_ABSOLUTE_ACCUSE_PATH, ADMIN_ABSOLUTE_MILEAGE_PATH, MY_MILEAGE_PATH, MY_ATTENDANCE_CHECK_PATH, NOTICE_PATCH, MY_ACCOUNT_MANAGEMENT_PATH } from './constants';
 import MainLayout from './layouts/MainLayout';
 import GD from './view/General_Discuss';
 import RTDiscuss from './view/RT_Discuss';
@@ -34,6 +34,7 @@ import GetSignInResponseDto from './apis/dto/response/auth/get-sign-in.response.
 import { GetSignInRequest } from './apis';
 import { useSignInUserStore } from './stores';
 import Attendance from './view/Mypage/Attendance';
+import AccountManagement from './view/Mypage/Account_Management';
 
 // component: root path 컴포넌트 //
 function Index() {
@@ -173,6 +174,7 @@ export default function DoranDoran() {
         <Route path={MY_INFO_PW_PATH(':userId')} element={<PwCheck />} />
         <Route path={MY_INFO_UPDATE_PATH(':userId')} element={<ChangeInfo />} />
         <Route path={MY_MILEAGE_PATH} element={<MypageMileage />} />
+        <Route path={MY_ACCOUNT_MANAGEMENT_PATH} element={<AccountManagement />} />
         <Route path={MY_ATTENDANCE_CHECK_PATH(':userId')} element={<Attendance />} />
       </Route>
 
