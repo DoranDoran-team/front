@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './style.css';
 import AccuseModal from '../../../components/modal/accuse';
-import { getDiscussionRequest, postCommentRequest} from '../../../apis';
+import { getDiscussionRequest, postCommentRequest } from '../../../apis';
 import Comment from '../../../types/Comment.interface';
 import { usePagination } from '../../../hooks';
 import PostCommentRequestDto from '../../../apis/dto/request/comment/post-comment.request.dto';
@@ -16,12 +16,12 @@ import { useSignInUserStore } from '../../../stores';
 import { PostAccuseRequestDto } from '../../../apis/dto/request/accuse';
 
 interface voteProps {
-    agreeOpinion:string|undefined;
-    oppositeOpinion:string|undefined;
+    agreeOpinion: string | undefined;
+    oppositeOpinion: string | undefined;
 }
 
 // component: 찬/반 의견 선택 컴포넌트 //
-function OpinionSelector ({agreeOpinion,oppositeOpinion}:voteProps){
+function OpinionSelector({ agreeOpinion, oppositeOpinion }: voteProps) {
     const [selectedOpinion, setSelectedOpinion] = useState<string>('');
     const [submitted, setSubmitted] = useState<boolean>(false);
     const [opinionAUsers, setOpinionAUsers] = useState<number>(27); // 의견 A 유저 비율
@@ -109,14 +109,14 @@ export default function GDDetail() {
 
     // state: 원본 리스트 상태 //
     const [originalList, setOriginalList] = useState<Comment[]>([]);
-    
+
     // state: 페이징 관련 상태 //
     const {
         currentPage,
         viewList,
         pageList,
         setTotalList,
-        initViewList} = usePagination<Comment>();
+        initViewList } = usePagination<Comment>();
 
     const openReportModal = () => {
         setIsReportModalOpen(!isReportModalOpen);
@@ -127,67 +127,7 @@ export default function GDDetail() {
         setIsReportModalOpen(!isReportModalOpen);
     };
 
-    // function: 신고 사유 작성 //
-    const handleReportSubmit = () => {
-        if (!selectedReportReason) {
-            alert('신고 사유를 선택해 주세요.');
-            return;
-        }
-        closeReportModal();
 
-        const accessToken = cookies[ACCESS_TOKEN];
-        if (!accessToken) {
-            alert('토큰 오류');
-            return;
-        }
-
-        const formatDate = (date: Date): string => {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0'); // 1월 = 0이므로 +1 필요
-            const day = String(date.getDate()).padStart(2, '0');
-
-            const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
-            const dayOfWeek = days[date.getDay()];
-
-            const hours = String(date.getHours()).padStart(2, '0');
-            const minutes = String(date.getMinutes()).padStart(2, '0');
-
-            return `${year}. ${month}. ${day}. ${dayOfWeek} ${hours}:${minutes}`;
-        };
-
-        const now = new Date();
-        const accuseDate = formatDate(now);
-
-        const requestBody: PostAccuseRequestDto = {
-            reportType: 'POST',
-            reportContents: selectedReportReason,
-            userId: discussionId as string,
-            accuseUserId: discussionData?.userId as string,
-            postId: discussionData?.roomId as number,
-            replyId: null,
-            accuseDate: accuseDate
-        }
-        postAccuseRequest(requestBody, accessToken).then(postAccuseResponse);
-    };
-
-    // function: post accuse response 처리 함수 //
-    const postAccuseResponse = (responseBody: ResponseDto | null) => {
-        const message =
-            !responseBody ? '서버에 문제가 있습니다.' :
-                responseBody.code === 'VF' ? '유효하지 않은 데이터입니다.' :
-                    responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-                        responseBody.code === 'NS' ? '자기신이 올린 글은 신고가 불가능 합니다.' :
-                            responseBody.code === 'NT' ? '신고할려는 항목이 존재하지 않습니다.' :
-                                responseBody.code === 'DA' ? '이미 신고를 하셨습니다.' : '';
-
-        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
-        if (!isSuccessed) {
-            alert(message);
-            return;
-        }
-
-        alert('정상적으로 신고가 접수되었습니다.');
-    }
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
     };
@@ -216,7 +156,7 @@ export default function GDDetail() {
         }
     };
 
-    
+
     const handleReplySubmit = (commentId: number) => {
         const currentDate = new Date().toLocaleString();
         const newReply = {
@@ -252,12 +192,12 @@ export default function GDDetail() {
     };
 
     // function: post comment response 처리 함수 //
-    const postCommentResponse = (responseBody:ResponseDto|null) => {
-        const message = 
+    const postCommentResponse = (responseBody: ResponseDto | null) => {
+        const message =
             !responseBody ? '서버에 문제가 있습니다. ' :
-            responseBody.code === 'AF' ? '접근이 잘못되었습니다. ':
-            responseBody.code === 'NR' ? '존재하지 않는 토론방입니다. ':
-            responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ' : '';
+                responseBody.code === 'AF' ? '접근이 잘못되었습니다. ' :
+                    responseBody.code === 'NR' ? '존재하지 않는 토론방입니다. ' :
+                        responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ' : '';
 
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
@@ -268,12 +208,12 @@ export default function GDDetail() {
 
     // event handler: 댓글 작성하기 버튼 클릭 이벤트 처리 //
     const handleCommentSubmit = () => {
-        
+
         const accessToken = cookies[ACCESS_TOKEN];
         if (!accessToken || !discussionId || !roomId) return;
 
-        const requestBody:PostCommentRequestDto = {
-            userId:discussionId, commentContents:newComment, discussionType:'찬성'
+        const requestBody: PostCommentRequestDto = {
+            userId: discussionId, commentContents: newComment, discussionType: '찬성'
         }
         postCommentRequest(requestBody, roomId, accessToken).then(postCommentResponse);
         setNewComment('');
@@ -359,10 +299,10 @@ export default function GDDetail() {
                         </div>
                     )}
                     {isReportModalOpen && (
-                        <AccuseModal cancelHandler={closeReportModal}/>
+                        <AccuseModal cancelHandler={closeReportModal} discussionData={discussionData} />
                     )}
                     <div className="discussion-info">
-                        <div className="discussion-image" style={{backgroundImage:`url(${discussionData?.discussionImage})`}}></div>
+                        <div className="discussion-image" style={{ backgroundImage: `url(${discussionData?.discussionImage})` }}></div>
                         <div className="discussion-text-info">
                             <div className="discussion-title">{discussionData?.roomTitle}</div>
                             <div className="deadline">마감: {discussionData?.discussionEnd}</div>
@@ -370,7 +310,7 @@ export default function GDDetail() {
                         </div>
                     </div>
                     <div className="vote-info">
-                        <OpinionSelector agreeOpinion={discussionData?.agreeOpinion} oppositeOpinion={discussionData?.oppositeOpinion}/>
+                        <OpinionSelector agreeOpinion={discussionData?.agreeOpinion} oppositeOpinion={discussionData?.oppositeOpinion} />
                     </div>
                     <div className="comment-and-recommendation">
                         <div className="comment-icon"></div>
@@ -433,7 +373,7 @@ export default function GDDetail() {
                             {commentOptions[comment.commentId] && (
                                 <div className='dropdown-menu-box'>
                                     <div className='dropdown-menu'>
-                                        <div className='dropdown-item' onClick={() => handleEditComment(comment.commentId)}>수정하기</div>                                  
+                                        <div className='dropdown-item' onClick={() => handleEditComment(comment.commentId)}>수정하기</div>
                                         <div className='dropdown-item' onClick={() => handleDeleteComment(comment.commentId)}>삭제하기</div>
                                     </div>
                                 </div>

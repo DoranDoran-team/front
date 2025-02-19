@@ -2,6 +2,8 @@
     display: flex;
     align-items: center;
     gap: 24px;
+    margin-left: 37%;
+    margin-top: 20px
 }
 
 .left-button,
@@ -15,7 +17,6 @@
     width: 40px;
     height: 40px;
 
-    /* background-image: url(/public//images/round-left.png); */
     background-size: 100% 100%;
 
     cursor: pointer;
@@ -27,7 +28,6 @@
     width: 40px;
     height: 40px;
 
-    /* background-image: url(/public//images/round-right.png); */
     background-size: 100% 100%;
 
     cursor: pointer;
@@ -48,7 +48,7 @@
     cursor: pointer;
 }
 
-.page-active {
+.page.active {
     color: black;
 
     font-weight: 700;

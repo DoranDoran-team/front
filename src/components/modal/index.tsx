@@ -2,14 +2,14 @@
 import './style.css';
 // interface: modal Props
 interface modalProps {
-    content: string
+    content: string | null
     lt_btn: string
     rt_btn: string
-    lt_handler: ()=>void
-    rt_handler: ()=>void
+    lt_handler: () => void
+    rt_handler: () => void
 }
-export default function Modal({content, lt_btn, rt_btn, lt_handler, rt_handler}: modalProps) {
-    
+export default function Modal({ content, lt_btn, rt_btn, lt_handler, rt_handler }: modalProps) {
+
     return (
         <div>
             <div className='modal-wrapper'>
