@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import './style.css';
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
-import { ACCESS_TOKEN } from "../../constants";
+import { ACCESS_TOKEN, GEN_DISC_DETAIL_ABSOLUTE_PATH } from "../../constants";
 import { getMainGenDiscListRequest } from "../../apis";
 import ResponseDto from "../../apis/dto/response/response.dto";
 import GetMainGenDiscListResponseDto from "../../apis/dto/response/main/get-main-gen-disc-list.response.dto";
@@ -57,10 +57,23 @@ export default function Main() {
         }, 0);
     };
 
-    // event handler: 해당 게시글 이동 이벤트 //
-    const onGenDiscClickHandler = () => {
-        //navigator()
+    // event handler: 해당 게시글 이동 이벤트(사진 클릭) //
+    const onGenDiscClickHandler = (postIndex: number) => {
+        navigator(GEN_DISC_DETAIL_ABSOLUTE_PATH(postIndex));
     }
+
+    // event handler: 일반 토론 - 태그 클릭 이벤트 //
+    // const onGenDiscTagClickHandler = (tag: string) => {
+    //     if(tag === "시사·교양") navigator();
+    //     else if (tag === "과학") navigator();
+    //     else if (tag === "기타") navigator();
+    //     else navigator(); //경제
+    // }
+
+    // event handler: 일반 토론 제목 & 내용 클릭 이벤트 //
+    // const onTitleNContentsClickHandler = (postIndex: number) => {
+    //     navigator(GEN_DISC_DETAIL_ABSOLUTE_PATH(postIndex));
+    // }
 
     // function: navigator //
     const navigator = useNavigate();
@@ -81,6 +94,7 @@ export default function Main() {
     
         const { mainGenDiscs } = responseBody as GetMainGenDiscListResponseDto;
         setPosts(mainGenDiscs);
+        console.log(mainGenDiscs);
     }
 
     // effect: 메인 화면 일반 토론 게시글 가져오기 //
@@ -112,7 +126,8 @@ export default function Main() {
                 <div className='main-general-discussion'>
                     <div className='main-general-box'>
                         <div className='main-general-photo'>
-                            <img src={posts[postIndex]?.imgSrc} className="general-image" />
+                            <img src={posts[postIndex]?.imgSrc} className="general-image" 
+                                onClick={() => onGenDiscClickHandler(posts[postIndex].roomId)}/>
                         </div>
                     </div>
                 </div>
@@ -120,7 +135,7 @@ export default function Main() {
                     <div className='main-general-content'>
                         <em className="subject-tit">
                             <div>
-                                <a href="태그">일반 토론 - {posts[postIndex]?.tag}</a>
+                                <div className="main-category">일반 토론 - {posts[postIndex]?.tag}</div>
                             </div>
                             <div className="arrow-circles">
                                 <div className="arrow-circle-left" onClick={handlePrevPost}></div>
@@ -128,7 +143,7 @@ export default function Main() {
                             </div>
                         </em>
                         <div className="general-news-tit">
-                            <a href="이름">{posts[postIndex]?.title}</a>
+                            <div>{posts[postIndex]?.title}</div>
                         </div>
                         <div className="general-news-content">{posts[postIndex]?.content}</div>
                     </div>

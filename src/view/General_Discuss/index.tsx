@@ -36,7 +36,10 @@ function TableRow({ discussionList, getDiscussionList }: TableRowProps) {
             <div className='main-box' onClick={onDiscussionClickHandler}>
                 <div className="box1">
                     <div>
-                        <div className="profile-image"></div>
+                    <div className="profile-image"
+                        style={{backgroundImage: `url(${discussionList.profileImage ? 
+                            discussionList.profileImage : '/defaultProfile.png'})`}}
+                    ></div>
                     </div>
                     <div className='user-nickname'>{discussionList.nickName}</div>
                 </div>
@@ -136,6 +139,7 @@ export default function GD() {
         }
 
         const { discussionList } = responseBody as GetDiscussionListResponseDto
+        console.log(discussionList);
         setTotalList(discussionList);
         setOriginalList(discussionList);
     }
@@ -152,7 +156,7 @@ export default function GD() {
     };
     // event handler: 토론방 카테고리 클릭 이벤트 처리 //
     const onCategoryHandler = (type: string) => {
-        setCategory(category => (category === type ? '' : type));
+        setCategory(type);
     }
 
     // event handler: 검색어 변경 이벤트 처리 //
@@ -191,7 +195,7 @@ export default function GD() {
                                     <span>{type}</span>
                                 </div>
                             ))}
-                        </div>
+                        </div> 
                         <div className="search-bar-and-sequence">
                             <div className='search-bar'>
                                 <div className="magnifier-and-search-input">
