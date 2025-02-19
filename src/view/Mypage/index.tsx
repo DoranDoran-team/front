@@ -11,6 +11,7 @@ import { deleteMyDiscussionRequest, getMyDiscussionRequest } from "../../apis";
 import GetMyDiscussionListResposneDto from "../../apis/dto/response/mypage/myInfo/get-my-discussion-list.response.dto";
 import ResponseDto from "../../apis/dto/response/response.dto";
 import MyDiscussion from "../../types/my-discussion.interface";
+import MypageSidebar from "../../components/mypage/sidebar";
 
 interface DiscussionRowProps {
     discussion: MyDiscussion;
