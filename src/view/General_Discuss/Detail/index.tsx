@@ -517,9 +517,6 @@ export default function GDDetail() {
         }
     };
 
-
-
-
     const handleCancelReply = () => {
         setReplyTo(null);
         setReplyContent({});
@@ -659,7 +656,7 @@ export default function GDDetail() {
                         </div>
                     )}
                     {isReportModalOpen && (
-                        <AccuseModal cancelHandler={closeReportModal} />
+                        <AccuseModal cancelHandler={closeReportModal} discussionData={discussionData} />
                     )}
                     <div className="discussion-info">
                         <div className="discussion-image" style={{ backgroundImage: `url(${discussionData?.discussionImage})` }}></div>
