@@ -152,7 +152,7 @@ export default function GD() {
     };
     // event handler: 토론방 카테고리 클릭 이벤트 처리 //
     const onCategoryHandler = (type: string) => {
-        setCategory(category => (category === type ? '' : type));
+        setCategory(type);
     }
 
     // event handler: 검색어 변경 이벤트 처리 //
@@ -191,7 +191,7 @@ export default function GD() {
                                     <span>{type}</span>
                                 </div>
                             ))}
-                        </div>
+                        </div> 
                         <div className="search-bar-and-sequence">
                             <div className='search-bar'>
                                 <div className="magnifier-and-search-input">

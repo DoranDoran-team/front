@@ -1,13 +1,17 @@
-import Reply from "./Reply.interface";
 
 // interface: 댓글 리스트 타입 정의//
 export default interface Comment {
     commentId:number;
     roomId:number;
+    userId:string;
     nickName:string;
     profileImage:string;
-    commentContents:string;
-    commentTime:string;
+    contents:string;
+    createdAt:string;
     discussionType:string;
-    replies:Reply[];
+    updateStatus:boolean;
+    parentId:number;
+    depth:number;
+    deleteStatus:boolean;
+    replies:Comment[];
 }
