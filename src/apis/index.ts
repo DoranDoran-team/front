@@ -37,6 +37,7 @@ import { PostAdminMileageRequestDto } from "./dto/request/mileage/post-admin-mil
 import { PostAccountRequestDto } from "./dto/request/account/post-account.request.dto";
 import { GetAccountsResponseDto } from "./dto/response/mypage/account_management/get-account-management.response.dto";
 import GetMyDiscussionListResposneDto from "./dto/response/mypage/myInfo/get-my-discussion-list.response.dto";
+import { GetNotificationsResponseDto } from "./dto/response/notification/get-notifications.reponse.dto";
 
 // variable: api url 상수//
 const DORANDORAN_API_DOMAIN = process.env.REACT_APP_API_URL;
@@ -81,6 +82,11 @@ const GET_ACCUSE_URL = (accuseId: number) => `${DORANDORAN_API_DOMAIN}/accuse/${
 const MILEAGE_API_URL = `${DORANDORAN_API_DOMAIN}/mypage/mileage`;
 const ADMIN_MILEAGE_API_URL = `${DORANDORAN_API_DOMAIN}/admin/mileage`;
 const ACCOUNT_MANAGEMENT_API_URL = `${DORANDORAN_API_DOMAIN}/mypage/account-management`;
+
+
+
+const NOTIFICATION_API_URL = `${DORANDORAN_API_DOMAIN}/mypage/notifications`;
+
 
 
 const GET_SIGN_IN_API_URL = `${AUTH_MODULE_URL}/sign-in`;
@@ -325,7 +331,7 @@ export const refundRequest = async (requestBody: MyMileageRequestDto, accessToke
     return responseBody;
 };
 
-// function: (관리자) 마일리지 지급 POST 요청 함수수 //
+// function: (관리자) 마일리지 지급 POST 요청 함수 //
 export const giveMileage = async (requestBody: PostAdminMileageRequestDto, accessToken: string) => {
     try {
         const response = await axios.post(`${ADMIN_MILEAGE_API_URL}/give`, requestBody, bearerAuthorization(accessToken));
@@ -361,6 +367,41 @@ export const updateRefundStatus = async (mileageId: number, status: string, acce
         return null;
     }
 };
+
+
+// function: 알림 목록 조회 GET 요청 함수 //
+
+export const getNotifications = async (accessToken: string, page: number = 1) => {
+    try {
+        const response = await axios.get(`${NOTIFICATION_API_URL}?page=${page}&limit=5`, bearerAuthorization(accessToken));
+
+        return response.data;
+    } catch (error) {
+        console.error("🚨 Error fetching notifications:", error);
+        return [];
+    }
+};
+
+// 서버에서 온 메시지를 그대로 사용하도록 수정
+// const formatNotificationMessage = (notification: GetNotificationsResponseDto) => {
+//     return notification.message;
+// };
+
+// function: 특정 알림 읽음 처리 PATCH 요청 함수 //
+export const markNotificationAsRead = async (notificationId: number, accessToken: string) => {
+    try {
+        const response = await axios.patch(
+            `${NOTIFICATION_API_URL}/${notificationId}/read`,
+            {},
+            bearerAuthorization(accessToken)
+        );
+        return response.data as ResponseDto;
+    } catch (error) {
+        console.error("🚨 Error marking notification as read:", error);
+        return null;
+    }
+};
+
 
 // function: 계좌 목록 GET 요청 함수 //
 export const getAccounts = async (accessToken: string): Promise<GetAccountsResponseDto[] | null> => {

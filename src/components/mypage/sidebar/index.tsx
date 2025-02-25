@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import './style.css';
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { MY_ABSOLUTE_ACCOUNT_MANAGEMENT_PATH, MY_ABSOLUTE_ATTENDANCE_CHECK_PATH, MY_ABSOLUTE_MILEAGE_PATH, MY_ABSOLUTE_PATH, MY_ABSOLUTE_UPDATE_PATH, MY_INFO_PW_ABSOLUTE_PATH } from  "../../../constants";
+import { MY_ABSOLUTE_ACCOUNT_MANAGEMENT_PATH, MY_ABSOLUTE_ATTENDANCE_CHECK_PATH, MY_ABSOLUTE_MILEAGE_PATH, MY_ABSOLUTE_PATH, MY_ABSOLUTE_UPDATE_PATH, MY_INFO_PW_ABSOLUTE_PATH } from "../../../constants";
 import { FaUserEdit, FaCoins, FaHistory, FaCalendarCheck, FaCreditCard } from "react-icons/fa";
 import { useSignInUserStore } from "../../../stores";
 
@@ -68,16 +68,18 @@ export default function MypageSidebar() {
     return (
         <>
             <div className="mypage-left-opstions">
-                <aside className="mypage-sidebar">
-                    <h2 onClick={navigateToMyPage}>마이페이지</h2>
-                    <ul>
-                        <li onClick={onChangeInfoClickHandler}><FaUserEdit /> 개인정보 수정</li>
-                        <li><FaHistory /> 실시간 토론 참여 이력</li>
-                        <li onClick={naviagateToAttendance}><FaCalendarCheck /> 출석체크</li>
-                        <li onClick={navigateToMileage}><FaCoins /> 마일리지 관리</li>
-                        <li onClick={navigateToAccountManagement}><FaCreditCard  /> 계좌 관리</li>
-                    </ul>
-                </aside>
+                <div>
+                    <aside className="mypage-sidebar">
+                        <h2 onClick={navigateToMyPage}>마이페이지</h2>
+                        <ul>
+                            <li onClick={onChangeInfoClickHandler}><FaUserEdit /> 개인정보 수정</li>
+                            <li><FaHistory /> 실시간 토론 참여 이력</li>
+                            <li onClick={naviagateToAttendance}><FaCalendarCheck /> 출석체크</li>
+                            <li onClick={navigateToMileage}><FaCoins /> 마일리지 관리</li>
+                            <li onClick={navigateToAccountManagement}><FaCreditCard /> 계좌 관리</li>
+                        </ul>
+                    </aside>
+                </div>
                 <div className="subscribe-wrapper">
                     <div>
                         <h2 className="subscribe-title">내가 구독한 사람 2명</h2>

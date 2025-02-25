@@ -271,22 +271,22 @@
 
 #layout-my .menu-box2 {
     position: absolute;
-    top: 45px;
-    left: 35%;
+    /* top: 45px;
+    left: 35%; */
     transform: translateX(-50%);
-    width: 200px;
+    /* width: 200px; */
     border-radius: 6px;
-    background-color: white;
+    /* background-color: white; */
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
-    padding: 15px;
+    /* padding: 15px; */
     z-index: 1000;
-    font-size: 15px;
-    text-align: left;
+    /* font-size: 15px; */
+    /* text-align: left; */
     cursor: pointer;
-    max-height: 150px;
-    overflow-y: auto;
+    /* max-height: 150px; */
+    /* overflow-y: auto; */
 }
 
 #layout-my .menu2 {

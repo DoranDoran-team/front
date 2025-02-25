@@ -6,6 +6,7 @@ import Footer from '../../components/footer';
 import { useCookies } from 'react-cookie';
 import { ACCESS_TOKEN, GEN_DISC_ABSOLUTE_PATH, GEN_DISC_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, MY_ABSOLUTE_PATH, NOTICE, NOTICE_ABSOLUTE_PATH, ROOT_ABSOLUTE_PATH, ROOT_PATH, RT_DISC_ABSOLUTE_PATH, RT_DISC_PATH, SCHEDULE, SCHEDULE_ABSOLUTE_PATH } from '../../constants';
 import { RankingClickResultStore, useSignInUserStore } from '../../stores';
+import Notification from '../../components/notification';
 //import ArrowToTop from '../../components/arrow-to-top/ArrowToTop';
 
 // component: 로고 컴포넌트 //
@@ -119,15 +120,16 @@ function TopPersonalNavigation() {
                     onMouseEnter={() => setIsHovered2(true)}
                     onMouseLeave={() => setIsHovered2(false)}>
                     <div>
-                        <AlarmMessage></AlarmMessage>
-
+                        {/* <AlarmMessage></AlarmMessage> */}
+                        <Notification></Notification>
+{/* 
                         <div className='menu'>회원님이 구독하신 <strong>@test123</strong> 님이 게시글을 작성하였습니다.</div>
                         <hr />
                         <div className='menu'>회원님이 신청하신 마일리지 환급 <strong>5,000점</strong> 승인 완료되었습니다.</div>
                         <hr />
                         <div className='menu'>회원님이 게시한 "<strong>AI에게 윤리적 책임이 있는가?</strong>" 토론이 마감되었습니다.</div>
                         <hr />
-                        <div className='menu2'>회원님이 예약하신 "<strong>대마초 합법화 가능한가?</strong>" 실시간 토론 입장이 시작되었습니다.</div>
+                        <div className='menu2'>회원님이 예약하신 "<strong>대마초 합법화 가능한가?</strong>" 실시간 토론 입장이 시작되었습니다.</div> */}
                     </div>
                 </div>)
             }

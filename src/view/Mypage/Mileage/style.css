@@ -1,11 +1,12 @@
 #mypage-mileage-main-wrapper {
     display: flex;
+    gap: 20px;
 }
 
 #mypage-mileage {
-    width: 900px;
-    margin: 0 auto;
-    padding: 20px;
+    /* box-sizing: border-box; */
+    width: 1080px;
+    padding: 0px 40px;
     font-family: Arial, sans-serif;
     color: #333;
     line-height: 1.6;
@@ -154,7 +155,8 @@
 }
 
 #mypage-mileage .refund-form input {
-    width: calc(100% - 10px);
+    width: 100%;
+    box-sizing: border-box;
     padding: 8px;
     margin-bottom: 10px;
     border: 1px solid #ddd;
@@ -180,4 +182,59 @@
 
 #mypage-mileage .refund-button:hover {
     background-color: #2f55d3;
+}
+
+/* 등록된 계좌 스타일 */
+.account-select {
+    margin-top: 20px;
+}
+
+.accounts-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.account-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    /* transition: all 0.3s ease; */
+}
+
+.account-item.selected {
+    border: 2px solid #367ff4;
+    background-color: rgba(54, 127, 244, 0.1);
+}
+
+.bank-logo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #367ff4;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.account-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.account-alias {
+    font-weight: bold;
+}
+
+.account-number {
+    font-size: 14px;
+    color: gray;
 }
