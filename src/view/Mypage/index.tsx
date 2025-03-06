@@ -169,7 +169,7 @@ export default function Mypage() {
 
     // event handler: 출석체크 버튼 클릭 이벤트 핸들러 //
     const naviagateToAttendance = () => {
-        navigator(MY_ABSOLUTE_ATTENDANCE_CHECK_PATH('songth'));
+        navigator(MY_ABSOLUTE_ATTENDANCE_CHECK_PATH);
     }
 
     // function: 내가 작성한 게시글 불러오기 처리 함수 //

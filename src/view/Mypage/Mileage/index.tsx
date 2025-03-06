@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './style.css';
-import { getMileageData, refundRequest } from '../../../apis';
+import { getAccounts, getMileageData, refundRequest } from '../../../apis';
 import { useCookies } from 'react-cookie';
 import { GetMileageResponseDto } from '../../../apis/dto/response/get-mileage.response.dto';
 import MypageSidebar from '../../../components/mypage/sidebar';
@@ -9,6 +9,12 @@ type RefundHistoryItem = {
     transactionDate: string;
     amount: number;
     status: string;
+};
+
+type AccountItem = {
+    bankName: string;
+    accountNumber: string;
+    accountAlias: string;
 };
 
 export default function MypageMileage() {
@@ -20,6 +26,7 @@ export default function MypageMileage() {
     const [totalRefundedMileage, setTotalRefundedMileage] = useState(0);
     const [refundHistory, setRefundHistory] = useState<RefundHistoryItem[]>([]);
     const [mileageHistory, setMileageHistory] = useState<{ date: string; detail: string; mileage: number; }[]>([]);
+    const [accounts, setAccounts] = useState<AccountItem[]>([]);
 
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndDate] = useState<string>('');
@@ -27,6 +34,7 @@ export default function MypageMileage() {
     const [refundAmount, setRefundAmount] = useState<number | ''>('');
     const [accountNumber, setAccountNumber] = useState<string>('');
     const [bankName, setBankName] = useState<string>('');
+    const [selectedAccount, setSelectedAccount] = useState<string | null>(null);
 
     useEffect(() => {
         if (!accessToken) {
@@ -53,13 +61,16 @@ export default function MypageMileage() {
                     }))
                 );
             }
+
         };
 
-
-
-
+        const fetchAccounts = async () => {
+            const accountData = await getAccounts(accessToken);
+            if (accountData) setAccounts(accountData);
+        };
 
         fetchMileageData();
+        fetchAccounts();
     }, [accessToken]);
 
     const filterMileageHistory = (start: string, end: string) => {
@@ -109,6 +120,24 @@ export default function MypageMileage() {
         setEndDate('');
         setFilterPeriod('');
     };
+
+    const handleSelectAccount = (account: AccountItem) => {
+        if (selectedAccount === account.accountNumber) {
+            setSelectedAccount(null);
+            setBankName('');
+            setAccountNumber('');
+        } else {
+            setSelectedAccount(account.accountNumber);
+            setBankName(account.bankName);
+            setAccountNumber(account.accountNumber);
+        }
+    };
+
+    // const handleDeselectAccount = () => {
+    //     setSelectedAccount(null);
+    //     setBankName('');
+    //     setAccountNumber('');
+    // };
 
     const handleRefund = async () => {
         if (refundAmount === '' || refundAmount <= 0 || !accountNumber || !bankName) {
@@ -165,23 +194,25 @@ export default function MypageMileage() {
                     <div className="filter-controls">
                         <div className="date-filters">
                             <label>조회 기간</label>
-                            <input
-                                type="date"
-                                value={startDate}
-                                onChange={(e) => {
-                                    setStartDate(e.target.value);
-                                    if (e.target.value && endDate) filterMileageHistory(e.target.value, endDate);
-                                }}
-                            />
-                            <label> ~ </label>
-                            <input
-                                type="date"
-                                value={endDate}
-                                onChange={(e) => {
-                                    setEndDate(e.target.value);
-                                    if (startDate && e.target.value) filterMileageHistory(startDate, e.target.value);
-                                }}
-                            />
+                            <div className="date-inputs">
+                                <input
+                                    type="date"
+                                    value={startDate}
+                                    onChange={(e) => {
+                                        setStartDate(e.target.value);
+                                        if (e.target.value && endDate) filterMileageHistory(e.target.value, endDate);
+                                    }}
+                                />
+                                <label> ~ </label>
+                                <input
+                                    type="date"
+                                    value={endDate}
+                                    onChange={(e) => {
+                                        setEndDate(e.target.value);
+                                        if (startDate && e.target.value) filterMileageHistory(startDate, e.target.value);
+                                    }}
+                                />
+                            </div>
                         </div>
                         <div className="preset-filters">
                             {['오늘', '1주일', '1개월', '6개월', '1년'].map((period) => (
@@ -258,6 +289,49 @@ export default function MypageMileage() {
                         <div>환급 가능한 마일리지: <strong>{currentMileage}p</strong></div>
                     </div>
                     <div className="refund-form">
+                        {/* 기존 계좌 목록 */}
+                        {accounts.length > 0 && (
+                            <div className="account-select">
+                                <h4>등록된 계좌 선택</h4>
+                                <div className="accounts-list">
+                                    {accounts.map((account) => (
+                                        <div
+                                            key={account.accountNumber}
+                                            className={`account-item ${selectedAccount === account.accountNumber ? 'selected' : ''}`}
+                                            onClick={() => handleSelectAccount(account)}
+                                        >
+                                            <div className="bank-logo">{account.bankName.charAt(0)}</div>
+                                            <div className="account-info">
+                                                <div className="account-alias">{account.accountAlias}</div>
+                                                <div className="account-number">{account.accountNumber}</div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+
+                        {/* 계좌 수동 입력 */}
+                        <div className="manual-input">
+                            <label>계좌 직접 입력</label>
+                            <input
+                                type="text"
+                                placeholder="계좌 번호 입력"
+                                value={selectedAccount ? selectedAccount : accountNumber}
+                                onChange={(e) => {
+                                    if (!selectedAccount) setAccountNumber(e.target.value);
+                                }}
+                            />
+                            <input
+                                type="text"
+                                placeholder="은행명 입력"
+                                value={selectedAccount ? bankName : bankName}
+                                onChange={(e) => {
+                                    if (!selectedAccount) setBankName(e.target.value);
+                                }}
+                            />
+                        </div>
                         <label>환급 신청할 마일리지</label>
                         <input
                             type="number"
@@ -271,7 +345,7 @@ export default function MypageMileage() {
                                 환급 후 남는 마일리지: <strong>{currentMileage - refundAmount}p</strong>
                             </div>
                         )}
-                        <label>계좌번호</label>
+                        {/* <label>계좌번호</label>
                         <input
                             type="text"
                             value={accountNumber}
@@ -284,7 +358,7 @@ export default function MypageMileage() {
                             value={bankName}
                             onChange={(e) => setBankName(e.target.value)}
                             placeholder="은행명 입력"
-                        />
+                        /> */}
                         <button onClick={handleRefund} className="refund-button">환급 신청</button>
                     </div>
                 </div>

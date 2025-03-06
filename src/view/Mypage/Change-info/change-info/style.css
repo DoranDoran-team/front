@@ -30,13 +30,14 @@
 }
 
 #change-info .background {
+    box-sizing: border-box;
     width: 1000px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 80px;
+    padding: 60px;
 
     background-color: #FBFBFB;
     border-radius: 50px;

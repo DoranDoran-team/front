@@ -13,7 +13,7 @@ export default function Mileage() {
     // 상태 관리
     const [activeTypes, setActiveTypes] = useState<string>('대기중');
     const [refundRequests, setRefundRequests] = useState<MileageRequestDto[]>([]);
-    const [selectedRefund, setSelectedRefund] = useState<MileageRequestDto | null>(null);
+    // const [selectedRefund, setSelectedRefund] = useState<MileageRequestDto | null>(null);
 
     // 마일리지 지급 관련 상태
     const [userId, setUserId] = useState<string>('');
