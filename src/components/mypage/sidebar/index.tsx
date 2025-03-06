@@ -1,16 +1,15 @@
 import React, { ChangeEvent, MouseEvent, useEffect, useState } from "react";
 import './style.css';
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-
+import { useNavigate, useParams } from "react-router-dom";
 import { ACCESS_TOKEN, MY_ABSOLUTE_ACCOUNT_MANAGEMENT_PATH, MY_ABSOLUTE_ATTENDANCE_CHECK_PATH, MY_ABSOLUTE_MILEAGE_PATH, MY_ABSOLUTE_PATH, MY_ABSOLUTE_UPDATE_PATH, MY_INFO_PW_ABSOLUTE_PATH, MY_PATH } from  "../../../constants";
 import { FaUserEdit, FaCoins, FaHistory, FaCalendarCheck, FaCreditCard } from "react-icons/fa";
 import { useSignInUserStore } from "../../../stores";
 import Subscribers from "../../../types/subscribers.interface";
 import useNoticePagination from "../../../hooks/notice.pagination.hooks";
-import NoticePagination from "../../noticePagination";
-import { cancleFollowRequest } from "../../../apis";
-import { Cookies, useCookies } from "react-cookie";
+import { useCookies } from "react-cookie";
 import ResponseDto from "../../../apis/dto/response/response.dto";
+import { SearchUserData } from "../../../apis/dto/response/user/get-search-user-list.response.dto";
+import { searchUsersRequest } from "../../../apis";
 
 interface SubProps {
     subers: Subscribers
@@ -23,7 +22,6 @@ export default function MypageSidebar() {
     const { userId } = useParams();
 
     // state: 마이페이지 상태 //
-    // const [state] = useState<boolean>(true);
     const [subscribe, setSubscribe] = useState<boolean>(false);
     const [user] = useState<boolean>(false);
     // const [stateType, setStateType] = useState<boolean>(false);
@@ -34,36 +32,49 @@ export default function MypageSidebar() {
     // state: 원본 리스트 상태 //
     const [originalList, setOriginalList] = useState<Subscribers[]>([]);
 
+    // state: 검색어, 검색 결과, 드롭다운 열림 여부
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [searchResults, setSearchResults] = useState<SearchUserData[]>([]);
+    const [showResults, setShowResults] = useState<boolean>(false);
+ 
+
     // variable: 자기자신 확인 //
     const isUser = signInUser?.userId === userId; // 로그인한 사람이 본인인지 확인
 
     // function: 네비게이터 함수 처리 //
     const navigator = useNavigate();
 
-    // event handler: 마일리지 관리 버튼 클릭 이벤트 처리 함수 //
+    const [cookies] = useCookies();
+    const accessToken = cookies['accessToken'];
+
+    // event handler: 마이페이지 버튼 클릭 이벤트 처리 함수 //
     const navigateToMyPage = () => {
         //navigator(MY_ABSOLUTE_PATH);
     };
 
     // event handler: 마일리지 관리 버튼 클릭 이벤트 처리 함수 //
     const navigateToMileage = () => {
-        if(signInUser) navigator(MY_ABSOLUTE_MILEAGE_PATH(signInUser.userId));
+        //if(signInUser) navigator(MY_ABSOLUTE_MILEAGE_PATH(signInUser.userId));
+        navigator(MY_ABSOLUTE_MILEAGE_PATH);
     };
 
-    // event handler: 마일리지 관리 버튼 클릭 이벤트 처리 함수 //
+    // event handler: 계좌 관리 버튼 클릭 이벤트 처리 함수 //
     const navigateToAccountManagement = () => {
-        if(signInUser) navigator(MY_ABSOLUTE_ACCOUNT_MANAGEMENT_PATH(signInUser.userId));
+        //if(signInUser) navigator(MY_ABSOLUTE_ACCOUNT_MANAGEMENT_PATH(signInUser.userId));
+        navigator(MY_ABSOLUTE_ACCOUNT_MANAGEMENT_PATH);
     };
 
-    // event handler: 개인 정보 수정 버튼 클릭 이벤트 핸들러 //
+    // event handler: 개인정보 수정 버튼 클릭 이벤트 처리 함수 //
     const onChangeInfoClickHandler = () => {
         if(signInUser) navigator(MY_INFO_PW_ABSOLUTE_PATH(signInUser.userId));
         else return;
+        //navigator(MY_INFO_PW_ABSOLUTE_PATH(signInUser?.userId));
     }
 
-    // event handler: 출석체크 버튼 클릭 이벤트 핸들러 //
+    // event handler: 출석체크 버튼 클릭 이벤트 처리 함수 //
     const naviagateToAttendance = () => {
-        if(signInUser) navigator(MY_ABSOLUTE_ATTENDANCE_CHECK_PATH(signInUser.userId));
+        //if(signInUser) navigator(MY_ABSOLUTE_ATTENDANCE_CHECK_PATH(signInUser.userId));
+        navigator(MY_ABSOLUTE_ATTENDANCE_CHECK_PATH);
     }
 
     // event handler: 아이디 검색 입력 변경 이벤트 핸들러 //
@@ -86,7 +97,73 @@ export default function MypageSidebar() {
         }
     }
 
-    // effect: //
+    const performSearch = async (keyword: string) => {
+        if (!keyword.trim()) {
+            setShowResults(false);
+            setSearchResults([]);
+            return;
+        }
+
+        if (!accessToken) {
+            alert('로그인이 필요한 기능입니다.');
+            return;
+        }
+
+        const response = await searchUsersRequest(keyword, accessToken);
+
+        if (!response || response.code !== 'SU') {
+            setSearchResults([]);
+            setShowResults(true);
+            return;
+        }
+
+        if (!('userList' in response)) {
+            setSearchResults([]);
+            setShowResults(true);
+            return;
+        }
+
+        // 여기까지 왔으면 response는 GetSearchUserListResponseDto 타입
+        setSearchResults(response.userList);
+        setShowResults(true);
+    };
+
+
+    // event handler: 검색어 입력 시
+    const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+
+        // 이미 드롭다운이 열려있다면 실시간 필터링 재호출
+        if (showResults) {
+            performSearch(value);
+        }
+    };
+
+    // event handler: 검색 input에서 Enter 키 입력
+    const onInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            performSearch(searchTerm);
+        }
+    };
+
+    // event handler: 검색 버튼 클릭
+    const onSearchButtonClick = () => {
+        performSearch(searchTerm);
+    };
+
+    // event handler: 드롭다운 닫기
+    const closeDropdown = () => {
+        setShowResults(false);
+    };
+
+    // event handler: 구독 버튼 클릭 시 (UI만 구현)
+    const onSubscribeButtonClick = (userId: string) => {
+        alert(`(구독 기능은 아직 미구현), ${userId} 님을(를) 구독합니다`);
+    };
+
+
+    // effect: 컴포넌트 마운트 시 signInUser 확인용 //
     useEffect(() => {
         if(signInUser) {
             setSubscribers(signInUser.subscribers);
@@ -117,7 +194,7 @@ export default function MypageSidebar() {
 
         // event handler: 상대방 프로필 클릭 이벤트 핸들러 //
         const onProfileClickHandler = () => {
-            navigator(MY_PATH(subers.userId));
+            navigator(MY_PATH);
         }
 
         // event handler: 구독 취소 버튼 이벤트 처리 함수 //
@@ -150,7 +227,7 @@ export default function MypageSidebar() {
                 //alert("구독 취소되었습니다.");
                 //window.location.reload();
             }
-        }
+    }
 
         // render: 구독 박스 렌더링 //
         return (
@@ -175,29 +252,70 @@ export default function MypageSidebar() {
     return (
         <>
             <div className="mypage-left-opstions">
-                <aside className="mypage-sidebar">
-                    <h2 onClick={navigateToMyPage}>마이페이지</h2>
-                    <ul>
-                        <li onClick={onChangeInfoClickHandler}><FaUserEdit /> 개인정보 수정</li>
-                        <li><FaHistory /> 실시간 토론 참여 이력</li>
-                        <li onClick={naviagateToAttendance}><FaCalendarCheck /> 출석체크</li>
-                        <li onClick={navigateToMileage}><FaCoins /> 마일리지 관리</li>
-                        <li onClick={navigateToAccountManagement}><FaCreditCard  /> 계좌 관리</li>
-                    </ul>
-                </aside>
+                <div>
+                    <aside className="mypage-sidebar">
+                        <h3 onClick={navigateToMyPage}>마이페이지</h3>
+                        <ul>
+                            <li onClick={onChangeInfoClickHandler}><FaUserEdit /> 개인정보 수정</li>
+                            <li><FaHistory /> 실시간 토론 참여 이력</li>
+                            <li onClick={naviagateToAttendance}><FaCalendarCheck /> 출석체크</li>
+                            <li onClick={navigateToMileage}><FaCoins /> 마일리지 관리</li>
+                            <li onClick={navigateToAccountManagement}><FaCreditCard /> 계좌 관리</li>
+                        </ul>
+                    </aside>
+                </div>
                 <div className="subscribe-wrapper">
                     <div style={{display: "flex", flexDirection: "column"}}>
                         <h2 className="subscribe-title">내가 구독한 사람 {subscribers.length}명</h2>
                         <div className="subscribe-search-box">
-                            <input className="input" placeholder="아이디를 입력하세요. " 
-                                value={searchWord} onChange={onIdChangeHandler} onKeyDown={handleKeyDown}/>
-                            <div className="button active">검색</div>
+                            {/* <input className="input" placeholder="아이디를 입력하세요. " 
+                                value={searchWord} onChange={onIdChangeHandler} onKeyDown={handleKeyDown}/> 
+                            <div className="button active">검색</div>*/}    
+                            <input
+                                className="input"
+                                placeholder="아이디를 입력하세요. "
+                                value={searchTerm}
+                                onChange={onInputChange}
+                                onKeyDown={onInputKeyDown}
+                            />
+                            <div className="button active" onClick={onSearchButtonClick}>검색</div>
                         </div>
+
+                        {/* 드롭다운 영역 */}
+                        {showResults && (
+                            <div className="search-dropdown">
+                                <div className="search-dropdown-close" onClick={closeDropdown}>닫기</div>
+                                {searchResults.length === 0 ? (
+                                    <div className="search-no-result">검색 결과가 없습니다.</div>
+                                ) : (
+                                    searchResults.map((user) => (
+                                        <div className="search-result" key={user.userId}>
+                                            <div
+                                                className="search-result-image"
+                                                style={{ backgroundImage: `url(${user.profileImage || ''})` }}
+                                            ></div>
+                                            <div className="search-result-text">
+                                                <div className="search-result-nickname">{user.nickName}</div>
+                                                <div className="search-result-userId">@{user.userId}</div>
+                                            </div>
+                                            <div
+                                                className="search-subscribe-button"
+                                                onClick={() => onSubscribeButtonClick(user.userId)}
+                                            >
+                                                구독
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        )}
+
+                        {/* 예시: 기존 구독 목록 */}
                         {subscribers.map((sub) => <SmallProfile key={sub.userId} subers={sub}/>)}
                     </div>
 
                 </div>
             </div>
         </>
-    )
+    );
 }

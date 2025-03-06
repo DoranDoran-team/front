@@ -149,7 +149,7 @@ export default function ChangeInfo() {
 
     // event handler: 취소 버튼 클릭 이벤트 핸들러 //
     const onCancleClickHandler = () => {
-        if(signInUser) navigator(MY_ABSOLUTE_PATH(signInUser?.userId));
+        if(signInUser) navigator(MY_ABSOLUTE_PATH);
         else return;
     }
 

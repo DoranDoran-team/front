@@ -220,6 +220,20 @@ export default function Mypage() {
         setStateType(!stateType)
     }
 
+    // const navigateToMileage = () => {
+    //     navigator(MY_ABSOLUTE_MILEAGE_PATH);
+    // };
+
+    // event handler: 개인 정보 수정 버튼 클릭 이벤트 핸들러 //
+    // const onChangeInfoClickHandler = () => {
+    //     navigator(MY_INFO_PW_ABSOLUTE_PATH('qwer1234'));
+    // }
+
+    // event handler: 출석체크 버튼 클릭 이벤트 핸들러 //
+    // const naviagateToAttendance = () => {
+    //     navigator(MY_ABSOLUTE_ATTENDANCE_CHECK_PATH);
+    // }
+
     // function: 내가 작성한 게시글 불러오기 처리 함수 //
     const getMyDiscussionResponse = (responseBody: GetMyDiscussionListResposneDto | ResponseDto | null) => {
         

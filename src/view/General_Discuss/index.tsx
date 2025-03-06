@@ -32,7 +32,7 @@ function TableRow({ discussionList, getDiscussionList }: TableRowProps) {
     // event handler: 게시글 작성자 프로필 클릭 이벤트 처리 //
     const onProfileClickHandler = (event: MouseEvent<HTMLDivElement>) => {
         event.stopPropagation();
-        navigator(MY_PATH(discussionList.userId));
+        navigator(MY_PATH);
     }
 
     // function: get general discussion response 처리 함수 //

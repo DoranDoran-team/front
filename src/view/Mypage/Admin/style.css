@@ -1,10 +1,10 @@
 .accuse-title {
+    display: flex;
+    align-items: center;
     font-weight: bold;
     font-size: 24px;
-    width: 900px;
     /* margin-top: 20px;
     margin-bottom: 10px; */
-    padding-bottom: 10px;
 }
 
 .accuse-box {
