@@ -1,47 +1,98 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./style.css";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
-import { getNotifications, markNotificationAsRead } from "../../apis";
 import moment from "moment";
+import { getNotifications, markNotificationAsRead } from "../../apis";
 import { GetNotificationsResponseDto } from "../../apis/dto/response/notification/get-notifications.reponse.dto";
 
-export default function Notification() {
+interface NotificationProps {
+    // 미읽은 알림 존재 여부를 부모에 알려줄 콜백
+    setHasUnread: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export default function Notification({ setHasUnread }: NotificationProps) {
     const [cookies] = useCookies();
     const accessToken = cookies.accessToken;
-    const [notifications, setNotifications] = useState<GetNotificationsResponseDto[]>([]);
-    const [page, setPage] = useState<number>(1);
-    const [hasMore, setHasMore] = useState<boolean>(true);
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState<boolean>(true);
 
-    // 알림 데이터 가져오기 (중복 제거)
+    const [notifications, setNotifications] = useState<GetNotificationsResponseDto[]>([]);
+    const [page, setPage] = useState<number>(1); // 더보기 페이지
+    const [hasMore, setHasMore] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [displayCount, setDisplayCount] = useState<number>(5);
+
+    const navigate = useNavigate();
+
+    async function fetchNotifications() {
+        if (!accessToken) return;
+        setLoading(true);
+        const data = await getNotifications(accessToken, page);
+        if (data && data.length > 0) {
+            setNotifications((prev) => {
+                // 이전 목록과 새 데이터를 합치기
+                const merged = [...prev, ...data];
+                // notificationId 기준 중복 제거
+                const unique = merged.reduce((acc, curr) => {
+                    if (!acc.find((item: { notificationId: any }) => item.notificationId === curr.notificationId)) {
+                        acc.push(curr);
+                    }
+                    return acc;
+                }, [] as GetNotificationsResponseDto[]);
+                return unique;
+            });
+            if (data.length < 5) {
+                setHasMore(false);
+            }
+        } else {
+            // 다음 페이지가 없으면
+            setHasMore(false);
+        }
+        setLoading(false);
+    }
+
+    // 컴포넌트 마운트 시 한 번 알림 fetch
+    useEffect(() => {
+        if (accessToken) {
+            fetchNotifications();
+        }
+    }, [accessToken]);
+
+    // 페이지 변경 시 알림 fetch (더보기)
+    useEffect(() => {
+        if (page > 1 && accessToken) {
+            fetchNotifications();
+        }
+    }, [page, accessToken]);
+
+    // 미읽은 알림이 없으면 5초마다 폴링하여 알림 fetch
     useEffect(() => {
         if (!accessToken) return;
-
-        async function fetchNotifications() {
-            const data = await getNotifications(accessToken, page);
-            if (data && data.length > 0) {
-                setNotifications((prev) => {
-                    const mergedNotifications = [...prev, ...data];
-                    const uniqueNotifications = mergedNotifications.reduce((acc, curr) => {
-                        if (!acc.find((item: { notificationId: any; }) => item.notificationId === curr.notificationId)) {
-                            acc.push(curr);
-                        }
-                        return acc;
-                    }, [] as GetNotificationsResponseDto[]);
-                    return uniqueNotifications;
-                });
-            } else {
-                setHasMore(false); // 더 이상 데이터가 없으면 버튼 숨김
-            }
-            setLoading(false);
+        if (!notifications.some((n) => !n.isRead) && hasMore) {
+            const interval = setInterval(() => {
+                fetchNotifications();
+            }, 5000);
+            return () => clearInterval(interval);
         }
+    }, [accessToken, notifications, hasMore]);
 
-        fetchNotifications();
-    }, [accessToken, page]);
+    // notifications가 변경될 때마다 미읽은 알림 여부 업데이트
+    useEffect(() => {
+        const unreadExists = notifications.some((n) => !n.isRead);
+        setHasUnread(unreadExists);
+    }, [notifications, setHasUnread]);
 
-    // 알림 클릭 시 처리 (읽음 처리 + 페이지 이동)
+
+    // "더보기" 버튼 클릭 핸들러
+    const handleLoadMore = () => {
+        // 만약 현재 표시할 알림 개수보다 전체가 적고, 추가 페이지가 있을 경우 fetch
+        if (notifications.length <= displayCount && hasMore) {
+            setPage(page + 1);
+        }
+        setDisplayCount(displayCount + 5);
+    };
+
+
+    // 알림 클릭 시 처리: 미읽음이면 읽음 처리 후 최신 상태 동기화, 그리고 타입별로 해당 페이지로 이동
     const handleNotificationClick = async (notification: GetNotificationsResponseDto) => {
         if (!accessToken) return;
 
@@ -52,14 +103,35 @@ export default function Notification() {
                     n.notificationId === notification.notificationId ? { ...n, isRead: true } : n
                 )
             );
+            // 최신 알림 동기화를 위해 fetch
+            fetchNotifications();
         }
 
-        if (["MILEAGE_EARNED", "REFUND_APPROVED", "REFUND_DENIED"].includes(notification.notificationType)) {
-            navigate("/mypage/mileage");
+        // 알림 타입에 따라 이동 경로 결정
+        switch (notification.notificationType) {
+            case "MILEAGE_EARNED":
+            case "REFUND_APPROVED":
+            case "REFUND_DENIED":
+                navigate("/mypage/mileage");
+                break;
+            case "NEW_REFUND_REQUEST":
+                navigate("/admin/mileage");
+                break;
+            case "COMMENT_ON_POST":
+            case "REPLY_TO_COMMENT":
+            case "MENTION":
+                if (notification.additionalInfo) {
+                    navigate(notification.additionalInfo);
+                }
+                break;
+            case "REPORT_RECEIVED":
+                navigate("/admin/accuse");
+                break;
+            default:
+                break;
         }
     };
 
-    // 알림 시간 표시 (n초 전, n분 전, n시간 전, n일 전)
     const formatNotificationDate = (dateString: string) => {
         const notificationDate = moment(dateString);
         const now = moment();
@@ -84,20 +156,22 @@ export default function Notification() {
                 <p>로딩 중...</p>
             ) : (
                 <div className="notification-list">
-                    {notifications.slice(0, 5).map((notification) => (
+                    {notifications.slice(0, displayCount).map((notification) => (
                         <div
                             key={notification.notificationId}
-                            className={`notification-item ${notification.isRead ? "read" : ""}`}
+                            className={`notification-item ${notification.isRead ? "read" : "unread"}`}
                             onClick={() => handleNotificationClick(notification)}
                         >
                             <p>{notification.message}</p>
-                            <span className="notification-time">{formatNotificationDate(notification.notificationDate)}</span>
+                            <span className="notification-time">
+                                {formatNotificationDate(notification.notificationDate)}
+                            </span>
                         </div>
                     ))}
                 </div>
             )}
-            {hasMore && (
-                <button onClick={() => setPage((prev) => prev + 1)} className="load-more">
+            {((notifications.length > displayCount) || hasMore) && !loading && (
+                <button onClick={handleLoadMore} className="load-more">
                     더보기
                 </button>
             )}

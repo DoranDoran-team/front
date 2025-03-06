@@ -122,16 +122,22 @@ export default function MypageMileage() {
     };
 
     const handleSelectAccount = (account: AccountItem) => {
-        setSelectedAccount(account.accountNumber);
-        setBankName(account.bankName);
-        setAccountNumber(account.accountNumber);
+        if (selectedAccount === account.accountNumber) {
+            setSelectedAccount(null);
+            setBankName('');
+            setAccountNumber('');
+        } else {
+            setSelectedAccount(account.accountNumber);
+            setBankName(account.bankName);
+            setAccountNumber(account.accountNumber);
+        }
     };
 
-    const handleDeselectAccount = () => {
-        setSelectedAccount(null);
-        setBankName('');
-        setAccountNumber('');
-    };
+    // const handleDeselectAccount = () => {
+    //     setSelectedAccount(null);
+    //     setBankName('');
+    //     setAccountNumber('');
+    // };
 
     const handleRefund = async () => {
         if (refundAmount === '' || refundAmount <= 0 || !accountNumber || !bankName) {
@@ -188,23 +194,25 @@ export default function MypageMileage() {
                     <div className="filter-controls">
                         <div className="date-filters">
                             <label>조회 기간</label>
-                            <input
-                                type="date"
-                                value={startDate}
-                                onChange={(e) => {
-                                    setStartDate(e.target.value);
-                                    if (e.target.value && endDate) filterMileageHistory(e.target.value, endDate);
-                                }}
-                            />
-                            <label> ~ </label>
-                            <input
-                                type="date"
-                                value={endDate}
-                                onChange={(e) => {
-                                    setEndDate(e.target.value);
-                                    if (startDate && e.target.value) filterMileageHistory(startDate, e.target.value);
-                                }}
-                            />
+                            <div className="date-inputs">
+                                <input
+                                    type="date"
+                                    value={startDate}
+                                    onChange={(e) => {
+                                        setStartDate(e.target.value);
+                                        if (e.target.value && endDate) filterMileageHistory(e.target.value, endDate);
+                                    }}
+                                />
+                                <label> ~ </label>
+                                <input
+                                    type="date"
+                                    value={endDate}
+                                    onChange={(e) => {
+                                        setEndDate(e.target.value);
+                                        if (startDate && e.target.value) filterMileageHistory(startDate, e.target.value);
+                                    }}
+                                />
+                            </div>
                         </div>
                         <div className="preset-filters">
                             {['오늘', '1주일', '1개월', '6개월', '1년'].map((period) => (
@@ -310,16 +318,18 @@ export default function MypageMileage() {
                             <input
                                 type="text"
                                 placeholder="계좌 번호 입력"
-                                value={selectedAccount ? accountNumber : ''}
-                                onChange={(e) => setAccountNumber(e.target.value)}
-                                disabled={!!selectedAccount}
+                                value={selectedAccount ? selectedAccount : accountNumber}
+                                onChange={(e) => {
+                                    if (!selectedAccount) setAccountNumber(e.target.value);
+                                }}
                             />
                             <input
                                 type="text"
                                 placeholder="은행명 입력"
-                                value={selectedAccount ? bankName : ''}
-                                onChange={(e) => setBankName(e.target.value)}
-                                disabled={!!selectedAccount}
+                                value={selectedAccount ? bankName : bankName}
+                                onChange={(e) => {
+                                    if (!selectedAccount) setBankName(e.target.value);
+                                }}
                             />
                         </div>
                         <label>환급 신청할 마일리지</label>

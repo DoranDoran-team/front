@@ -4,9 +4,9 @@
 }
 
 #mypage-mileage {
-    /* box-sizing: border-box; */
-    width: 1080px;
-    padding: 0px 40px;
+    box-sizing: border-box;
+    width: 1000px;
+    padding: 0px 30px;
     font-family: Arial, sans-serif;
     color: #333;
     line-height: 1.6;
@@ -17,7 +17,7 @@
     align-items: center;
     justify-content: space-around;
     margin-bottom: 30px;
-    padding: 20px;
+    padding: 30px;
     background-color: #f9f9f9;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -64,22 +64,67 @@
     flex-direction: column;
     margin-bottom: 20px;
     gap: 15px;
+    align-items: flex-start;
 }
 
-#mypage-mileage .date-filters,
-#mypage-mileage .preset-filters {
+/* 날짜 필터 영역 */
+#mypage-mileage .date-filters {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-#mypage-mileage .filter-button {
-    padding: 8px 16px;
+#mypage-mileage .date-filters label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+#mypage-mileage .date-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    padding: 0px 8px;
     border: 1px solid #ddd;
-    background-color: #f9f9f9;
+    border-radius: 6px;
+}
+
+#mypage-mileage .date-inputs input {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    padding: 6px;
+    color: #333;
+    background: none;
     cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
+}
+
+#mypage-mileage .date-inputs input::-webkit-calendar-picker-indicator {
+    filter: invert(40%);
+    cursor: pointer;
+}
+
+#mypage-mileage .date-inputs span {
+    font-size: 14px;
+    color: #666;
+}
+
+/* 📌 필터 버튼 스타일 */
+#mypage-mileage .preset-filters {
+    display: flex;
+    gap: 10px;
+}
+
+#mypage-mileage .filter-button {
+    padding: 8px 14px;
+    border: 1px solid #ddd;
+    background-color: #f5f5f5;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 #mypage-mileage .filter-button.active {
@@ -97,7 +142,8 @@
     background-color: #367ff4;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
+    font-size: 14px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
@@ -208,7 +254,7 @@
 }
 
 .account-item.selected {
-    border: 2px solid #367ff4;
+    /* border: 2px solid #367ff4; */
     background-color: rgba(54, 127, 244, 0.1);
 }
 

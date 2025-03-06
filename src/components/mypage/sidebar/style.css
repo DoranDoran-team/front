@@ -1,7 +1,7 @@
 /* ==========================
     마이페이지 사이드바 CSS
    ========================== */
-.mypage-left-opstions{
+.mypage-left-opstions {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -9,7 +9,7 @@
 
 .mypage-sidebar {
     background-color: #FBFBFB;
-    padding: 50px;
+    padding: 30px 40px;
     border-radius: 50px;
 }
 
@@ -24,7 +24,7 @@
 
 .mypage-sidebar ul li {
     padding: 10px;
-    font-size: 18px;
+    font-size: 16px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -40,7 +40,7 @@
 .subscribe-wrapper {
     display: flex;
     justify-content: center;
-    padding: 50px;
+    padding: 30px 40px;
     background-color: #FBFBFB;
     border-radius: 50px;
 }
@@ -111,4 +111,93 @@
     text-align: center;
     color: rgba(255, 7, 7, 1);
     margin: 6px 0px;
+}
+
+/* ==========================
+    검색 드롭다운 추가 CSS
+   ========================== */
+
+/* 드롭다운 컨테이너 */
+.search-dropdown {
+    position: relative;
+    margin-top: -5px;
+    padding: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    background-color: #fff;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* 닫기 버튼 */
+.search-dropdown-close {
+    text-align: right;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* 검색 결과가 없을 때 */
+.search-no-result {
+    color: #999;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 14px;
+}
+
+/* 개별 검색 결과 row */
+.search-result {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+    margin-bottom: 5px;
+}
+
+.search-result:hover {
+    background-color: #f0f0f0;
+}
+
+/* 프로필 이미지 영역 */
+.search-result-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-position: center;
+    background-size: cover;
+    background-color: #ddd;
+    /* 이미지가 없을 시 배경색 */
+}
+
+/* 텍스트 정보 */
+.search-result-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.search-result-nickname {
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.search-result-userId {
+    font-size: 13px;
+    color: #555;
+}
+
+/* 구독 버튼 */
+.search-subscribe-button {
+    margin-left: auto;
+    border: 1px solid #0095f6;
+    border-radius: 15px;
+    padding: 5px 10px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.search-subscribe-button:hover {
+    background-color: #0095f6;
+    color: white;
 }

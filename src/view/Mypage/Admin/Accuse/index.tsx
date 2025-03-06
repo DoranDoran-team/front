@@ -396,23 +396,6 @@ export default function Accuse() {
 
                             </div> : ''}
             </div>
-            <div className="blacklist-wrapper">
-                <div className="blacklist-title">활동 중지 2명</div>
-                <div className="subscribe-search-box">
-                    <input className="input" placeholder="아이디를 입력하세요. " />
-                    <div className="button active">검색</div>
-                </div>
-                <div className="blacklist-box">
-                    <div className="blacklist-image"></div>
-                    <div className="blacklist-user-info">
-                        <div className="blacklist-nickname">마이멜로디</div>
-                        <div className="blacklist-user">@1000JEA</div>
-                    </div>
-                    <div className="subscribe-cancel-button">
-                        <div className="subscribe-cancel">취소</div>
-                    </div>
-                </div>
-            </div>
         </div>
 
     )

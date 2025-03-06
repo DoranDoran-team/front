@@ -38,6 +38,7 @@ import { PostAccountRequestDto } from "./dto/request/account/post-account.reques
 import { GetAccountsResponseDto } from "./dto/response/mypage/account_management/get-account-management.response.dto";
 import GetMyDiscussionListResposneDto from "./dto/response/mypage/myInfo/get-my-discussion-list.response.dto";
 import { GetNotificationsResponseDto } from "./dto/response/notification/get-notifications.reponse.dto";
+import GetSearchUserListResponseDto from "./dto/response/user/get-search-user-list.response.dto";
 
 // variable: api url 상수//
 const DORANDORAN_API_DOMAIN = process.env.REACT_APP_API_URL;
@@ -82,14 +83,12 @@ const GET_ACCUSE_URL = (accuseId: number) => `${DORANDORAN_API_DOMAIN}/accuse/${
 const MILEAGE_API_URL = `${DORANDORAN_API_DOMAIN}/mypage/mileage`;
 const ADMIN_MILEAGE_API_URL = `${DORANDORAN_API_DOMAIN}/admin/mileage`;
 const ACCOUNT_MANAGEMENT_API_URL = `${DORANDORAN_API_DOMAIN}/mypage/account-management`;
-
-
-
 const NOTIFICATION_API_URL = `${DORANDORAN_API_DOMAIN}/mypage/notifications`;
-
-
+const MYPAGE_ATTENDANCE_API_URL = `${DORANDORAN_API_DOMAIN}/mypage/attendance`;
 
 const GET_SIGN_IN_API_URL = `${AUTH_MODULE_URL}/sign-in`;
+
+const USER_API_URL = `${DORANDORAN_API_DOMAIN}/api/users`;
 
 const MYPAGE_MODULE_URL = `${DORANDORAN_API_DOMAIN}/mypage`;
 const MYPAGE_USER_INFO_API_URL = `${MYPAGE_MODULE_URL}/user-info`;
@@ -382,7 +381,6 @@ export const getNotifications = async (accessToken: string, page: number = 1) =>
     }
 };
 
-// 서버에서 온 메시지를 그대로 사용하도록 수정
 // const formatNotificationMessage = (notification: GetNotificationsResponseDto) => {
 //     return notification.message;
 // };
@@ -430,6 +428,43 @@ export const deleteAccount = async (accountNumber: string, accessToken: string) 
     return response.data;
 };
 
+
+// function: get search user 요청 함수 //
+export const searchUsersRequest = async (keyword: string, accessToken: string) => {
+    const url = `${USER_API_URL}/search?keyword=${encodeURIComponent(keyword)}`;
+
+    const responseBody = await axios.get(url, bearerAuthorization(accessToken))
+        .then(responseDataHandler<GetSearchUserListResponseDto>)
+        .catch(responseErrorHandler);
+    
+    return responseBody;
+};
+
+// function: 출석체크 GET 요청 함수 //
+export const getAttendanceRecordsRequest = async (accessToken: string) => {
+    try {
+        const responseBody = await axios.get(MYPAGE_ATTENDANCE_API_URL, bearerAuthorization(accessToken))
+            .then(responseDataHandler)
+            .catch(responseErrorHandler);
+        return responseBody;
+    } catch (error) {
+        console.error("출석체크 조회 API 에러", error);
+        return null;
+    }
+};
+
+// function: 출석체크 POST 요청 함수 //
+export const checkAttendanceRequest = async (accessToken: string) => {
+    try {
+        const responseBody = await axios.post(`${MYPAGE_ATTENDANCE_API_URL}/check`, {}, bearerAuthorization(accessToken))
+            .then(responseDataHandler)
+            .catch(responseErrorHandler);
+        return responseBody;
+    } catch (error) {
+        console.error("출석체크 API 에러", error);
+        return null;
+    }
+};
 
 // function: get sign in 요청 함수 //
 export const GetSignInRequest = async (accessToken: string) => {
@@ -545,8 +580,5 @@ export const fileUploadRequest = async (requestBody: FormData) => {
         .catch(error => null);
     return url;
 }
-
-
-
 
 

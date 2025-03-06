@@ -97,6 +97,7 @@ function TopPersonalNavigation() {
     // state: hovering 상태 //
     const [isHovered, setIsHovered] = useState(false);
     const [isHovered2, setIsHovered2] = useState(false);
+    const [hasUnread, setHasUnread] = useState(false);
 
     // function: 네비게이터 함수 //
     const navigator = useNavigate();
@@ -109,20 +110,27 @@ function TopPersonalNavigation() {
 
     // render: 상단 컴포넌트 //
     return (
-        <div id='layout-my'>
+        <div id="layout-my">
 
             <div
                 className='layout-my-alarm'
                 onMouseEnter={() => setIsHovered2(true)}>
+                {hasUnread && <div className="alarm-dot" />}
+            </div>
+            <div style={{ display: 'none' }}>
+                <Notification setHasUnread={setHasUnread} />
             </div>
             {isHovered2 && (
                 <div className='menu-box2'
                     onMouseEnter={() => setIsHovered2(true)}
                     onMouseLeave={() => setIsHovered2(false)}>
                     <div>
-                        {/* <AlarmMessage></AlarmMessage> */}
-                        <Notification></Notification>
-{/* 
+                        {/* 알림 모달용 Notification – 필요 시 표시 */}
+                        <Notification setHasUnread={setHasUnread} />
+                    </div>
+                    {/* <div> */}
+                    {/* <AlarmMessage></AlarmMessage> */}
+                    {/* 
                         <div className='menu'>회원님이 구독하신 <strong>@test123</strong> 님이 게시글을 작성하였습니다.</div>
                         <hr />
                         <div className='menu'>회원님이 신청하신 마일리지 환급 <strong>5,000점</strong> 승인 완료되었습니다.</div>
@@ -130,9 +138,10 @@ function TopPersonalNavigation() {
                         <div className='menu'>회원님이 게시한 "<strong>AI에게 윤리적 책임이 있는가?</strong>" 토론이 마감되었습니다.</div>
                         <hr />
                         <div className='menu2'>회원님이 예약하신 "<strong>대마초 합법화 가능한가?</strong>" 실시간 토론 입장이 시작되었습니다.</div> */}
-                    </div>
-                </div>)
-            }
+                    {/* </div> */}
+                </div>
+            )}
+
 
             <div
                 className='layout-my-icon'
@@ -147,7 +156,7 @@ function TopPersonalNavigation() {
                         <div className='menu' onClick={onLogoutButtonClickHandler}>로그아웃</div>
                         <div className='menu' onClick={
                             signInUser?.role ? () => navigator('/admin') :
-                            () => navigator('/mypage')}>마이페이지</div>
+                                () => navigator('/mypage')}>마이페이지</div>
                     </div>
                 </div>)
             }

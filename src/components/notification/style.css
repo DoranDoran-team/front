@@ -1,4 +1,5 @@
 .notification-container {
+    /* position: relative; */
     width: 300px;
     max-height: 400px;
     background: white;
@@ -11,6 +12,16 @@
 .notification-container h3 {
     margin-bottom: 10px;
     font-size: 18px;
+}
+
+.new-notification-dot {
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    position: absolute;
+    top: 12px;
+    right: 10px;
 }
 
 .notification-list {

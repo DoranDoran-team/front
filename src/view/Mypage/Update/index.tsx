@@ -138,7 +138,6 @@ export default function Update() {
                         <input className="mypage-nickname edit" value={nickname} placeholder='닉네임을 입력해주세요. ' onChange={onNickNameChangeHandler} />
                         <div className="mypage-id">@{signInUser?.userId}</div>
                     </div>
-                    <div className="mypage-user">구독자 <span>28</span>명 / 토론방<span>9</span>개</div>
                     <div className="edit-button-box" >
                         <div className={`edit-button ${nickname ? 'complete' : 'fail'}`} onClick={onCompleteButtonHandler}>완료</div>
                     </div>

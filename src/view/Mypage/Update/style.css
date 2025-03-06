@@ -8,15 +8,14 @@
 /* mypage 유저 정보 CSS */
 .mypage-update-wrapper {
     display: flex;
-    width: 80%;
-    height: 100%;
-    margin: 100px;
 }
 
 .mypage-update-wrapper .mypage-main-wrapper {
+    width: 1000px;
+    box-sizing: border-box;
     flex: 1;
-    padding: 30px;
-    background-color: #D7FFE1;
+    padding: 60px;
+    background-color: #fbfbfb;
     border-radius: 50px;
     margin-left: 20px;
 }
@@ -25,10 +24,10 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    gap: 15px;
+    gap: 30px;
     border-bottom: 1px solid rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-    margin-top: -20px;
+    margin-bottom: 40px;
+    /* margin-top: -20px; */
     position: relative;
 }
 
@@ -50,19 +49,20 @@
 
 .mypage-update-wrapper .mypage-nickname.edit {
     font-family: '양진체';
-    font-size: 20px;
+    padding: 0px 10px;
+    font-size: 18px;
     font-weight: 400;
     width: 200px;
-    height: 60px;
+    height: 50px;
     background-color: rgba(255,255,255,1);
-    border-radius: 6px;
+    border-radius: 8px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .mypage-update-wrapper .mypage-id {
-    font-size: 24px;
+    font-size: 18px;
     margin-bottom: 0;
     padding-bottom: 0;
 }
@@ -80,15 +80,15 @@
 .mypage-update-wrapper .mypage-state-message,
 .mypage-update-wrapper .mypage-user,
 .mypage-update-wrapper .mypage-discussion-room {
-    font-size: 24px;
-    margin-bottom: 20px;
+    font-size: 18px;
     align-content: end;
 }
 
 .mypage-update-wrapper .mypage-state-message.edit {
-    width: 514px;
-    height: 62px;
-    border-radius: 6px;
+    width: 100%;
+    padding: 0px 10px;
+    height: 60px;
+    border-radius: 8px;
     background-color: rgba(255, 255, 255, 1);
     display: flex;
     align-items: center;
@@ -106,14 +106,18 @@
     align-items: center;
     width: 100px;
     height: 50px;
-    border-radius: 20px;
-    border: 2px solid rgba(0, 0, 0, 1);
+    border-radius: 10px;
     cursor: pointer;
 }
 
 .mypage-update-wrapper .edit-button.complete {
-    background-color: rgba(76,245,39,0.8);
-    color: rgba(75,115,100,1);
+    background-color: rgba(0,0,0,0.2);
+    color: white
+}
+
+.mypage-update-wrapper .edit-button.complete:hover {
+    background-color: rgba(0,0,0,0.3);
+    color: white
 }
 
 .mypage-update-wrapper .edit-button.fail {

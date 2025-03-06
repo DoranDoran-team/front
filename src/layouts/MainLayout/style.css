@@ -8,12 +8,14 @@
 /* 4, 5, 6, 8, 10, 11은 otf */
 
 .scrolled {
-    background-color: #c7e6c7; /* /main 경로에서 사용할 색상 */
+    background-color: #c7e6c7;
+    /* /main 경로에서 사용할 색상 */
     transition: background-color 0.5s;
 }
 
 .default-scrolled {
-    background-color: white; /* 다른 경로에서 사용할 색상 */
+    background-color: white;
+    /* 다른 경로에서 사용할 색상 */
     transition: background-color 0.5s;
 }
 
@@ -218,14 +220,14 @@
     display: flex;
     justify-content: right;
     width: 240px;
-    gap: 30px;
+    gap: 45px;
     position: relative;
     margin-right: 60px;
 }
 
 #layout-my .layout-my-icon {
     cursor: pointer;
-    position: relative;
+    /* position: relative; */
     background-image: url('/public/login-icon.png');
     background-size: 100% 100%;
     height: 35px;
@@ -233,35 +235,49 @@
 }
 
 #layout-my .layout-my-alarm {
+    position: relative;
     width: 35px;
     height: 35px;
     background-image: url('/public/bell.png');
     background-size: cover;
     cursor: pointer;
-    margin-top: 2px;
+    /* margin-top: 2px; */
     margin-right: -5px;
 }
+
+#layout-my .alarm-dot {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: red;
+    border: 1px solid white;
+}
+
 
 #layout-my .menu-box {
     position: absolute;
     top: 45px;
-    left: 92%;
-    transform: translateX(-50%);
+    left: 71%;
+    /* transform: translateX(-50%); */
     width: 100px;
     border-radius: 6px;
     background-color: white;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
     padding: 5px;
     z-index: 1000;
-    font-size: 15px;
+    font-size: 14px;
     text-align: center;
     cursor: pointer;
 }
 
 #layout-my .menu {
     margin-bottom: 2px;
+    padding: 5px;
 }
 
 #layout-my .menu:hover,
@@ -271,19 +287,17 @@
 
 #layout-my .menu-box2 {
     position: absolute;
-    /* top: 45px;
-    left: 35%; */
-    transform: translateX(-50%);
+    top: 45px;
+    /* left: 35%; */
+    transform: translateX(-23%);
     /* width: 200px; */
     border-radius: 6px;
     /* background-color: white; */
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
-    /* padding: 15px; */
     z-index: 1000;
     /* font-size: 15px; */
-    /* text-align: left; */
     cursor: pointer;
     /* max-height: 150px; */
     /* overflow-y: auto; */
