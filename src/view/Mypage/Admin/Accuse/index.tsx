@@ -282,7 +282,6 @@ export default function Accuse() {
             }
         }
 
-
         // function: 신고 리스트 불러오기 response 처리 함수 //
         const getAccuseListResponse = (responseBody: GetAccuseListResponseDto | ResponseDto | null) => {
 
@@ -311,32 +310,34 @@ export default function Accuse() {
             setAccuses(accuses);
         }
 
-        // function: 신고 리스트 불러오기 //
-        const getAccuseList = async () => {
-            const accessToken = cookies[ACCESS_TOKEN];
-            if (!accessToken) {
-                alert('접근 권한이 없습니다.');
-                return;
-            }
+        // // function: 신고 리스트 불러오기 //
+        // const getAccuseList = async () => {
+        //     const accessToken = cookies[ACCESS_TOKEN];
+        //     if (!accessToken) {
+        //         alert('접근 권한이 없습니다.');
+        //         return;
+        //     }
 
-            await getAccuseListRequest(adminCheck, accessToken)
-                .then((response) => getAccuseListResponse(response as GetAccuseListResponseDto | ResponseDto | null));
-        }
+        //     if (signInUser?.userId == null) {
+        //         return;
+        //     }
 
-        // effect: 마운트 될 때 신고  불러오기 //
-        useEffect(() => {
+        //     await getAccuseListRequest(signInUser.userId, accessToken)
+        //         .then((response) => getAccuseListResponse(response as GetAccuseListResponseDto | ResponseDto | null));
+        // }
 
-            const accessToken = cookies[ACCESS_TOKEN];
-            if (!accessToken) {
-                alert('접근 권한이 없습니다.');
-                return;
-            }
-            if (signInUser?.userId) {
-                setAdminCheck(signInUser.userId);
-            }
+        // // effect: 마운트 될 때 신고  불러오기 //
+        // useEffect(() => {
 
-            getAccuseList();
-        }, [accuse.accuseId]);
+        //     const accessToken = cookies[ACCESS_TOKEN];
+        //     if (!accessToken) {
+        //         alert('접근 권한이 없습니다.');
+        //         return;
+        //     }
+        //     if (!signInUser || !signInUser.userId) return;
+
+        //     getAccuseList();
+        // }, [accuse.accuseId]);
 
         return (
             <>
@@ -416,17 +417,28 @@ export default function Accuse() {
             return;
         }
 
-        if (signInUser?.userId) {
-            setAdminCheck(signInUser.userId);
-        }
+        if (!signInUser || !signInUser.userId) return;
 
-        getAccuseListRequest('songth', accessToken)
-            .then((response) => {
-                getAccuseListResponse(response as GetAccuseListResponseDto | ResponseDto | null);
-            });
+        getAccuseList();
 
         setActiveTypes('댓글')
     }, [signInUser]);
+
+    // function: 신고 리스트 불러오기 //
+    const getAccuseList = async () => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) {
+            alert('접근 권한이 없습니다.');
+            return;
+        }
+
+        if (signInUser?.userId == null) {
+            return;
+        }
+
+        await getAccuseListRequest(signInUser.userId, accessToken)
+            .then((response) => getAccuseListResponse(response as GetAccuseListResponseDto | ResponseDto | null));
+    }
 
     // effect: 페이지네이션 적용//
     useEffect(() => {
