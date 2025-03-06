@@ -37,6 +37,8 @@ import { PostAdminMileageRequestDto } from "./dto/request/mileage/post-admin-mil
 import { PostAccountRequestDto } from "./dto/request/account/post-account.request.dto";
 import { GetAccountsResponseDto } from "./dto/response/mypage/account_management/get-account-management.response.dto";
 import GetMyDiscussionListResposneDto from "./dto/response/mypage/myInfo/get-my-discussion-list.response.dto";
+import GetUserProfileResponseDto from "./dto/response/mypage/another_user/get-user-profile.response.dto";
+import PostUserFollowRequestDto from "./dto/request/follow/post-user-follow.request.dto";
 
 // variable: api url 상수//
 const DORANDORAN_API_DOMAIN = process.env.REACT_APP_API_URL;
@@ -94,8 +96,14 @@ const MYPAGE_USER_CHANGE_PW_API_URL = `${MYPAGE_USER_INFO_API_URL}/change-pw`;
 const MYPAGE_PATCH_USER_INFO_API_URL = `${MYPAGE_USER_INFO_API_URL}/patch-user`;
 const MYPAGE_USER_DELETE_API_URL = `${MYPAGE_USER_INFO_API_URL}/delete-user`;
 const MYPAGE_MY_DISCUSSION_LIST_API_URL = `${MYPAGE_USER_INFO_API_URL}/get-my-discussion`;
+const MYPAGE_GET_USER_PROFILE_API_URL = (userId: string) => `${MYPAGE_USER_INFO_API_URL}/get-user-profile/${userId}`;
 const MYPAGE_DELETE_MY_DISCUSSION_API_URL = (roomId: number | string) => 
     `${MYPAGE_USER_INFO_API_URL}/delete/${roomId}`;
+
+// 구독(취소) api url
+const USER_FOLLOW_API_URL = `${DORANDORAN_API_DOMAIN}/sub`;
+const USER_CACNLE_API_URL = (userId: string, subscriber: string) => 
+    `${DORANDORAN_API_DOMAIN}/sub/cancle?userId=${userId}&subscriber=${subscriber}`;
 
 const NOTICE_API_URL = `${DORANDORAN_API_DOMAIN}/notice`;
 const POST_NOTICE_API_URL = `${NOTICE_API_URL}/post`;
@@ -450,6 +458,30 @@ export const deleteUserRequest = async (accessToken: string) => {
 export const getMyDiscussionRequest = async(accessToken: string) => {
     const responseBody = await axios.get(MYPAGE_MY_DISCUSSION_LIST_API_URL, bearerAuthorization(accessToken))
         .then(responseDataHandler<GetMyDiscussionListResposneDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 마이페이지 - 타 유저 프로필 불러오기 함수 //
+export const getUserProfileRequest = async(accessToken: string, userId: string) => {
+    const responseBody = await axios.get(MYPAGE_GET_USER_PROFILE_API_URL(userId), bearerAuthorization(accessToken))
+        .then(responseDataHandler<GetUserProfileResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 타 유저 구독하기 요청 함수 //
+export const postUserFollowRequest = async(requestBody: PostUserFollowRequestDto, accessToken: string) => {
+    const responseBody = await axios.post(USER_FOLLOW_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 타 유저 구독 취소하기 요청 함수 //
+export const cancleFollowRequest = async(userId: string, subscriber: string, accessToken: string) => {
+    const responseBody = await axios.delete(USER_CACNLE_API_URL(userId, subscriber),bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
 }

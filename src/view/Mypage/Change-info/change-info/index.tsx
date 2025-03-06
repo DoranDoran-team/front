@@ -149,7 +149,8 @@ export default function ChangeInfo() {
 
     // event handler: 취소 버튼 클릭 이벤트 핸들러 //
     const onCancleClickHandler = () => {
-        navigator(MY_ABSOLUTE_PATH);
+        if(signInUser) navigator(MY_ABSOLUTE_PATH(signInUser?.userId));
+        else return;
     }
 
     // event handler: 탈퇴 버튼 클릭 이벤트 핸들러 //
@@ -253,7 +254,7 @@ export default function ChangeInfo() {
             return;
         } else {
             alert('수정이 완료되었습니다.');
-            navigator(MY_ABSOLUTE_PATH);
+            //navigator(MY_ABSOLUTE_PATH);
         }
     };
 

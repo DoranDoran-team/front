@@ -2,15 +2,14 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import './style.css';
 import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, NOTICE_DETAIL_ABSOLUTE_PATH, NOTICE_WRITE_ABSOLUTE_PATH } from "../../constants";
-import { usePagination } from "../../hooks";
-import Pagination from "../../components/pagination";
 import NoticeList from "../../types/notice.interface";
-import formatDate from "../../components/dateFormat/changeDate";
 import { useSignInUserStore } from "../../stores";
 import { getNoticeListRequest } from "../../apis";
 import GetNoticeListResponseDto from "../../apis/dto/response/notice/Get-notice-list.response.dto";
 import ResponseDto from "../../apis/dto/response/response.dto";
 import { useCookies } from "react-cookie";
+import useNoticePagination from "../../hooks/notice.pagination.hooks";
+import NoticePagination from "../../components/noticePagination";
 
 // interface: 공지사항 리스트 아이템 //
 interface TableRowProps {
@@ -135,7 +134,7 @@ export default function Notice() {
         onPageClickHandler,
         onPreSectionClickHandler,
         onNextSectionClickHandler,
-    } = usePagination<NoticeList>();
+    } = useNoticePagination<NoticeList>();
 
     const pinnedNotices = viewList.filter(notice => notice.topStatus); // 상단 고정 공지
     const normalNotices = viewList.filter(notice => !notice.topStatus); // 일반 공지
@@ -184,7 +183,7 @@ export default function Notice() {
                 <div className="search-btn">검색</div>
             </div>
 
-            <Pagination
+            <NoticePagination
                 pageList={pageList}
                 currentPage={currentPage}
                 onPageClickHandler={onPageClickHandler}

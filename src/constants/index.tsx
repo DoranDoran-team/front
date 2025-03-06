@@ -23,9 +23,10 @@ export const NOTICE_PATCH = (noticeNumber: string | number) => `patch/${noticeNu
 
 export const SCHEDULE = '/schedule';
 
-export const MY_PATH = '/mypage';
-export const MY_UPDATE_PATH = (userId: string | number) => `${userId}/update`;
-export const MY_ATTENDANCE_CHECK_PATH = (userId: string | number) => `${userId}/attendance`;
+// 마이페이지 관련 url
+export const MY_PATH = (userId: string) => `/mypage/${userId}`;
+export const MY_UPDATE_PATH = `update`;
+export const MY_ATTENDANCE_CHECK_PATH = `attendance`;
 export const MY_MILEAGE_PATH = 'mileage';
 export const MY_ACCOUNT_MANAGEMENT_PATH = 'account-management';
 export const MY_MILEAGE_REQUEST_PATH = '/request';
@@ -34,8 +35,8 @@ export const ADMIN_PATH = '/admin';
 export const ADMIN_ACCUSE_PATH = 'accuse';
 export const ADMIN_MILEAGE_PATH = 'mileage';
 
-export const MY_INFO_PW_PATH = (userId: string | number) => `${userId}/pw-check`;
-export const MY_INFO_UPDATE_PATH = (userId: string | number) => `${userId}/change-info`;
+export const MY_INFO_PW_PATH = `pw-check`;
+export const MY_INFO_UPDATE_PATH = `change-info`;
 
 export const SNS_SUCCESS_PATH = '/sns-success';
 export const OTHERS_PATH = '*';
@@ -67,18 +68,18 @@ export const NOTICE_PATCH_ABSOLUTE_PATH = (noticeNumber: string | number) => `${
 
 export const SCHEDULE_ABSOLUTE_PATH = SCHEDULE;
 
-export const MY_ABSOLUTE_PATH = MY_PATH;
-export const MY_ABSOLUTE_UPDATE_PATH = (userId: string | number) => `${MY_PATH}/${MY_UPDATE_PATH(userId)}`
-export const MY_INFO_PW_ABSOLUTE_PATH = (userId: string | number) => `${MY_PATH}/${MY_INFO_PW_PATH(userId)}`;
-export const MY_INFO_UPDATE_ABSOLUTE_PATH = (userId: string | number) => `${MY_PATH}/${MY_INFO_UPDATE_PATH(userId)}`;
+export const MY_ABSOLUTE_PATH = (userId: string) => MY_PATH(userId);
+export const MY_ABSOLUTE_UPDATE_PATH = (userId: string) => `${MY_PATH(userId)}/${MY_UPDATE_PATH}`
+export const MY_INFO_PW_ABSOLUTE_PATH = (userId: string) => `${MY_PATH(userId)}/${MY_INFO_PW_PATH}`;
+export const MY_INFO_UPDATE_ABSOLUTE_PATH = (userId: string) => `${MY_PATH(userId)}/${MY_INFO_UPDATE_PATH}`;
 
 export const ADMIN_ABSOULTE_PATH = ADMIN_PATH;
 export const ADMIN_ABSOLUTE_ACCUSE_PATH = `${ADMIN_PATH}/${ADMIN_ACCUSE_PATH}`
 export const ADMIN_ABSOLUTE_MILEAGE_PATH = `${ADMIN_PATH}/${ADMIN_MILEAGE_PATH}`
 export const OTHERS_ABSOLUTE_PATH = OTHERS_PATH;
-export const MY_ABSOLUTE_MILEAGE_PATH =  `${MY_PATH}/${MY_MILEAGE_PATH}`;
-export const MY_ABSOLUTE_ACCOUNT_MANAGEMENT_PATH =  `${MY_PATH}/${MY_ACCOUNT_MANAGEMENT_PATH}`;
-export const MY_ABSOLUTE_ATTENDANCE_CHECK_PATH = MY_ATTENDANCE_CHECK_PATH;
+export const MY_ABSOLUTE_MILEAGE_PATH = (userId: string) => `${MY_PATH(userId)}/${MY_MILEAGE_PATH}`;
+export const MY_ABSOLUTE_ACCOUNT_MANAGEMENT_PATH = (userId: string) => `${MY_PATH(userId)}/${MY_ACCOUNT_MANAGEMENT_PATH}`;
+export const MY_ABSOLUTE_ATTENDANCE_CHECK_PATH = (userId: string) => `${MY_PATH(userId)}/${MY_ATTENDANCE_CHECK_PATH}`;
 
 
 // variable: HTTP BEARER TOKEN COOKIE NAME //

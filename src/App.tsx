@@ -119,8 +119,8 @@ export default function DoranDoran() {
     }
 
     const {userId, name, telNumber, profileImage, role, nickName, mileage, 
-      statusMessage} = responseBody as GetSignInResponseDto;
-    setSignInUser({userId, name, telNumber, profileImage, role, nickName, mileage, statusMessage});
+      statusMessage, subscribers} = responseBody as GetSignInResponseDto;
+    setSignInUser({userId, name, telNumber, profileImage, role, nickName, mileage, statusMessage, subscribers});
   };
   
   //effect: cookie의 accesstoken 값이 변경될 때 마다 로그인 유저 정보를 요청하는 함수 //
@@ -168,14 +168,14 @@ export default function DoranDoran() {
         <Route index element={<Schedule />} />
       </Route>
 
-      <Route path={MY_PATH} element={<MainLayout />}  >
+      <Route path={MY_PATH(':userId')} element={<MainLayout />}  >
         <Route index element={<Mypage />} />
-        <Route path={MY_UPDATE_PATH(':userId')} element={<Update />} />
-        <Route path={MY_INFO_PW_PATH(':userId')} element={<PwCheck />} />
-        <Route path={MY_INFO_UPDATE_PATH(':userId')} element={<ChangeInfo />} />
+        <Route path={MY_UPDATE_PATH} element={<Update />} />
+        <Route path={MY_INFO_PW_PATH} element={<PwCheck />} />
+        <Route path={MY_INFO_UPDATE_PATH} element={<ChangeInfo />} />
         <Route path={MY_MILEAGE_PATH} element={<MypageMileage />} />
         <Route path={MY_ACCOUNT_MANAGEMENT_PATH} element={<AccountManagement />} />
-        <Route path={MY_ATTENDANCE_CHECK_PATH(':userId')} element={<Attendance />} />
+        <Route path={MY_ATTENDANCE_CHECK_PATH} element={<Attendance />} />
       </Route>
 
       <Route path={ADMIN_PATH} element={<MainLayout />}>

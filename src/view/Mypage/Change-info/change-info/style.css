@@ -374,6 +374,8 @@
 
     font-size: 16px;
     font-weight: 500;
+
+    cursor: pointer;
 }
 
 #change-info .modal-patch:hover {
@@ -392,6 +394,8 @@
     display: flex;
     align-content: center;
     justify-content: center;
+    cursor: pointer;
+
 }
 
 #change-info .modal-cancle:hover {

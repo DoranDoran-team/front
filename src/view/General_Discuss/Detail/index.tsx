@@ -5,10 +5,10 @@ import { deleteCommentRequest, getDiscussionRequest, patchCommentRequest, postCo
 import Comment from '../../../types/Comment.interface';
 import { usePagination } from '../../../hooks';
 import PostCommentRequestDto from '../../../apis/dto/request/comment/post-comment.request.dto';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { postAccuseRequest } from '../../../apis';
 import { useCookies } from 'react-cookie';
-import { ACCESS_TOKEN } from '../../../constants';
+import { ACCESS_TOKEN, MY_ABSOLUTE_PATH } from '../../../constants';
 import ResponseDto from '../../../apis/dto/response/response.dto';
 import { GetDiscussionResponseDto } from '../../../apis/dto/response/gd_discussion';
 import DiscussionData from '../../../types/discussionData.interface';
@@ -468,6 +468,8 @@ export default function GDDetail() {
     const [clicked, setClicked] = useState<boolean>(false);
     const [commentId] = useState<number>();
 
+    // function: navigator //
+    const navigator = useNavigate();
 
     // state: 원본 리스트 상태 //
     const [originalList, setOriginalList] = useState<Comment[]>([]);
@@ -496,6 +498,11 @@ export default function GDDetail() {
     const toggleDropdownOption = () => {
         setIsDropdownOptionOpen(!isDropdownOptionOpen);
     };
+
+    const onUserProfileClickHandler = () => {
+        console.log(discussionData?.userId);
+        if(discussionData) navigator(MY_ABSOLUTE_PATH(discussionData.userId));
+    }
 
     const toggleCommentOptions = (commentId: number) => {
         setCommentOptions((prev) => ({
@@ -616,8 +623,6 @@ export default function GDDetail() {
         getDiscussion();
     }, []);
 
-
-
     return (
         <div id="gd-detail-wrapper">
             <div className="gd-detail-wrapper-in">
@@ -628,7 +633,8 @@ export default function GDDetail() {
                     </div>
                     <div className="post-info">
                         <div className="post-user-info">
-                            <div className="profile-image" style={{ backgroundImage: `url(${discussionData?.profileImage || '/defaultProfile.png'})` }}></div>
+                            <div className="profile-image" style={{ backgroundImage: `url(${discussionData?.profileImage || '/defaultProfile.png'})` }}
+                            onClick={onUserProfileClickHandler}></div>
                             <div>
                                 <div className='user-nickname'>{discussionData?.nickName}</div>
                                 <div className='post-date-and-modify'>

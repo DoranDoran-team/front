@@ -145,7 +145,7 @@ function TopPersonalNavigation() {
                         <div className='menu' onClick={onLogoutButtonClickHandler}>로그아웃</div>
                         <div className='menu' onClick={
                             signInUser?.role ? () => navigator('/admin') :
-                            () => navigator('/mypage')}>마이페이지</div>
+                            () => navigator(`/mypage/${signInUser?.userId}`)}>마이페이지</div>
                     </div>
                 </div>)
             }

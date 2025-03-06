@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import './style.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ACCESS_TOKEN, MY_PATH } from '../../../constants';
 import { useSignInUserStore } from '../../../stores';
 import PatchProfileRequestDto from '../../../apis/dto/request/mypage/myInfo/patch-profile.request.dto';
@@ -19,6 +19,7 @@ export default function Update() {
 
     // state: 로그인 유저 정보 상태 //
     const { signInUser, setSignInUser } = useSignInUserStore();
+    const { userId } = useParams();
 
     // state: 내정보 입력 상태 //
     const [nickname, setNickName] = useState<string>('');
@@ -79,11 +80,12 @@ export default function Update() {
             const formData = new FormData();
             formData.append('file', storeImageUrl);
             url = await fileUploadRequest(formData);
+            if(url) setPreviewUrl(url);
         }
 
         const requestBody : PatchProfileRequestDto = {
             nickName: nickname,
-            profileImage: url,
+            profileImage: previewUrl,
             statusMessage: stateMessage,
         }
         console.log(requestBody);
@@ -107,7 +109,7 @@ export default function Update() {
             return;
         }
 
-        navigator(MY_PATH);
+        if(userId) navigator(MY_PATH(userId));
         window.location.reload();
     };
 
@@ -143,7 +145,7 @@ export default function Update() {
                 </div>
                 <input className="mypage-state-message edit" value={stateMessage} 
                 placeholder='상태메세지를 입력해주세요 'onChange={onStateMessageChangeHandler}/>
-                <div className="mypage-discussion-room">내가 개설한 토론방</div>
+                {/* <div className="mypage-discussion-room">내가 개설한 토론방</div>
                 <div className="myapge-middle-box">
                     <div className="mypage-middle-icon"></div>
                     <div className="mypage-middle-nickname">별별이</div>
@@ -176,7 +178,7 @@ export default function Update() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> */}
             </div>
             <div className="subscribe-wrapper">
                 <div className="subscribe-title">내가 구독한 사람 2명</div>

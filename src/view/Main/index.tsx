@@ -94,7 +94,7 @@ export default function Main() {
     
         const { mainGenDiscs } = responseBody as GetMainGenDiscListResponseDto;
         setPosts(mainGenDiscs);
-        console.log(mainGenDiscs);
+        //console.log(mainGenDiscs);
     }
 
     // effect: 메인 화면 일반 토론 게시글 가져오기 //
