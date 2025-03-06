@@ -83,12 +83,9 @@
     gap: 17px;
 }
 
-
-/* mypage 유저 정보 CSS */
 .mypage-wrapper {
     display: flex;
     justify-content: center;
-    /* height: 100%; */
     gap: 20px;
 }
 
@@ -104,8 +101,8 @@
     display: flex;
     flex-direction: column;
     /* flex:2; */
-    padding: 80px;
-
+    padding: 60px;
+    box-sizing: border-box;
     background-color: #FBFBFB;
     width: 1000px;
     border-radius: 50px;
@@ -373,18 +370,17 @@
 }
 
 .discussion-room-list .discussion-image {
-
-    /* background-image: url('/public/mypage/profile1.png'); */
-    border-radius: 375px;
     width: 130px;
     height: 130px;
-
-    background-position: 50% 50%;
+    /* 반지름을 px 대신 50%로 주면, 가로나 세로가 달라져도 둥근 모양이 유지됩니다. */
+    border-radius: 50%;
+    background-position: center;
     background-size: cover;
+    /* 플렉스 컨테이너에서 이미지가 가로로 늘어나지 않도록 고정 */
+    flex-shrink: 0;
 }
 
 .mypage-wrapper .discussion-info {
-    width: 720px;
     height: 130px;
     padding: 10px;
 
@@ -395,7 +391,7 @@
 .discussion-title-box {
     display: flex;
     justify-content: space-between;
-    width: 720px;
+    /* width: 720px; */
 
     font-size: 20px;
     font-weight: bold;
@@ -457,7 +453,7 @@
 
 .discussion-bottom {
     display: flex;
-    width: 720px;
+    /* width: 720px; */
     justify-content: space-between;
     align-items: center;
 
@@ -480,7 +476,7 @@
 
 .discussion-icons {
     display: flex;
-    width: 720px;
+    /* width: 720px; */
     font-weight: 400;
     justify-content: right;
     gap: 8px;

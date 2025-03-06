@@ -175,7 +175,7 @@ export default function DoranDoran() {
         <Route path={MY_INFO_UPDATE_PATH(':userId')} element={<ChangeInfo />} />
         <Route path={MY_MILEAGE_PATH} element={<MypageMileage />} />
         <Route path={MY_ACCOUNT_MANAGEMENT_PATH} element={<AccountManagement />} />
-        <Route path={MY_ATTENDANCE_CHECK_PATH(':userId')} element={<Attendance />} />
+        <Route path={MY_ATTENDANCE_CHECK_PATH} element={<Attendance />} />
       </Route>
 
       <Route path={ADMIN_PATH} element={<MainLayout />}>

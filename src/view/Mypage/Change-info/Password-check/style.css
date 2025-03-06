@@ -39,11 +39,12 @@
 }
 
 #password-check .background {
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 80px;
+    padding: 60px;
 
     background-color: #FBFBFB;
     width: 1000px;

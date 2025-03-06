@@ -1,3 +1,6 @@
+.mypage-left-opstions {
+    gap: 20px;
+}
 
 #account-management-wrapper {
     display: flex;
@@ -5,10 +8,11 @@
 }
 
 #account-management-main-wrapper {
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     width: 1000px;
-    padding: 80px;
+    padding: 60px;
     background-color: #FBFBFB;
     border-radius: 50px;
 }
@@ -21,14 +25,16 @@
 
 #account-management-main-wrapper .account-form h3 {
     font-size: 20px;
-    margin-bottom: 15px;
+    margin-bottom: 40px;
+    /* margin-bottom: 40px; */
 }
 
 #account-management-main-wrapper .bank-options {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    box-sizing: border-box;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     gap: 10px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 #account-management-main-wrapper .bank-option {
@@ -51,17 +57,43 @@
     color: white;
 }
 
+#account-management-main-wrapper .input-and-button {
+    display: flex;
+}
+
 #account-management-main-wrapper input {
+    box-sizing: border-box;
+    /* width: 30%; */
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    /* margin-bottom: 10px; */
+}
+
+#account-management-main-wrapper .input-and-button {
+    display: flex;
+    gap: 10px;
+}
+
+#account-management-main-wrapper .text-inputs {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+}
+
+#account-management-main-wrapper .text-input {
     box-sizing: border-box;
     width: 100%;
     padding: 10px;
     border-radius: 8px;
     border: 1px solid rgba(0, 0, 0, 0.2);
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
 }
 
 #account-management-main-wrapper .register-button {
-    width: 100%;
+    width: 100px;
+    height: 100%;
     padding: 10px;
     background-color: #367ff4;
     color: white;
@@ -73,6 +105,10 @@
 
 #account-management-main-wrapper .register-button:hover {
     background-color: #2f55d3;
+}
+
+#account-management-main-wrapper .registered-accounts {
+    margin-top: 30px;
 }
 
 #account-management-main-wrapper .registered-accounts h3 {
