@@ -71,3 +71,26 @@
 .load-more:hover {
     background: #2f55d3;
 }
+
+.notification-delete {
+    /* position: absolute; */
+    top: 5px;
+    right: 5px;
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    color: gray;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.notification-delete:hover {
+    color: black;
+}
+
+.for-display-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
