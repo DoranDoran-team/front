@@ -8,14 +8,10 @@ import { usePagination } from "../../hooks";
 
 import { useCookies } from "react-cookie";
 import ResponseDto from "../../apis/dto/response/response.dto";
-import { deleteLikeRequest, getDiscussionListRequest, postLikeRequest } from "../../apis";
-import Pagination from "../../components/pagination";
-import { GetDiscussionListResponseDto } from "../../apis/dto/response/gd_discussion";
 import { useCategoryStore, useSignInUserStore } from "../../stores";
-import { getDiscussionListRequest, getSearchDiscussionListRequest } from "../../apis";
 import Pagination from "../../components/pagination";
 import { GetDiscussionListResponseDto } from "../../apis/dto/response/gd_discussion";
-import { useSignInUserStore } from "../../stores";
+import { deleteLikeRequest, getDiscussionListRequest, getSearchDiscussionListRequest, postLikeRequest } from "../../apis";
 
 const DEBOUNCE_DELAY = 200; // 0.2초 (200ms)
 
@@ -29,12 +25,12 @@ interface TableRowProps {
 
 // component: 일반 토론방 리스트 컴포넌트//
 function TableRow({ discussionList, getDiscussionList, postLike, click}: TableRowProps) {
-
-    const {signInUser} = useSignInUserStore();
-    const user = signInUser?.userId ?? "";
-
+    
     // state: 로그인 유저 //
     const { signInUser, setSignInUser } = useSignInUserStore();
+    const user = signInUser?.userId ?? "";
+
+    
 
     // function: navigate 함수 처리 //
     const navigator = useNavigate();
