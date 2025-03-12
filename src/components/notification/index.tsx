@@ -3,7 +3,7 @@ import "./style.css";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
-import { getNotifications, markNotificationAsRead } from "../../apis";
+import { deleteNotification, getNotifications, markNotificationAsRead } from "../../apis";
 import { GetNotificationsResponseDto } from "../../apis/dto/response/notification/get-notifications.reponse.dto";
 
 interface NotificationProps {
@@ -81,10 +81,8 @@ export default function Notification({ setHasUnread }: NotificationProps) {
         setHasUnread(unreadExists);
     }, [notifications, setHasUnread]);
 
-
-    // "더보기" 버튼 클릭 핸들러
     const handleLoadMore = () => {
-        // 만약 현재 표시할 알림 개수보다 전체가 적고, 추가 페이지가 있을 경우 fetch
+        // 만약 현재 표시할 알림 개수보다 전체가 적고 추가 페이지가 있을 경우 fetch
         if (notifications.length <= displayCount && hasMore) {
             setPage(page + 1);
         }
@@ -92,7 +90,7 @@ export default function Notification({ setHasUnread }: NotificationProps) {
     };
 
 
-    // 알림 클릭 시 처리: 미읽음이면 읽음 처리 후 최신 상태 동기화, 그리고 타입별로 해당 페이지로 이동
+    // 알림 클릭 시 처리: 미읽음이면 읽음 처리 후 최신 상태 동기화, 타입별로 해당 페이지로 이동
     const handleNotificationClick = async (notification: GetNotificationsResponseDto) => {
         if (!accessToken) return;
 
@@ -132,6 +130,19 @@ export default function Notification({ setHasUnread }: NotificationProps) {
         }
     };
 
+    // 알림 삭제 핸들러
+    const handleDeleteNotification = async (notificationId: number) => {
+        if (!accessToken) return;
+        const result = await deleteNotification(notificationId, cookies.accessToken);
+        if (result && result.code === "SU") {
+            setNotifications((prev) =>
+                prev.filter((n) => n.notificationId !== notificationId)
+            );
+        } else {
+            alert("알림 삭제에 실패했습니다.");
+        }
+    };
+
     const formatNotificationDate = (dateString: string) => {
         const notificationDate = moment(dateString);
         const now = moment();
@@ -160,12 +171,25 @@ export default function Notification({ setHasUnread }: NotificationProps) {
                         <div
                             key={notification.notificationId}
                             className={`notification-item ${notification.isRead ? "read" : "unread"}`}
-                            onClick={() => handleNotificationClick(notification)}
                         >
-                            <p>{notification.message}</p>
-                            <span className="notification-time">
-                                {formatNotificationDate(notification.notificationDate)}
-                            </span>
+                            <div className="notification-content">
+                                <p onClick={() => handleNotificationClick(notification)}>{notification.message}</p>
+                                <div className="for-display-flex">
+                                    <div>
+                                        <span className="notification-time">
+                                            {formatNotificationDate(notification.notificationDate)}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <button
+                                            className="notification-delete"
+                                            onClick={() => handleDeleteNotification(notification.notificationId)}
+                                        >
+                                            x
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     ))}
                 </div>

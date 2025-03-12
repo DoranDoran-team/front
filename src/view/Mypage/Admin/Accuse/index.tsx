@@ -265,7 +265,7 @@ export default function Accuse() {
             setAdminCheck(signInUser.userId);
         }
 
-        getAccuseListRequest('songth', accessToken)
+        getAccuseListRequest(adminCheck, accessToken)
             .then((response) => {
                 getAccuseListResponse(response as GetAccuseListResponseDto | ResponseDto | null);
             });

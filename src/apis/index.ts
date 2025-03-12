@@ -376,7 +376,7 @@ export const getNotifications = async (accessToken: string, page: number = 1) =>
 
         return response.data;
     } catch (error) {
-        console.error("🚨 Error fetching notifications:", error);
+        console.error("알림 목록 조회 실패:", error);
         return [];
     }
 };
@@ -395,7 +395,7 @@ export const markNotificationAsRead = async (notificationId: number, accessToken
         );
         return response.data as ResponseDto;
     } catch (error) {
-        console.error("🚨 Error marking notification as read:", error);
+        console.error("알림 읽음 처리 실패", error);
         return null;
     }
 };
@@ -407,7 +407,7 @@ export const getAccounts = async (accessToken: string): Promise<GetAccountsRespo
         const response = await axios.get(`${ACCOUNT_MANAGEMENT_API_URL}`, bearerAuthorization(accessToken));
         return response.data;
     } catch (error) {
-        console.error("Error", error);
+        console.error("계좌 목록 조회 실패", error);
         return null;
     }
 };
@@ -429,7 +429,7 @@ export const deleteAccount = async (accountNumber: string, accessToken: string) 
 };
 
 
-// function: get search user 요청 함수 //
+// function: 사용자 검색 GET 요청 함수 //
 export const searchUsersRequest = async (keyword: string, accessToken: string) => {
     const url = `${USER_API_URL}/search?keyword=${encodeURIComponent(keyword)}`;
 
@@ -448,7 +448,7 @@ export const getAttendanceRecordsRequest = async (accessToken: string) => {
             .catch(responseErrorHandler);
         return responseBody;
     } catch (error) {
-        console.error("출석체크 조회 API 에러", error);
+        console.error("출석체크 기록 조회 실패", error);
         return null;
     }
 };
@@ -461,7 +461,29 @@ export const checkAttendanceRequest = async (accessToken: string) => {
             .catch(responseErrorHandler);
         return responseBody;
     } catch (error) {
-        console.error("출석체크 API 에러", error);
+        console.error("출석체크 실패", error);
+        return null;
+    }
+};
+
+// function: (관리자) 생일 마일리지 지급 POST 요청 함수 //
+export const awardBirthdayBonus = async (accessToken: string) => {
+    try {
+        const response = await axios.post(`${ADMIN_MILEAGE_API_URL}/birthday`, {}, bearerAuthorization(accessToken));
+        return response.data;
+    } catch (error) {
+        console.error("생일 마일리지 지급 오류:", error);
+        return null;
+    }
+};
+
+// function: 알림 삭제 요청 함수 //
+export const deleteNotification = async (notificationId: number, accessToken: string) => {
+    try {
+        const response = await axios.delete(`${NOTIFICATION_API_URL}/${notificationId}`, bearerAuthorization(accessToken));
+        return response.data;
+    } catch (error) {
+        console.error("알림 삭제 오류:", error);
         return null;
     }
 };
