@@ -20,7 +20,6 @@ export default function Update() {
 
     // state: 로그인 유저 정보 상태 //
     const { signInUser, setSignInUser } = useSignInUserStore();
-    const { userId } = useParams();
 
     // state: 내정보 입력 상태 //
     const [nickname, setNickName] = useState<string>('');
@@ -81,16 +80,29 @@ export default function Update() {
             const formData = new FormData();
             formData.append('file', storeImageUrl);
             url = await fileUploadRequest(formData);
-            if(url) setPreviewUrl(url);
+            //if(url) setPreviewUrl(url);
         }
 
-        const requestBody: PatchProfileRequestDto = {
-            nickName: nickname,
-            profileImage: previewUrl,
-            statusMessage: stateMessage,
+        if(url) {
+            // 새로운 프로필 이미지 등록
+            const requestBody: PatchProfileRequestDto = {
+                nickName: nickname,
+                profileImage: url,
+                statusMessage: stateMessage,
+            }
+            console.log(requestBody);
+            patchProfileRequest(requestBody, accessToken).then(patchProfileResponse);
+
+        } else {
+            // 기존의 프로필 이미지 유지
+            const requestBody: PatchProfileRequestDto = {
+                nickName: nickname,
+                profileImage: signInUser.profileImage,
+                statusMessage: stateMessage,
+            }
+            console.log(requestBody);
+            patchProfileRequest(requestBody, accessToken).then(patchProfileResponse);
         }
-        console.log(requestBody);
-        patchProfileRequest(requestBody, accessToken).then(patchProfileResponse);
     }
 
     // function: 프로필 수정 완료 처리 함수 //
@@ -110,7 +122,7 @@ export default function Update() {
             return;
         }
 
-        if(userId) navigator(MY_PATH);
+        navigator(MY_PATH);
         window.location.reload();
     };
 

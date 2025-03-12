@@ -90,7 +90,7 @@ export default function PwCheck() {
             return;
         }
 
-        navigator(MY_INFO_UPDATE_ABSOLUTE_PATH(`${signInUser?.userId}`));
+        navigator(MY_INFO_UPDATE_ABSOLUTE_PATH);
     };
 
     // render: 비밀번호 확인 화면 렌더링 //

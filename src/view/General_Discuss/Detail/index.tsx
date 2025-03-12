@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { MouseEvent, useEffect, useState } from 'react';
 import './style.css';
 import AccuseModal from '../../../components/modal/accuse';
 import { deleteCommentRequest, getDiscussionRequest, patchCommentRequest, postCommentRequest } from '../../../apis';
@@ -6,14 +6,12 @@ import Comment from '../../../types/Comment.interface';
 import { usePagination } from '../../../hooks';
 import PostCommentRequestDto from '../../../apis/dto/request/comment/post-comment.request.dto';
 import { useNavigate, useParams } from 'react-router';
-import { postAccuseRequest } from '../../../apis';
 import { useCookies } from 'react-cookie';
-import { ACCESS_TOKEN, MY_ABSOLUTE_PATH } from '../../../constants';
+import { ACCESS_TOKEN, ANOTHER_USER_PROFILE_ABSOULTE_PATH, MY_ABSOLUTE_PATH, MY_PATH, SELECTED_USER } from '../../../constants';
 import ResponseDto from '../../../apis/dto/response/response.dto';
 import { GetDiscussionResponseDto } from '../../../apis/dto/response/gd_discussion';
 import DiscussionData from '../../../types/discussionData.interface';
 import { useSignInUserStore } from '../../../stores';
-import { PostAccuseRequestDto } from '../../../apis/dto/request/accuse';
 import PatchCommentRequestDto from '../../../apis/dto/request/comment/patch-comment.request.dto';
 import MentionInput from '../../../components/search-user';  // MentionInput 컴포넌트 사용
 
@@ -47,6 +45,8 @@ function Comments({ comment, depth }: commentProps) {
         }));
         setNewReply('');
     };
+
+    const navigator = useNavigate();
 
     const openReportModal = () => {
         setIsReportModalOpen(!isReportModalOpen);
@@ -154,13 +154,23 @@ function Comments({ comment, depth }: commentProps) {
         }
     };
 
+    // 댓글 프로필 클릭 후 마이페이지 이동 //
+    const onCommentClickHandler = (event: MouseEvent<HTMLDivElement>) => {
+        if(signInUser?.userId === comment.userId) navigator(MY_PATH);
+        else {
+            document.cookie = `selectedUser=${comment.userId}; path=/;`;
+            navigator(ANOTHER_USER_PROFILE_ABSOULTE_PATH);
+            document.cookie = "yourCookieName=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        }
+    }
+
     return (
         <div>
             <div key={comment.commentId} className='comment-info'>
                 {!editCotents[comment.commentId] ? (
                     <div className='comment-item-box'>
                         <div className="comment-user-info">
-                            <div className='comment-user'>
+                            <div className='comment-user' onClick={onCommentClickHandler}>
                                 <div className="profile-image"></div>
                                 <div>
                                     <div className='comment-user-nickname'>{comment.nickName}</div>
@@ -444,7 +454,7 @@ function OpinionSelector({ agreeOpinion, oppositeOpinion }: voteProps) {
 }
 
 export default function GDDetail() {
-    const { signInUser } = useSignInUserStore();
+    const { signInUser, setSignInUser } = useSignInUserStore();
     const discussionId = signInUser?.userId;
     const { roomId } = useParams();
     const roomIdNumber = Number(roomId);
@@ -499,8 +509,8 @@ export default function GDDetail() {
     };
 
     const onUserProfileClickHandler = () => {
-        console.log(discussionData?.userId);
-        if(discussionData) navigator(MY_ABSOLUTE_PATH);
+        if(discussionData?.userId === signInUser?.userId) navigator(MY_PATH);
+        else navigator(ANOTHER_USER_PROFILE_ABSOULTE_PATH);
     }
 
     const toggleCommentOptions = (commentId: number) => {
@@ -609,9 +619,8 @@ export default function GDDetail() {
                         <div className="width-line"><span>{discussionData?.discussionType}</span></div>
                     </div>
                     <div className="post-info">
-                        <div className="post-user-info">
-                            <div className="profile-image" style={{ backgroundImage: `url(${discussionData?.profileImage || '/defaultProfile.png'})` }}
-                            onClick={onUserProfileClickHandler}></div>
+                        <div className="post-user-info" onClick={onUserProfileClickHandler}>
+                            <div className="profile-image" style={{ backgroundImage: `url(${discussionData?.profileImage || '/defaultProfile.png'})` }}></div>
                             <div>
                                 <div className='user-nickname'>{discussionData?.nickName}</div>
                                 <div className='post-date-and-modify'>

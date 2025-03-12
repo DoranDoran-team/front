@@ -2,7 +2,7 @@ import React, { ChangeEvent, MouseEvent, useEffect, useState } from "react";
 import './style.css';
 import { useNavigate } from 'react-router-dom';
 
-import { ACCESS_TOKEN, GEN_DISC_DETAIL_ABSOLUTE_PATH, GEN_DISC_WRITE_ABSOLUTE_PATH, MY_PATH } from '../../constants';
+import { ACCESS_TOKEN, ANOTHER_USER_PROFILE_ABSOULTE_PATH, GEN_DISC_DETAIL_ABSOLUTE_PATH, GEN_DISC_WRITE_ABSOLUTE_PATH, MY_PATH } from '../../constants';
 import DiscussionList from "../../types/discussionList.interface";
 import { usePagination } from "../../hooks";
 
@@ -11,6 +11,7 @@ import ResponseDto from "../../apis/dto/response/response.dto";
 import { getDiscussionListRequest } from "../../apis";
 import Pagination from "../../components/pagination";
 import { GetDiscussionListResponseDto } from "../../apis/dto/response/gd_discussion";
+import { useSignInUserStore } from "../../stores";
 
 
 interface TableRowProps {
@@ -20,6 +21,9 @@ interface TableRowProps {
 
 // component: 일반 토론방 리스트 컴포넌트//
 function TableRow({ discussionList, getDiscussionList }: TableRowProps) {
+
+    // state: 로그인 유저 //
+    const { signInUser, setSignInUser } = useSignInUserStore();
 
     // function: navigate 함수 처리 //
     const navigator = useNavigate();
@@ -32,7 +36,12 @@ function TableRow({ discussionList, getDiscussionList }: TableRowProps) {
     // event handler: 게시글 작성자 프로필 클릭 이벤트 처리 //
     const onProfileClickHandler = (event: MouseEvent<HTMLDivElement>) => {
         event.stopPropagation();
-        navigator(MY_PATH);
+        if(signInUser?.userId === discussionList.userId) navigator(MY_PATH);
+        else {
+            document.cookie = `selectedUser=${discussionList.userId}; path=/;`;
+            navigator(ANOTHER_USER_PROFILE_ABSOULTE_PATH);
+            document.cookie = "yourCookieName=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        }
     }
 
     // function: get general discussion response 처리 함수 //
@@ -89,6 +98,7 @@ export default function GD() {
     const [cookies] = useCookies();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState<string>('정렬순');
+    
 
     // state: 검색어 상태 //
     const [searched, setSearched] = useState<string>('');
@@ -133,6 +143,7 @@ export default function GD() {
 
     // function: get general discussion list response 처리 함수 //
     const getDiscussionListResponse = (responseBody: GetDiscussionListResponseDto | ResponseDto | null) => {
+
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
                 responseBody.code === "AF" ? '잘못된 접근입니다. ' :

@@ -22,12 +22,17 @@ interface TableRowProps {
 // component: NoticeRow 컴포넌트 //
 export function NoticeRow({ notice, getNoticeList, onDetailClickHandler, index }: TableRowProps) {
 
+    // function: 날짜 변환 함수 //
+    const formatDate = (dateString: string): string => {
+        return dateString.replace(/-/g, ".");
+    };
+
     // render: NoticeRow 컴포넌트 렌더링 //
     return (
         <div id="tr" onClick={() => onDetailClickHandler(notice.noticeId)}>
             <div className="td-no">{index}</div>
             <div className="td-title">{notice.title}</div>
-            <div className="td-date">{notice.noticeDate}</div>
+            <div className="td-date">{formatDate(notice.noticeDate)}</div>
         </div>
     )
 }
@@ -35,12 +40,17 @@ export function NoticeRow({ notice, getNoticeList, onDetailClickHandler, index }
 // component: 상단 고정 공지사항 컴포넌트 //
 export function TopNotice({ notice, getNoticeList, onDetailClickHandler }: TableRowProps) {
     
+    // function: 날짜 변환 함수 //
+    const formatDate = (dateString: string): string => {
+        return dateString.replace(/-/g, ".");
+    };
+
     // render: 상단 고정 공지사항 컴포넌트 렌더링 //
     return (
         <div id="tr" onClick={() => onDetailClickHandler(notice.noticeId)}>
             <div className="td-pin"></div>
             <div className="td-pin-title">{notice.title}</div>
-            <div className="td-pin-date">{notice.noticeDate}</div>
+            <div className="td-pin-date">{formatDate(notice.noticeDate)}</div>
         </div>
     )
 }

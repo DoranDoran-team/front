@@ -1,7 +1,7 @@
 import React, { ChangeEvent, MouseEvent, useEffect, useState } from "react";
 import './style.css';
 import { useNavigate, useParams } from "react-router-dom";
-import { ACCESS_TOKEN, MY_ABSOLUTE_ACCOUNT_MANAGEMENT_PATH, MY_ABSOLUTE_ATTENDANCE_CHECK_PATH, MY_ABSOLUTE_MILEAGE_PATH, MY_ABSOLUTE_PATH, MY_ABSOLUTE_UPDATE_PATH, MY_INFO_PW_ABSOLUTE_PATH, MY_PATH } from  "../../../constants";
+import { ACCESS_TOKEN, ANOTHER_USER_PROFILE_ABSOULTE_PATH, MY_ABSOLUTE_ACCOUNT_MANAGEMENT_PATH, MY_ABSOLUTE_ATTENDANCE_CHECK_PATH, MY_ABSOLUTE_MILEAGE_PATH, MY_ABSOLUTE_PATH, MY_ABSOLUTE_UPDATE_PATH, MY_INFO_PW_ABSOLUTE_PATH, MY_PATH, SELECTED_USER } from  "../../../constants";
 import { FaUserEdit, FaCoins, FaHistory, FaCalendarCheck, FaCreditCard } from "react-icons/fa";
 import { useSignInUserStore } from "../../../stores";
 import Subscribers from "../../../types/subscribers.interface";
@@ -9,7 +9,8 @@ import useNoticePagination from "../../../hooks/notice.pagination.hooks";
 import { useCookies } from "react-cookie";
 import ResponseDto from "../../../apis/dto/response/response.dto";
 import { SearchUserData } from "../../../apis/dto/response/user/get-search-user-list.response.dto";
-import { searchUsersRequest } from "../../../apis";
+import { cancleFollowRequest, searchUsersRequest } from "../../../apis";
+import { getCookie } from "../../get-user-cookie/get.user.cookie";
 
 interface SubProps {
     subers: Subscribers
@@ -49,31 +50,26 @@ export default function MypageSidebar() {
 
     // event handler: 마이페이지 버튼 클릭 이벤트 처리 함수 //
     const navigateToMyPage = () => {
-        //navigator(MY_ABSOLUTE_PATH);
+        navigator(MY_ABSOLUTE_PATH);
     };
 
     // event handler: 마일리지 관리 버튼 클릭 이벤트 처리 함수 //
     const navigateToMileage = () => {
-        //if(signInUser) navigator(MY_ABSOLUTE_MILEAGE_PATH(signInUser.userId));
         navigator(MY_ABSOLUTE_MILEAGE_PATH);
     };
 
     // event handler: 계좌 관리 버튼 클릭 이벤트 처리 함수 //
     const navigateToAccountManagement = () => {
-        //if(signInUser) navigator(MY_ABSOLUTE_ACCOUNT_MANAGEMENT_PATH(signInUser.userId));
         navigator(MY_ABSOLUTE_ACCOUNT_MANAGEMENT_PATH);
     };
 
     // event handler: 개인정보 수정 버튼 클릭 이벤트 처리 함수 //
     const onChangeInfoClickHandler = () => {
-        if(signInUser) navigator(MY_INFO_PW_ABSOLUTE_PATH(signInUser.userId));
-        else return;
-        //navigator(MY_INFO_PW_ABSOLUTE_PATH(signInUser?.userId));
+        navigator(MY_INFO_PW_ABSOLUTE_PATH);
     }
 
     // event handler: 출석체크 버튼 클릭 이벤트 처리 함수 //
     const naviagateToAttendance = () => {
-        //if(signInUser) navigator(MY_ABSOLUTE_ATTENDANCE_CHECK_PATH(signInUser.userId));
         navigator(MY_ABSOLUTE_ATTENDANCE_CHECK_PATH);
     }
 
@@ -168,7 +164,7 @@ export default function MypageSidebar() {
         if(signInUser) {
             setSubscribers(signInUser.subscribers);
         }
-    }, []);
+    }, [signInUser]);
 
     //* 커스텀 훅 가져오기
     const {
@@ -188,28 +184,26 @@ export default function MypageSidebar() {
 
         const [cookies, setCookie] = useCookies();
         const accessToken = cookies[ACCESS_TOKEN];
-        const { userId } = useParams();
+        const userId = getCookie(SELECTED_USER);
 
         const [id, setId] = useState<string>('');
 
         // event handler: 상대방 프로필 클릭 이벤트 핸들러 //
         const onProfileClickHandler = () => {
-            navigator(MY_PATH);
+            document.cookie = `selectedUser=${subers.userId}; path=/;`;
+            navigator(ANOTHER_USER_PROFILE_ABSOULTE_PATH);
+            document.cookie = "yourCookieName=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         }
 
         // event handler: 구독 취소 버튼 이벤트 처리 함수 //
-        const onSubscribeCancleHandler = (event: MouseEvent<HTMLDivElement>) => {
+        const onSubscribeCancleHandler = (event: MouseEvent<HTMLDivElement>, userId: string) => {
             event.stopPropagation();
             if(!accessToken || !signInUser?.userId) return;
-            //cancleFollowRequest(signInUser.userId, id, accessToken).then(cancleFollowResponse);
+            cancleFollowRequest(signInUser.userId, userId, accessToken).then(cancleFollowResponse);
         }
 
         // function: 구독 취소 후 응답 처리 함수 //
         const cancleFollowResponse = (responseBody: ResponseDto | null) => {
-            
-            if(userId) setId(userId);
-            else return;
-            console.log(responseBody, userId, "로그인 유저: ", signInUser?.userId);
             const message =
                 !responseBody ? '서버에 문제가 있습니다.' :
                 responseBody.code === 'VF' ? '일치하는 정보가 없습니다.' :
@@ -224,24 +218,25 @@ export default function MypageSidebar() {
                 return;
             } else {
                 setSubscribe(false);
-                //alert("구독 취소되었습니다.");
-                //window.location.reload();
+                alert("구독 취소되었습니다.");
+                window.location.reload();
             }
     }
 
         // render: 구독 박스 렌더링 //
         return (
-            <div className="subscribe-box" style={{marginBottom: "15px"}}
+            <div className="subscribe-box" style={{marginBottom: "20px"}}
                 onClick={onProfileClickHandler}>
                 <div className="subscribe-image" 
                     style={{backgroundImage: `url(${subers.profileImage ? 
                         subers.profileImage : '/defaultProfile.png'})`}}
                 ></div>
                 <div className="subscribe-user-info">
-                    <div className="subscribe-nickname">{subers.nickName}</div>
-                    <div className="subscribe-user">@{subers.userId}</div>
+                    <div className="subscribe-nickname" style={{cursor: "pointer"}}>{subers.nickName}</div>
+                    <div className="subscribe-user" style={{cursor: "pointer"}}>@{subers.userId}</div>
                 </div>
-                <div className="subscribe-cancel-button" onClick={onSubscribeCancleHandler}>
+                <div className="subscribe-cancel-button" 
+                    onClick={(event) => onSubscribeCancleHandler(event, subers.userId)}>
                     <div className="subscribe-cancel">구독취소</div>
                 </div>
             </div>

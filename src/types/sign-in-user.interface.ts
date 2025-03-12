@@ -10,4 +10,5 @@ export default interface SignInUser {
     mileage: string | null;
     statusMessage : string | null;
     subscribers: Subscribers[];
+    subscribersCount: number | null;
 }

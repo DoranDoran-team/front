@@ -7,4 +7,5 @@ export default interface MyDiscussion {
     likeCount: number;
     createdRoom: string;
     roomDescription: string;
+    discussionEnd: string;
 }

@@ -12,4 +12,5 @@ export default interface GetSignInResponseDto extends ResponseDto{
     mileage: string | null;
     statusMessage : string | null;
     subscribers: Subscribers[];
+    subscribersCount: number | null;
 }
