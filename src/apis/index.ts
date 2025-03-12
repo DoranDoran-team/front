@@ -67,6 +67,7 @@ const PATCH_PASSWORD_API_URL = `${AUTH_MODULE_URL}/change-pw`;
 // 토론방 API URL //
 const WRITE_GENENRAL_DISCUSSION_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}/write`;
 const GET_GENENRAL_DISCUSSION_LIST_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}`;
+const GET_KEYWORD_GENERAL_DISCUSSION_LIST = (keyword: string) => `${GENERAL_DISCUSSION_MODULE_URL}/search?keyword=${keyword}`;
 
 const GET_GENERAL_DISCUSSION_API_URL = (roomId: number | string) => `${GENERAL_DISCUSSION_MODULE_URL}/${roomId}`;
 
@@ -80,7 +81,7 @@ const DELETE_COMMENT_API_URL = (roomId: number | string, commentId: number | str
 const POST_ACCUSE_URL = `${DORANDORAN_API_DOMAIN}/accuse`;
 const GET_ACCUSE_LIST_URL = (userId: string) => `${DORANDORAN_API_DOMAIN}/accuse?userId=${userId}`;
 const GET_ACCUSE_URL = (accuseId: number) => `${DORANDORAN_API_DOMAIN}/accuse/${accuseId}`;
-const GET_ACCUSE_USER_LIST = (keyword: string) => `${DORANDORAN_API_DOMAIN}/accuse/user?keyword=${keyword}`
+const GET_ACCUSE_USER_LIST = (keyword: string) => `${DORANDORAN_API_DOMAIN}/accuse/user?keyword=${keyword}`;
 const PATCH_ACCUSE_APROVED = (accuseId: number) => `${DORANDORAN_API_DOMAIN}/accuse/approve/${accuseId}`;
 const PATCH_ACCUSE_REJECTED = (accuseId: number) => `${DORANDORAN_API_DOMAIN}/accuse/rejected/${accuseId}`;
 
@@ -241,6 +242,13 @@ export const getDiscussionListRequest = async (accessToken: string) => {
     return responseBody;
 }
 
+// function: 일반 토론방 검색어 get discussionList 요청 함수 //
+export const getSearchDiscussionListRequest = async (keyword: string, accessToken: string) => {
+    const responseBody = await axios.get(GET_KEYWORD_GENERAL_DISCUSSION_LIST(keyword), bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
 
 // function: 토론방 상세보기 get discussion 요청 함수 //
 export const getDiscussionRequest = async (roomId: number | string, accessToken: string) => {
@@ -466,7 +474,7 @@ export const searchUsersRequest = async (keyword: string, accessToken: string) =
     const responseBody = await axios.get(url, bearerAuthorization(accessToken))
         .then(responseDataHandler<GetSearchUserListResponseDto>)
         .catch(responseErrorHandler);
-    
+
     return responseBody;
 };
 
