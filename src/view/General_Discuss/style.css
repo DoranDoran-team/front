@@ -235,10 +235,16 @@
     color: rgba(200, 200, 200, 80);
 }
 
-#gd-wrapper .progress-status {
+#gd-wrapper .progress-status.active{
     font-size: 14px;
     padding: 2px 14px;
     background-color: #ABF6BE;
+    border-radius: 15px;
+}
+#gd-wrapper .progress-status.end{
+    font-size: 14px;
+    padding: 2px 14px;
+    background-color: #7a7d81;
     border-radius: 15px;
 }
 
@@ -263,6 +269,12 @@
     background-image: url('../../image/recommendation.png');
     background-size: cover;
     background-position: center;
+}
+
+#gd-wrapper .recommendation-icon.active {
+    
+    background-image: url('../../image/recommendation2.png');
+    
 }
 
 

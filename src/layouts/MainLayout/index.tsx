@@ -5,7 +5,7 @@ import Footer from '../../components/footer';
 
 import { useCookies } from 'react-cookie';
 import { ACCESS_TOKEN, GEN_DISC_ABSOLUTE_PATH, GEN_DISC_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, MY_ABSOLUTE_PATH, NOTICE, NOTICE_ABSOLUTE_PATH, ROOT_ABSOLUTE_PATH, ROOT_PATH, RT_DISC_ABSOLUTE_PATH, RT_DISC_PATH, SCHEDULE, SCHEDULE_ABSOLUTE_PATH } from '../../constants';
-import { RankingClickResultStore, useSignInUserStore } from '../../stores';
+import { RankingClickResultStore, useCategoryStore, useSignInUserStore } from '../../stores';
 import Notification from '../../components/notification';
 //import ArrowToTop from '../../components/arrow-to-top/ArrowToTop';
 
@@ -46,6 +46,8 @@ function TopNavigation() {
     // state: login user state //
     //const { signInUser } = useSignInUserStore();
 
+    // state: 일반 토론방 상태 //
+    const {category, setCategory} = useCategoryStore();
     // function: 네비게이터 함수 //
     const navigator = useNavigate();
 
@@ -58,6 +60,7 @@ function TopNavigation() {
     // event handler: 네비게이션 아이템 클릭 이벤트 //
     const onItemClickHandler = (path: string) => {
         navigator(path);
+        setCategory('전체');
     };
 
     // render: 상단 네비게이션 컴포넌트 //

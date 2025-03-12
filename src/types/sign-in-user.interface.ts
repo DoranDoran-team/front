@@ -1,3 +1,5 @@
+
+import VoteInfo from "./voteInfo.interface";
 import Subscribers from "./subscribers.interface";
 
 export default interface SignInUser {
@@ -11,4 +13,5 @@ export default interface SignInUser {
     statusMessage : string | null;
     subscribers: Subscribers[];
     subscribersCount: number | null;
+  
 }

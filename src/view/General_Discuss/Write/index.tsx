@@ -14,12 +14,12 @@ export default function GDWrite() {
 
     const defaultProfileImageUrl = 'https://blog.kakaocdn.net/dn/4CElL/btrQw18lZMc/Q0oOxqQNdL6kZp0iSKLbV1/img.png';
 
-    const [firstOpinion, setFirstOpinion] = useState<string>('');
-    const [secondOpinion, setSecondOpinion] = useState<string>('');
+    const [firstOpinion, setFirstOpinion] = useState<string>('찬성');
+
     const [title, setTitle] = useState<string>('');
     const [content, setContent] = useState<string>('');
     const [category, setCategory] = useState<string>('시사·교양');
-    const [image, setImage] = useState<File | null>(null);
+    const [image, setImage] = useState<File | string | null>(null);
     const [deadline, setDeadline] = useState<string>('');
     const [showModal, setShowModal] = useState<boolean>(false);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -50,11 +50,6 @@ export default function GDWrite() {
         }
     };
 
-    const handleConfirm = () => {
-        console.log({ title, content, image, firstOpinion, secondOpinion, category, deadline });
-        window.location.href = GEN_DISC_ABSOLUTE_PATH;
-    };
-
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
@@ -74,6 +69,11 @@ export default function GDWrite() {
             return;
         }
         navigator(GEN_DISC_ABSOLUTE_PATH)
+    }
+
+    // event handler: 게시전 주의 사항 알림 이벤트 처리 //
+    const onCautionAlarmHandler = () => {
+        alert('*주의 한번 게시한 게시물은 수정이 불가합니다.*')
     }
 
     // event handler: 게시하기 버튼 클릭 이벤트 처리//
@@ -146,11 +146,17 @@ export default function GDWrite() {
                                 if (e.target.files) {
                                     setImage(e.target.files[0]);
                                 }
+                                else{
+                                    setImage(defaultProfileImageUrl);
+                                }
                             }}
                         />
                         {image && (
                             <div className="image-preview">
-                                <img src={URL.createObjectURL(image)} alt="미리보기" />
+                                <img
+                                    src={typeof image === 'string' ? image : URL.createObjectURL(image)}
+                                    alt="미리보기"
+                                />
                             </div>
                         )}
 
@@ -160,7 +166,7 @@ export default function GDWrite() {
                             id="firstOpinion"
                             placeholder="첫번째 의견을 입력하세요"
                             value={firstOpinion}
-                            onChange={(e) => setFirstOpinion(e.target.value)}
+                            onChange={(e) => !firstOpinion ? setFirstOpinion(e.target.value): setFirstOpinion('찬성')}
                         />
 
                         <label htmlFor="secondOpinion">두번째 의견 (미입력 시 '반대'로 게시됩니다)</label>
@@ -169,7 +175,7 @@ export default function GDWrite() {
                             id="secondOpinion"
                             placeholder="두번째 의견을 입력하세요"
                             value={secondOpinion}
-                            onChange={(e) => setSecondOpinion(e.target.value)}
+                            onChange={(e) => !secondOpinion ? setSecondOpinion(e.target.value):setSecondOpinion('반대')}
                         />
 
                         <label htmlFor="deadline">토론 마감일 *</label>
@@ -183,7 +189,7 @@ export default function GDWrite() {
                         {errors.deadline && <span className="error-message">{errors.deadline}</span>}
 
                         <div className="button-container">
-                            <button type="submit">게시하기</button>
+                            <button type="submit" onClick={onCautionAlarmHandler}>게시하기</button>
                         </div>
                     </form>
                 </div>

@@ -37,6 +37,9 @@ import { PostAdminMileageRequestDto } from "./dto/request/mileage/post-admin-mil
 import { PostAccountRequestDto } from "./dto/request/account/post-account.request.dto";
 import { GetAccountsResponseDto } from "./dto/response/mypage/account_management/get-account-management.response.dto";
 import GetMyDiscussionListResposneDto from "./dto/response/mypage/myInfo/get-my-discussion-list.response.dto";
+import PostVoteRequestDto from "./dto/request/vote/post-vote.request.dto";
+import GetVoteResultResponseDto from "./dto/response/vote/get-vote-result.response.dto";
+import GetLikeListResponseDto from "./dto/response/like/get-like.response.dto";
 import GetUserProfileResponseDto from "./dto/response/mypage/another_user/get-user-profile.response.dto";
 import PostUserFollowRequestDto from "./dto/request/follow/post-user-follow.request.dto";
 import GetAccuseUserListResponseDto from "./dto/response/accuse/get-accuse-user-list.response.dto";
@@ -47,9 +50,11 @@ import GetSearchUserListResponseDto from "./dto/response/user/get-search-user-li
 const DORANDORAN_API_DOMAIN = process.env.REACT_APP_API_URL;
 
 const AUTH_MODULE_URL = `${DORANDORAN_API_DOMAIN}/api/v1/auth`;
-const GENERAL_DISCUSSION_MODULE_URL = `${DORANDORAN_API_DOMAIN}/api/v1/gen_disc`
-const COMMENT_MODULE_URL = `${DORANDORAN_API_DOMAIN}/api/v1/comment`
+const GENERAL_DISCUSSION_MODULE_URL = `${DORANDORAN_API_DOMAIN}/api/v1/gen_disc`;
+const COMMENT_MODULE_URL = `${DORANDORAN_API_DOMAIN}/api/v1/comment`;
 const MAIN_GENERAL_DISC_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}/main`;
+const VOTE_MODULE_URL = `${DORANDORAN_API_DOMAIN}/api/v1/vote`;
+const LIKE_MODULE_URL = `${DORANDORAN_API_DOMAIN}/api/v1/like`
 
 //* ============= 일정관리 
 const POST_SCHEDULE_URL = `${DORANDORAN_API_DOMAIN}/schedule`;
@@ -78,6 +83,16 @@ const POST_COMMENT_API_URL = (roomId: number | string) => `${COMMENT_MODULE_URL}
 const PATCH_COMMENT_API_URL = (roomId: number | string, commentId: number | string) => `${COMMENT_MODULE_URL}/${roomId}/${commentId}`;
 const DELETE_COMMENT_API_URL = (roomId: number | string, commentId: number | string) => `${COMMENT_MODULE_URL}/delete/${roomId}/${commentId}`;
 
+// 투표 API URL //
+const POST_VOTE_API_URL = (roomId: number | string) => `${VOTE_MODULE_URL}/${roomId}`;
+const GET_VOTE_RESULT_API_URL = (roomId: number | string) => `${VOTE_MODULE_URL}/${roomId}`;
+
+// 좋아요 API URL //
+const POST_LIKE_API_URL = (targetId:number , likeType: string ) => `${LIKE_MODULE_URL}/${targetId}/${likeType}`; 
+const DELETE_LIKE_API_URL = (targetId:number , likeType: string ) => `${LIKE_MODULE_URL}/${targetId}/${likeType}`; 
+const GET_LIKE_API_URL = (roomId:number) => `${LIKE_MODULE_URL}/${roomId}`;
+
+=======
 //* ============= 신고
 
 const POST_ACCUSE_URL = `${DORANDORAN_API_DOMAIN}/accuse`;
@@ -293,6 +308,48 @@ export const deleteCommentRequest = async (roomId: number | string, commentId: n
     return responseBody;
 }
 
+// function: 투표 하기 post vote 요청 함수 //
+export const postVoteRequest = async(requsetBody:PostVoteRequestDto, userId:string, roomId:number|string,  accessToken: string) => {
+    const responseBody = await axios.post(POST_VOTE_API_URL(roomId), requsetBody,  bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 투표 결과 get vote result 요청 함수 //
+export const getVoteResultRequest = async(roomId:number|string, accessToken: string) => {
+    const responseBody = await axios.get(GET_VOTE_RESULT_API_URL(roomId), bearerAuthorization(accessToken))
+        .then(responseDataHandler<GetVoteResultResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// 좋아요 관련 API //
+// function: 좋아요 post like 요청 함수 //
+export const postLikeRequest = async(targetId:number, likeType:string, userId:string, accessToken:string) => {
+    const responseBody = await axios.post(POST_LIKE_API_URL(targetId,likeType), userId, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 좋아요 delete like 요청 함수 //
+export const deleteLikeRequest = async(targetId:number, likeType:string, userId:string,   accessToken:string) => {
+    const responseBody = await axios.delete(DELETE_LIKE_API_URL(targetId,likeType), bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 좋아요 정보 가져오기 get like 요청 함수 //
+export const getLikeRequest = async(roomId:number, userId:string, accessToken:string) => {
+    const responseBody = await axios.get(GET_LIKE_API_URL(roomId), bearerAuthorization(accessToken))
+        .then(responseDataHandler<GetLikeListResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+=======
 // function: POST 신고 요청 함수 //
 export const postAccuseRequest = async (requestBody: PostAccuseRequestDto, accessToken: string) => {
     const reseponseBody = await axios.post(POST_ACCUSE_URL, requestBody, bearerAuthorization(accessToken))

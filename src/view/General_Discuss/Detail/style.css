@@ -241,9 +241,11 @@
     background-image: url('../../../image/recommendation.png');
     background-size: cover;
     background-position: center;
+
+    cursor: pointer;
 }
 
-
+#gd-detail-wrapper .recommendation-icon.active,
 #gd-detail-wrapper .recommendation-icon:hover {
     background-image: url('../../../image/recommendation2.png');
 }
@@ -414,6 +416,7 @@
     display: flex;
     width: 100%;
     justify-content: end;
+    
 }
 
 #gd-detail-wrapper .dropdown-menu {
@@ -427,6 +430,7 @@
     border-radius: 8px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     z-index: 1000;
+    
 }
 
 #gd-detail-wrapper .dropdown-item {
@@ -434,8 +438,28 @@
     font-size: 14px;
     padding: 10px 15px;
     cursor: pointer;
+    /* background-image: url(/public/trash-icon.png); */
 }
 
 #gd-detail-wrapper .dropdown-item:hover {
     background-color: #f1f1f1;
+}
+
+#gd-detail-wrapper .see-more{
+    display: flex;
+    justify-content: center;
+    color: #ccc;
+    border-radius: 4px;
+    height: 1.6%;
+    align-items: center;
+    margin-top: -15px;
+    font-size: 15px;
+    cursor: pointer;
+
+}
+#gd-detail-wrapper .see-more{
+    margin-top: auto;
+}
+#gd-detail-wrapper .see-more:hover{
+    color:#A0A0A0;
 }

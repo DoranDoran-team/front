@@ -113,6 +113,7 @@ const usePagination = <T>() => {
     totalSection,
     viewList,
     pageList,
+    setViewList,
     setTotalList,
     setTotalPage,
     setTotalSection,

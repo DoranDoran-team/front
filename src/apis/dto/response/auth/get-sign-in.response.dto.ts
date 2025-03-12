@@ -1,3 +1,6 @@
+import CommentInfo from "../../../../types/comment-info.interface copy";
+import PostInfo from "../../../../types/post-info.interface";
+import VoteInfo from "../../../../types/voteInfo.interface";
 import Subscribers from "../../../../types/subscribers.interface";
 import ResponseDto from "../response.dto";
 
@@ -11,6 +14,9 @@ export default interface GetSignInResponseDto extends ResponseDto{
     role: boolean;
     mileage: string | null;
     statusMessage : string | null;
+    isVoted:VoteInfo[];
+    isLikePost:PostInfo[];
+    isLikeComment:CommentInfo[];
     subscribers: Subscribers[];
     subscribersCount: number | null;
 }
