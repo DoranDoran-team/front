@@ -253,7 +253,9 @@ export default function SignUp() {
             telAuthNumber: authNumber,
             joinPath: 'home',
             snsId: null,
-            birth
+            birth,
+            accuseCount: 0,
+            mileage: 0
         }
         signUpRequest(requestBody).then(signUpResponse);
     }

@@ -6,6 +6,7 @@ import Footer from '../../components/footer';
 import { useCookies } from 'react-cookie';
 import { ACCESS_TOKEN, GEN_DISC_ABSOLUTE_PATH, GEN_DISC_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, MY_ABSOLUTE_PATH, NOTICE, NOTICE_ABSOLUTE_PATH, ROOT_ABSOLUTE_PATH, ROOT_PATH, RT_DISC_ABSOLUTE_PATH, RT_DISC_PATH, SCHEDULE, SCHEDULE_ABSOLUTE_PATH } from '../../constants';
 import { RankingClickResultStore, useCategoryStore, useSignInUserStore } from '../../stores';
+import Notification from '../../components/notification';
 //import ArrowToTop from '../../components/arrow-to-top/ArrowToTop';
 
 // component: 로고 컴포넌트 //
@@ -86,19 +87,16 @@ function TopNavigation() {
 // component: 상단 네비게이션 컴포넌트 //
 function TopPersonalNavigation() {
 
-    // state: path 상태 //
-    const { pathname } = useLocation();
-
     // state: 로그인 유저 정보 상태 //
     const { signInUser, setSignInUser } = useSignInUserStore();
 
     // state: cookie 상태 //
     const [cookies, setCookie, removeCookie] = useCookies();
-    const accessToken = cookies[ACCESS_TOKEN];
 
     // state: hovering 상태 //
     const [isHovered, setIsHovered] = useState(false);
     const [isHovered2, setIsHovered2] = useState(false);
+    const [hasUnread, setHasUnread] = useState(false);
 
     // function: 네비게이터 함수 //
     const navigator = useNavigate();
@@ -111,29 +109,38 @@ function TopPersonalNavigation() {
 
     // render: 상단 컴포넌트 //
     return (
-        <div id='layout-my'>
+        <div id="layout-my">
 
             <div
                 className='layout-my-alarm'
                 onMouseEnter={() => setIsHovered2(true)}>
+                {hasUnread && <div className="alarm-dot" />}
+            </div>
+            <div style={{ display: 'none' }}>
+                <Notification setHasUnread={setHasUnread} />
             </div>
             {isHovered2 && (
                 <div className='menu-box2'
                     onMouseEnter={() => setIsHovered2(true)}
                     onMouseLeave={() => setIsHovered2(false)}>
                     <div>
-                        <AlarmMessage></AlarmMessage>
-
+                        {/* 알림 모달용 Notification – 필요 시 표시 */}
+                        <Notification setHasUnread={setHasUnread} />
+                    </div>
+                    {/* <div> */}
+                    {/* <AlarmMessage></AlarmMessage> */}
+                    {/* 
                         <div className='menu'>회원님이 구독하신 <strong>@test123</strong> 님이 게시글을 작성하였습니다.</div>
                         <hr />
                         <div className='menu'>회원님이 신청하신 마일리지 환급 <strong>5,000점</strong> 승인 완료되었습니다.</div>
                         <hr />
                         <div className='menu'>회원님이 게시한 "<strong>AI에게 윤리적 책임이 있는가?</strong>" 토론이 마감되었습니다.</div>
                         <hr />
-                        <div className='menu2'>회원님이 예약하신 "<strong>대마초 합법화 가능한가?</strong>" 실시간 토론 입장이 시작되었습니다.</div>
-                    </div>
-                </div>)
-            }
+                        <div className='menu2'>회원님이 예약하신 "<strong>대마초 합법화 가능한가?</strong>" 실시간 토론 입장이 시작되었습니다.</div> */}
+                    {/* </div> */}
+                </div>
+            )}
+
 
             <div
                 className='layout-my-icon'
@@ -165,71 +172,6 @@ function AlarmMessage() {
             <div className='menu'><strong>@abc123</strong> 님이 회원님의 게시글에 댓글을 달았습니다.</div>
             <hr />
         </>
-    )
-}
-
-// component: 랭킹 컴포넌트 //
-function Ranking() {
-
-    // state: 랭킹 클릭 상태 //
-    const { clickRank, setClickRank } = RankingClickResultStore();
-
-    const onClickRankHandler = () => {
-        setClickRank(!clickRank);
-    }
-
-    return (
-        <div className='ranking-box-gather'>
-            <div className='cancel-ranking'>
-                <p style={{ margin: '0px', fontSize: '20px', fontWeight: 'bolder' }}>랭킹</p>
-                <p style={{ margin: '0px' }} onClick={onClickRankHandler}>X</p>
-            </div>
-            <div className='ranking-box'>
-                <div>1등</div>
-                <div>나무와선녀꾼</div>
-                <div>100,000P</div>
-            </div>
-            <div className='ranking-box'>
-                <div>2등</div>
-                <div>나무와선녀꾼</div>
-                <div>90,000P</div>
-            </div>
-            <div className='ranking-box'>
-                <div>3등</div>
-                <div>나무와선녀꾼</div>
-                <div>80,000P</div>
-            </div>
-            <div className='ranking-box'>
-                <div>4등</div>
-                <div>나무와선녀꾼</div>
-                <div>70,000P</div>
-            </div>
-            <div className='ranking-box'>
-                <div>5등</div>
-                <div>나무와선녀꾼</div>
-                <div>60,000P</div>
-            </div>
-            <div className='ranking-box'>
-                <div>6등</div>
-                <div>나무와선녀꾼</div>
-                <div>50,000P</div>
-            </div>
-            <div className='ranking-box'>
-                <div>7등</div>
-                <div>나무와선녀꾼</div>
-                <div>40,000P</div>
-            </div>
-            <div className='ranking-box'>
-                <div>8등</div>
-                <div>나무와선녀꾼</div>
-                <div>30,000P</div>
-            </div>
-            <div className='ranking-box'>
-                <div>9등</div>
-                <div>나무와선녀꾼</div>
-                <div>20,000P</div>
-            </div>
-        </div>
     )
 }
 
@@ -275,18 +217,6 @@ export default function MainLayout() {
                 <TopPersonalNavigation />
             </div>
             <div id='main-wrapper'>
-                {isMainPage && (
-                    <div className="ranking-section" onClick={onClickRankHandler} style={clickRank ? { background: 'black', color: 'white' } : { background: 'white' }}>
-                        랭킹
-                        {clickRank && (
-                            <div className='ranking'>
-                                <Ranking />
-                            </div>
-                        )}
-                    </div>
-
-                )}
-
                 <Outlet />
             </div>
             {/* <ArrowToTop /> */}

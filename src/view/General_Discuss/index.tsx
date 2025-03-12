@@ -2,7 +2,7 @@ import React, { ChangeEvent, MouseEvent, useEffect, useState } from "react";
 import './style.css';
 import { useNavigate } from 'react-router-dom';
 
-import { ACCESS_TOKEN, GEN_DISC_DETAIL_ABSOLUTE_PATH, GEN_DISC_WRITE_ABSOLUTE_PATH } from '../../constants';
+import { ACCESS_TOKEN, ANOTHER_USER_PROFILE_ABSOULTE_PATH, GEN_DISC_DETAIL_ABSOLUTE_PATH, GEN_DISC_WRITE_ABSOLUTE_PATH, MY_PATH } from '../../constants';
 import DiscussionList from "../../types/discussionList.interface";
 import { usePagination } from "../../hooks";
 
@@ -12,7 +12,12 @@ import { deleteLikeRequest, getDiscussionListRequest, postLikeRequest } from "..
 import Pagination from "../../components/pagination";
 import { GetDiscussionListResponseDto } from "../../apis/dto/response/gd_discussion";
 import { useCategoryStore, useSignInUserStore } from "../../stores";
+import { getDiscussionListRequest, getSearchDiscussionListRequest } from "../../apis";
+import Pagination from "../../components/pagination";
+import { GetDiscussionListResponseDto } from "../../apis/dto/response/gd_discussion";
+import { useSignInUserStore } from "../../stores";
 
+const DEBOUNCE_DELAY = 200; // 0.2초 (200ms)
 
 interface TableRowProps {
     discussionList: DiscussionList;
@@ -27,6 +32,9 @@ function TableRow({ discussionList, getDiscussionList, postLike, click}: TableRo
 
     const {signInUser} = useSignInUserStore();
     const user = signInUser?.userId ?? "";
+
+    // state: 로그인 유저 //
+    const { signInUser, setSignInUser } = useSignInUserStore();
 
     // function: navigate 함수 처리 //
     const navigator = useNavigate();
@@ -43,16 +51,30 @@ function TableRow({ discussionList, getDiscussionList, postLike, click}: TableRo
     
         return endDate < today ? "마감" : "진행중";
     };
+    // event handler: 게시글 작성자 프로필 클릭 이벤트 처리 //
+    const onProfileClickHandler = (event: MouseEvent<HTMLDivElement>) => {
+        event.stopPropagation();
+        if(signInUser?.userId === discussionList.userId) navigator(MY_PATH);
+        else {
+            document.cookie = `selectedUser=${discussionList.userId}; path=/;`;
+            navigator(ANOTHER_USER_PROFILE_ABSOULTE_PATH);
+            document.cookie = "yourCookieName=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        }
+    }
+
+    // function: get general discussion response 처리 함수 //
 
     return (
         <div>
             <div className='main-box' onClick={onDiscussionClickHandler}>
-                <div className="box1">
+                <div className="box1" onClick={onProfileClickHandler}>
                     <div>
-                    <div className="profile-image"
-                        style={{backgroundImage: `url(${discussionList.profileImage ? 
-                            discussionList.profileImage : '/defaultProfile.png'})`}}
-                    ></div>
+                        <div className="profile-image"
+                            style={{
+                                backgroundImage: `url(${discussionList.profileImage ?
+                                    discussionList.profileImage : '/defaultProfile.png'})`
+                            }}
+                        ></div>
                     </div>
                     <div className='user-nickname'>{discussionList.nickName}</div>
                 </div>
@@ -100,6 +122,7 @@ export default function GD() {
     const [likeClick, setLikeClick] = useState<{[key:number]:boolean}>({});
     const [discussion] = useState<DiscussionList>();
     const roomId = discussion?.roomId ?? 0
+
 
     // state: 검색어 상태 //
     const [searched, setSearched] = useState<string>('');
@@ -149,6 +172,7 @@ export default function GD() {
 
     // function: get general discussion list response 처리 함수 //
     const getDiscussionListResponse = (responseBody: GetDiscussionListResponseDto | ResponseDto | null) => {
+
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
                 responseBody.code === "AF" ? '잘못된 접근입니다. ' :
@@ -161,10 +185,10 @@ export default function GD() {
         }
 
         const { discussionList } = responseBody as GetDiscussionListResponseDto
-        console.log(discussionList);
         setTotalList(discussionList);
         setOriginalList(discussionList);
     }
+
     // function: 일반 토론방 list 불러오기 함수 //
     const getDiscussionList = async() => {
         const accessToken = cookies[ACCESS_TOKEN];
@@ -183,13 +207,11 @@ export default function GD() {
         setCategory(type);
         setCategoryItem(type);
         setSearched('');
-        
     }
 
     // event handler: 검색어 변경 이벤트 처리 //
     const onSearchedChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-        const { value } = event.target;
-        setSearched(value);
+        setSearched(event.currentTarget.value);
     }
 
     // event handler: 검색 버튼 클릭 이벤트 처리 //
@@ -268,6 +290,26 @@ export default function GD() {
         }
     }
 
+    // effect: autoSerchVisible GET 요청 //
+    useEffect(() => {
+
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) {
+            alert('토큰 오류');
+            return;
+        }
+
+        const handler = setTimeout(() => {
+
+            getSearchDiscussionListRequest(searched, accessToken)
+                .then(getDiscussionListResponse);
+        }, DEBOUNCE_DELAY);
+
+        return () => {
+            clearTimeout(handler);
+        };
+
+    }, [searched]);
 
     // effect: 컴포넌트 로드시 일반 토론방 리스트 불러오기 함수 //
     useEffect(()=>{

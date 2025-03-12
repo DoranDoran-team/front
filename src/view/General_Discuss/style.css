@@ -20,7 +20,7 @@
     width: 100%;
 }
 
-#gd-wrapper .top-title  {
+#gd-wrapper .top-title {
     font-size: 40px;
     font-weight: bold;
     text-align: center;
@@ -116,7 +116,7 @@
 
 #gd-wrapper .main {
     margin-top: 40px;
-    
+
 }
 
 #gd-wrapper .main-box {
@@ -148,6 +148,9 @@
 }
 
 #gd-wrapper .user-nickname {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
     flex: 3;
 }
 
@@ -174,7 +177,7 @@
     border-radius: 15px;
     text-align: center;
     margin-left: 25px;
-    
+
     background-size: cover;
     background-position: center;
 }
@@ -245,7 +248,7 @@
     border-radius: 15px;
 }
 
-#gd-wrapper .comment-and-recommendation{
+#gd-wrapper .comment-and-recommendation {
     text-align: end;
     display: flex;
     align-items: center;
@@ -356,4 +359,3 @@
 #floating-write-button:focus {
     outline: none;
 }
-

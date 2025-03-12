@@ -1,5 +1,6 @@
 
 import VoteInfo from "./voteInfo.interface";
+import Subscribers from "./subscribers.interface";
 
 export default interface SignInUser {
     userId: string;
@@ -10,5 +11,7 @@ export default interface SignInUser {
     role: boolean;
     mileage: string | null;
     statusMessage : string | null;
-    isVoted:VoteInfo[];
+    subscribers: Subscribers[];
+    subscribersCount: number | null;
+  
 }

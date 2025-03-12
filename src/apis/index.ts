@@ -40,6 +40,11 @@ import GetMyDiscussionListResposneDto from "./dto/response/mypage/myInfo/get-my-
 import PostVoteRequestDto from "./dto/request/vote/post-vote.request.dto";
 import GetVoteResultResponseDto from "./dto/response/vote/get-vote-result.response.dto";
 import GetLikeListResponseDto from "./dto/response/like/get-like.response.dto";
+import GetUserProfileResponseDto from "./dto/response/mypage/another_user/get-user-profile.response.dto";
+import PostUserFollowRequestDto from "./dto/request/follow/post-user-follow.request.dto";
+import GetAccuseUserListResponseDto from "./dto/response/accuse/get-accuse-user-list.response.dto";
+import { GetNotificationsResponseDto } from "./dto/response/notification/get-notifications.reponse.dto";
+import GetSearchUserListResponseDto from "./dto/response/user/get-search-user-list.response.dto";
 
 // variable: api url 상수//
 const DORANDORAN_API_DOMAIN = process.env.REACT_APP_API_URL;
@@ -69,6 +74,7 @@ const PATCH_PASSWORD_API_URL = `${AUTH_MODULE_URL}/change-pw`;
 // 토론방 API URL //
 const WRITE_GENENRAL_DISCUSSION_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}/write`;
 const GET_GENENRAL_DISCUSSION_LIST_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}`;
+const GET_KEYWORD_GENERAL_DISCUSSION_LIST = (keyword: string) => `${GENERAL_DISCUSSION_MODULE_URL}/search?keyword=${keyword}`;
 
 const GET_GENERAL_DISCUSSION_API_URL = (roomId: number | string) => `${GENERAL_DISCUSSION_MODULE_URL}/${roomId}`;
 
@@ -86,18 +92,26 @@ const POST_LIKE_API_URL = (targetId:number , likeType: string ) => `${LIKE_MODUL
 const DELETE_LIKE_API_URL = (targetId:number , likeType: string ) => `${LIKE_MODULE_URL}/${targetId}/${likeType}`; 
 const GET_LIKE_API_URL = (roomId:number) => `${LIKE_MODULE_URL}/${roomId}`;
 
+=======
+//* ============= 신고
 
 const POST_ACCUSE_URL = `${DORANDORAN_API_DOMAIN}/accuse`;
 const GET_ACCUSE_LIST_URL = (userId: string) => `${DORANDORAN_API_DOMAIN}/accuse?userId=${userId}`;
 const GET_ACCUSE_URL = (accuseId: number) => `${DORANDORAN_API_DOMAIN}/accuse/${accuseId}`;
+const GET_ACCUSE_USER_LIST = (keyword: string) => `${DORANDORAN_API_DOMAIN}/accuse/user?keyword=${keyword}`;
+const PATCH_ACCUSE_APROVED = (accuseId: number) => `${DORANDORAN_API_DOMAIN}/accuse/approve/${accuseId}`;
+const PATCH_ACCUSE_REJECTED = (accuseId: number) => `${DORANDORAN_API_DOMAIN}/accuse/rejected/${accuseId}`;
 
 
 const MILEAGE_API_URL = `${DORANDORAN_API_DOMAIN}/mypage/mileage`;
 const ADMIN_MILEAGE_API_URL = `${DORANDORAN_API_DOMAIN}/admin/mileage`;
 const ACCOUNT_MANAGEMENT_API_URL = `${DORANDORAN_API_DOMAIN}/mypage/account-management`;
-
+const NOTIFICATION_API_URL = `${DORANDORAN_API_DOMAIN}/mypage/notifications`;
+const MYPAGE_ATTENDANCE_API_URL = `${DORANDORAN_API_DOMAIN}/mypage/attendance`;
 
 const GET_SIGN_IN_API_URL = `${AUTH_MODULE_URL}/sign-in`;
+
+const USER_API_URL = `${DORANDORAN_API_DOMAIN}/api/users`;
 
 const MYPAGE_MODULE_URL = `${DORANDORAN_API_DOMAIN}/mypage`;
 const MYPAGE_USER_INFO_API_URL = `${MYPAGE_MODULE_URL}/user-info`;
@@ -108,8 +122,14 @@ const MYPAGE_USER_CHANGE_PW_API_URL = `${MYPAGE_USER_INFO_API_URL}/change-pw`;
 const MYPAGE_PATCH_USER_INFO_API_URL = `${MYPAGE_USER_INFO_API_URL}/patch-user`;
 const MYPAGE_USER_DELETE_API_URL = `${MYPAGE_USER_INFO_API_URL}/delete-user`;
 const MYPAGE_MY_DISCUSSION_LIST_API_URL = `${MYPAGE_USER_INFO_API_URL}/get-my-discussion`;
+const MYPAGE_GET_USER_PROFILE_API_URL = (userId: string) => `${MYPAGE_USER_INFO_API_URL}/get-user-profile/${userId}`;
 const MYPAGE_DELETE_MY_DISCUSSION_API_URL = (roomId: number | string) => 
     `${MYPAGE_USER_INFO_API_URL}/delete/${roomId}`;
+
+// 구독(취소) api url
+const USER_FOLLOW_API_URL = `${DORANDORAN_API_DOMAIN}/sub`;
+const USER_CACNLE_API_URL = (userId: string, subscriber: string) => 
+    `${DORANDORAN_API_DOMAIN}/sub/cancle?userId=${userId}&subscriber=${subscriber}`;
 
 const NOTICE_API_URL = `${DORANDORAN_API_DOMAIN}/notice`;
 const POST_NOTICE_API_URL = `${NOTICE_API_URL}/post`;
@@ -245,6 +265,13 @@ export const getDiscussionListRequest = async (accessToken: string) => {
     return responseBody;
 }
 
+// function: 일반 토론방 검색어 get discussionList 요청 함수 //
+export const getSearchDiscussionListRequest = async (keyword: string, accessToken: string) => {
+    const responseBody = await axios.get(GET_KEYWORD_GENERAL_DISCUSSION_LIST(keyword), bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
 
 // function: 토론방 상세보기 get discussion 요청 함수 //
 export const getDiscussionRequest = async (roomId: number | string, accessToken: string) => {
@@ -274,8 +301,8 @@ export const patchCommentRequest = async (requestBody: PatchCommentRequestDto, r
 }
 
 // function: 댓글 삭제 patch comment 요청 함수 //
-export const deleteCommentRequest = async(roomId:number|string, commentId:number|string,userId:string, accessToken:string) => {
-    const responseBody = await axios.patch(DELETE_COMMENT_API_URL(roomId,commentId), userId, bearerAuthorization(accessToken))
+export const deleteCommentRequest = async (roomId: number | string, commentId: number | string, userId: string, accessToken: string) => {
+    const responseBody = await axios.patch(DELETE_COMMENT_API_URL(roomId, commentId), userId, bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
@@ -322,6 +349,7 @@ export const getLikeRequest = async(roomId:number, userId:string, accessToken:st
     return responseBody;
 }
 
+=======
 // function: POST 신고 요청 함수 //
 export const postAccuseRequest = async (requestBody: PostAccuseRequestDto, accessToken: string) => {
     const reseponseBody = await axios.post(POST_ACCUSE_URL, requestBody, bearerAuthorization(accessToken))
@@ -329,7 +357,6 @@ export const postAccuseRequest = async (requestBody: PostAccuseRequestDto, acces
         .catch(responseErrorHandler);
     return reseponseBody;
 }
-
 
 // function: 신고 리스트 GET 요청 함수 //
 export const getAccuseListRequest = async (userId: string, accessToken: string) => {
@@ -343,6 +370,31 @@ export const getAccuseListRequest = async (userId: string, accessToken: string) 
 export const getAccuseRequest = async (accuseId: number, accessToken: string) => {
     const responseBody = await axios.get(GET_ACCUSE_URL(accuseId), bearerAuthorization(accessToken))
         .then(responseDataHandler<GetAccuseResponseDto>)
+        .catch(responseDataHandler);
+    return responseBody;
+}
+
+// function: 신고 PATCH 처리 함수 //
+export const patchAccuseApproved = async (accuseId: number, accessToken: string) => {
+
+    const responseBody = await axios.patch(PATCH_ACCUSE_APROVED(accuseId), {}, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseDataHandler);
+    return responseBody;
+}
+
+// function: 신고 PATCH 반려 함수 //
+export const patchAccuseRejected = async (accuseId: number, accessToken: string) => {
+    const responseBody = await axios.patch(PATCH_ACCUSE_REJECTED(accuseId), {}, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseDataHandler);
+    return responseBody;
+}
+
+// function: 유저 리스트 불러오기 요청 함수 //
+export const getAccuseUserListRequest = async (keyword: string, accessToken: string) => {
+    const responseBody = await axios.get(GET_ACCUSE_USER_LIST(keyword), bearerAuthorization(accessToken))
+        .then(responseDataHandler<GetAccuseUserListResponseDto>)
         .catch(responseDataHandler);
     return responseBody;
 }
@@ -382,7 +434,7 @@ export const refundRequest = async (requestBody: MyMileageRequestDto, accessToke
     return responseBody;
 };
 
-// function: (관리자) 마일리지 지급 POST 요청 함수수 //
+// function: (관리자) 마일리지 지급 POST 요청 함수 //
 export const giveMileage = async (requestBody: PostAdminMileageRequestDto, accessToken: string) => {
     try {
         const response = await axios.post(`${ADMIN_MILEAGE_API_URL}/give`, requestBody, bearerAuthorization(accessToken));
@@ -419,13 +471,47 @@ export const updateRefundStatus = async (mileageId: number, status: string, acce
     }
 };
 
+
+// function: 알림 목록 조회 GET 요청 함수 //
+
+export const getNotifications = async (accessToken: string, page: number = 1) => {
+    try {
+        const response = await axios.get(`${NOTIFICATION_API_URL}?page=${page}&limit=5`, bearerAuthorization(accessToken));
+
+        return response.data;
+    } catch (error) {
+        console.error("알림 목록 조회 실패:", error);
+        return [];
+    }
+};
+
+// const formatNotificationMessage = (notification: GetNotificationsResponseDto) => {
+//     return notification.message;
+// };
+
+// function: 특정 알림 읽음 처리 PATCH 요청 함수 //
+export const markNotificationAsRead = async (notificationId: number, accessToken: string) => {
+    try {
+        const response = await axios.patch(
+            `${NOTIFICATION_API_URL}/${notificationId}/read`,
+            {},
+            bearerAuthorization(accessToken)
+        );
+        return response.data as ResponseDto;
+    } catch (error) {
+        console.error("알림 읽음 처리 실패", error);
+        return null;
+    }
+};
+
+
 // function: 계좌 목록 GET 요청 함수 //
 export const getAccounts = async (accessToken: string): Promise<GetAccountsResponseDto[] | null> => {
     try {
         const response = await axios.get(`${ACCOUNT_MANAGEMENT_API_URL}`, bearerAuthorization(accessToken));
         return response.data;
     } catch (error) {
-        console.error("Error", error);
+        console.error("계좌 목록 조회 실패", error);
         return null;
     }
 };
@@ -446,6 +532,65 @@ export const deleteAccount = async (accountNumber: string, accessToken: string) 
     return response.data;
 };
 
+
+// function: 사용자 검색 GET 요청 함수 //
+export const searchUsersRequest = async (keyword: string, accessToken: string) => {
+    const url = `${USER_API_URL}/search?keyword=${encodeURIComponent(keyword)}`;
+
+    const responseBody = await axios.get(url, bearerAuthorization(accessToken))
+        .then(responseDataHandler<GetSearchUserListResponseDto>)
+        .catch(responseErrorHandler);
+
+    return responseBody;
+};
+
+// function: 출석체크 GET 요청 함수 //
+export const getAttendanceRecordsRequest = async (accessToken: string) => {
+    try {
+        const responseBody = await axios.get(MYPAGE_ATTENDANCE_API_URL, bearerAuthorization(accessToken))
+            .then(responseDataHandler)
+            .catch(responseErrorHandler);
+        return responseBody;
+    } catch (error) {
+        console.error("출석체크 기록 조회 실패", error);
+        return null;
+    }
+};
+
+// function: 출석체크 POST 요청 함수 //
+export const checkAttendanceRequest = async (accessToken: string) => {
+    try {
+        const responseBody = await axios.post(`${MYPAGE_ATTENDANCE_API_URL}/check`, {}, bearerAuthorization(accessToken))
+            .then(responseDataHandler)
+            .catch(responseErrorHandler);
+        return responseBody;
+    } catch (error) {
+        console.error("출석체크 실패", error);
+        return null;
+    }
+};
+
+// function: (관리자) 생일 마일리지 지급 POST 요청 함수 //
+export const awardBirthdayBonus = async (accessToken: string) => {
+    try {
+        const response = await axios.post(`${ADMIN_MILEAGE_API_URL}/birthday`, {}, bearerAuthorization(accessToken));
+        return response.data;
+    } catch (error) {
+        console.error("생일 마일리지 지급 오류:", error);
+        return null;
+    }
+};
+
+// function: 알림 삭제 요청 함수 //
+export const deleteNotification = async (notificationId: number, accessToken: string) => {
+    try {
+        const response = await axios.delete(`${NOTIFICATION_API_URL}/${notificationId}`, bearerAuthorization(accessToken));
+        return response.data;
+    } catch (error) {
+        console.error("알림 삭제 오류:", error);
+        return null;
+    }
+};
 
 // function: get sign in 요청 함수 //
 export const GetSignInRequest = async (accessToken: string) => {
@@ -504,15 +649,39 @@ export const deleteUserRequest = async (accessToken: string) => {
 }
 
 // function: 마이페이지 - 내가 작성한 게시글 불러오기 함수 //
-export const getMyDiscussionRequest = async(accessToken: string) => {
+export const getMyDiscussionRequest = async (accessToken: string) => {
     const responseBody = await axios.get(MYPAGE_MY_DISCUSSION_LIST_API_URL, bearerAuthorization(accessToken))
         .then(responseDataHandler<GetMyDiscussionListResposneDto>)
         .catch(responseErrorHandler);
     return responseBody;
 }
 
+// function: 마이페이지 - 타 유저 프로필 불러오기 함수 //
+export const getUserProfileRequest = async(accessToken: string, userId: string) => {
+    const responseBody = await axios.get(MYPAGE_GET_USER_PROFILE_API_URL(userId), bearerAuthorization(accessToken))
+        .then(responseDataHandler<GetUserProfileResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 타 유저 구독하기 요청 함수 //
+export const postUserFollowRequest = async(requestBody: PostUserFollowRequestDto, accessToken: string) => {
+    const responseBody = await axios.post(USER_FOLLOW_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 타 유저 구독 취소하기 요청 함수 //
+export const cancleFollowRequest = async(userId: string, subscriber: string, accessToken: string) => {
+    const responseBody = await axios.delete(USER_CACNLE_API_URL(userId, subscriber),bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
 // function: 내가 작성한 게시글 삭제하기 요청 함수 //
-export const deleteMyDiscussionRequest = async(accessToken: string, roomId: string | number) => {
+export const deleteMyDiscussionRequest = async (accessToken: string, roomId: string | number) => {
     const responseBody = await axios.delete(MYPAGE_DELETE_MY_DISCUSSION_API_URL(roomId), bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
@@ -561,8 +730,5 @@ export const fileUploadRequest = async (requestBody: FormData) => {
         .catch(error => null);
     return url;
 }
-
-
-
 
 

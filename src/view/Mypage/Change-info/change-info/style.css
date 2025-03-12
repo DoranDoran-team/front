@@ -30,13 +30,14 @@
 }
 
 #change-info .background {
+    box-sizing: border-box;
     width: 1000px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 80px;
+    padding: 60px;
 
     background-color: #FBFBFB;
     border-radius: 50px;
@@ -64,7 +65,7 @@
 }
 
 #change-info .input-box {
-    width: 100%;
+    
     height: 30px;
 
     border-radius: 6px;
@@ -128,11 +129,11 @@
 }
 
 #change-info .input-box3 {
-
     border-radius: 6px;
     border: 1px solid #B4B4B4;
-
+    
     padding: 10px;
+    height: 30px;
 }
 
 #change-info .message-false {
@@ -149,12 +150,11 @@
     display: flex;
     flex-direction: row;
     gap: 10px;
-    /* padding: 10px; */
 }
 
 #change-info .input-box2 {
     width: 100%;
-    height: 48px;
+    height: 30px;
     border-radius: 6px;
     border: 1px solid #B4B4B4;
 
@@ -167,14 +167,14 @@
     justify-content: center;
     align-items: center;
 
-    width: 40px;
+    width: 50px;
     border-radius: 6px;
     background-color: #ABF6BE;
     border: 1px solid #ABF6BE;
 
     font-size: 13px;
     font-weight: 600;
-
+    padding: 10px;
     cursor: pointer;
 }
 
@@ -183,7 +183,7 @@
     justify-content: center;
     align-items: center;
 
-    width: 58px;
+    width: 50px;
     border-radius: 6px;
     background-color: #B4B4B4;
     border: 1px solid #B4B4B4;
@@ -226,7 +226,8 @@
 #change-info .btn-box {
     display: flex;
     flex-direction: row;
-    gap: 10px;
+    gap: 40px;
+    margin-left: 8px;
 }
 
 #change-info .update-btn {
@@ -374,6 +375,8 @@
 
     font-size: 16px;
     font-weight: 500;
+
+    cursor: pointer;
 }
 
 #change-info .modal-patch:hover {
@@ -392,6 +395,8 @@
     display: flex;
     align-content: center;
     justify-content: center;
+    cursor: pointer;
+
 }
 
 #change-info .modal-cancle:hover {

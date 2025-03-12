@@ -19,6 +19,11 @@ export default function MyCalendar() {
     const [events, setEvents] = useState<ScheduleComponentProps[]>([]);
     const [modalOpen, setModalOpen] = useState(false);
     const [currentEvent, setCurrentEvent] = useState<any>(null);
+    const [showWriteDaily, setShowWriteDaily] = useState(false);
+
+    const handleClick = () => {
+        setShowWriteDaily(true);
+    };
 
     const handleEventClick = (clickInfo: any) => {
         setCurrentEvent(clickInfo.event);
@@ -160,7 +165,9 @@ export default function MyCalendar() {
 
         return (
             <div id='schedule-modal'>
-                <button type="submit" onClick={() => setModalOpen(true)}>일정 추가</button>
+                <div id="floating-write-button" onClick={() => { setModalOpen(true) }}>
+                    +
+                </div>
                 {
                     modalOpen &&
                     <div className='modal-container' ref={modalBackground} onClick={e => {
@@ -302,6 +309,7 @@ export default function MyCalendar() {
                 }}
                 dayMaxEvents={3} // 최대 이벤트 수 설정
             />
+
             {modalOpen && <DetailDaily />}
         </div>
     );

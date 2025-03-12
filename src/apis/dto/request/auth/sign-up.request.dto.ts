@@ -8,4 +8,6 @@ export default interface SignUpRequestDto {
     birth: string;
     snsId: string | null;
     telAuthNumber: string;
+    accuseCount: number;
+    mileage: number;
 }

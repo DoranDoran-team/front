@@ -2,15 +2,14 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import './style.css';
 import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, NOTICE_DETAIL_ABSOLUTE_PATH, NOTICE_WRITE_ABSOLUTE_PATH } from "../../constants";
-import { usePagination } from "../../hooks";
-import Pagination from "../../components/pagination";
 import NoticeList from "../../types/notice.interface";
-import formatDate from "../../components/dateFormat/changeDate";
 import { useSignInUserStore } from "../../stores";
 import { getNoticeListRequest } from "../../apis";
 import GetNoticeListResponseDto from "../../apis/dto/response/notice/Get-notice-list.response.dto";
 import ResponseDto from "../../apis/dto/response/response.dto";
 import { useCookies } from "react-cookie";
+import useNoticePagination from "../../hooks/notice.pagination.hooks";
+import NoticePagination from "../../components/noticePagination";
 
 // interface: 공지사항 리스트 아이템 //
 interface TableRowProps {
@@ -23,12 +22,17 @@ interface TableRowProps {
 // component: NoticeRow 컴포넌트 //
 export function NoticeRow({ notice, getNoticeList, onDetailClickHandler, index }: TableRowProps) {
 
+    // function: 날짜 변환 함수 //
+    const formatDate = (dateString: string): string => {
+        return dateString.replace(/-/g, ".");
+    };
+
     // render: NoticeRow 컴포넌트 렌더링 //
     return (
         <div id="tr" onClick={() => onDetailClickHandler(notice.noticeId)}>
             <div className="td-no">{index}</div>
             <div className="td-title">{notice.title}</div>
-            <div className="td-date">{notice.noticeDate}</div>
+            <div className="td-date">{formatDate(notice.noticeDate)}</div>
         </div>
     )
 }
@@ -36,12 +40,17 @@ export function NoticeRow({ notice, getNoticeList, onDetailClickHandler, index }
 // component: 상단 고정 공지사항 컴포넌트 //
 export function TopNotice({ notice, getNoticeList, onDetailClickHandler }: TableRowProps) {
     
+    // function: 날짜 변환 함수 //
+    const formatDate = (dateString: string): string => {
+        return dateString.replace(/-/g, ".");
+    };
+
     // render: 상단 고정 공지사항 컴포넌트 렌더링 //
     return (
         <div id="tr" onClick={() => onDetailClickHandler(notice.noticeId)}>
             <div className="td-pin"></div>
             <div className="td-pin-title">{notice.title}</div>
-            <div className="td-pin-date">{notice.noticeDate}</div>
+            <div className="td-pin-date">{formatDate(notice.noticeDate)}</div>
         </div>
     )
 }
@@ -135,7 +144,7 @@ export default function Notice() {
         onPageClickHandler,
         onPreSectionClickHandler,
         onNextSectionClickHandler,
-    } = usePagination<NoticeList>();
+    } = useNoticePagination<NoticeList>();
 
     const pinnedNotices = viewList.filter(notice => notice.topStatus); // 상단 고정 공지
     const normalNotices = viewList.filter(notice => !notice.topStatus); // 일반 공지
@@ -184,7 +193,7 @@ export default function Notice() {
                 <div className="search-btn">검색</div>
             </div>
 
-            <Pagination
+            <NoticePagination
                 pageList={pageList}
                 currentPage={currentPage}
                 onPageClickHandler={onPageClickHandler}

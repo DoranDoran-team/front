@@ -120,7 +120,8 @@ const usePagination = <T>() => {
     initViewList,
     onPageClickHandler,
     onPreSectionClickHandler,
-    onNextSectionClickHandler
+    onNextSectionClickHandler,
+    setViewList
   };
 
 }
