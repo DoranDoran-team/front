@@ -32,40 +32,35 @@ export default function Admin() {
     const onSortOptionClickHandler = (option: string) => {
         setSortingState({
             selected: option,
-            
+
         })
         setToggleDown(!toggleDown)
     }
-    
+
     return (
         <div className="mypage-wrapper">
             <div className="admin-side-wrapper">
                 <AdminSideBar />
             </div>
             <div className="mypage-main-wrapper">
-                <div className="top-icon-box">
-                    <div className="top-icons">
-                    </div>
-                </div>
                 <div className="user-box">
                     <div className="main-profile"></div>
                     <div className="mypage-info">
-                        <div className="mypage-nickname">{signInUser?.name}</div>
+                        <div className="mypage-nickname">{signInUser?.name} - 관리자</div>
                         <div className="mypage-id">@ {signInUser?.userId}</div>
                     </div>
                 </div>
-                <div className="mypage-state-message">관리자 계정 입니다. </div>
                 <div className="mypage-discussion-room-top">
                     <div className="mypage-discussion-room">실시간 토론방 현황
-                    <div className='search-bar'>
-                                <div className="magnifier-and-search-input">
-                                    <div className='magnifier'></div>
-                                    <input type="text" className="search-input" placeholder="검색어를 입력해주세요." />
-                                </div>
-                                <div className='search-button'>검색</div>
+                        <div className='search-bar'>
+                            <div className="magnifier-and-search-input">
+                                <div className='magnifier'></div>
+                                <input type="text" className="search-input" placeholder="검색어를 입력해주세요." />
                             </div>
+                            <div className='search-button'>검색</div>
+                        </div>
                     </div>
-                    
+
                     <div className="discussion-state-box" onClick={onSortingButtonHandler}>{sortingState.selected}
                         {toggleDown && <div className="state-type-box" >
                             <div className="state-type" onClick={() => onSortOptionClickHandler('진행중')}>진행중</div>
@@ -91,9 +86,9 @@ export default function Admin() {
                             <div className="discussion-bottom-box">
                                 <div className="discussion-created">20204.12.30 16:30</div>
                                 <div className="discussion-fixed">(수정됨)</div>
-                                <div className={`discussion-state-box ${sortingState.selected === '진행중' ? 'continue': sortingState.selected === '마감'? 'end': 'continue'}`}>
-                                    <div className="discussion-state ">{sortingState.selected === '진행중' ? '진행중': sortingState.selected === '마감'? '마감': '진행중'}</div>
-                                </div> 
+                                <div className={`discussion-state-box ${sortingState.selected === '진행중' ? 'continue' : sortingState.selected === '마감' ? 'end' : 'continue'}`}>
+                                    <div className="discussion-state ">{sortingState.selected === '진행중' ? '진행중' : sortingState.selected === '마감' ? '마감' : '진행중'}</div>
+                                </div>
                             </div>
                             <div className="discussion-icons">
                                 <div className="discussion-participants-icon"></div>
@@ -101,7 +96,7 @@ export default function Admin() {
                             </div>
                         </div>
                     </div>
-                </div> 
+                </div>
             </div>
         </div>
     )

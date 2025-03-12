@@ -20,6 +20,7 @@ import axios from 'axios';
 
 const ITEMS_PER_PAGE = 5;
 const PAGES_PER_SECTION = 5;
+const DEBOUNCE_DELAY = 200; // 0.2초 (200ms)
 
 export default function Accuse() {
 
@@ -140,10 +141,7 @@ export default function Accuse() {
 
     // effect: autoSerchVisible GET 요청 //
     useEffect(() => {
-
-        if (!autoSearchVisible) {
-            return;
-        }
+        if (!autoSearchVisible) return;
 
         const accessToken = cookies[ACCESS_TOKEN];
         if (!accessToken) {
@@ -151,10 +149,17 @@ export default function Accuse() {
             return;
         }
 
-        getAccuseUserListRequest(keyword, accessToken)
-            .then((response) => {
-                GetAccuseUserListResponse(response as GetAccuseUserListResponseDto | ResponseDto | null);
-            });
+        const handler = setTimeout(() => {
+
+            getAccuseUserListRequest(keyword, accessToken)
+                .then((response) => {
+                    GetAccuseUserListResponse(response as GetAccuseUserListResponseDto | ResponseDto | null);
+                });
+        }, DEBOUNCE_DELAY);
+
+        return () => {
+            clearTimeout(handler);
+        };
 
     }, [autoSearchVisible, keyword]);
 
@@ -309,35 +314,6 @@ export default function Accuse() {
             const { accuses } = responseBody as GetAccuseListResponseDto;
             setAccuses(accuses);
         }
-
-        // // function: 신고 리스트 불러오기 //
-        // const getAccuseList = async () => {
-        //     const accessToken = cookies[ACCESS_TOKEN];
-        //     if (!accessToken) {
-        //         alert('접근 권한이 없습니다.');
-        //         return;
-        //     }
-
-        //     if (signInUser?.userId == null) {
-        //         return;
-        //     }
-
-        //     await getAccuseListRequest(signInUser.userId, accessToken)
-        //         .then((response) => getAccuseListResponse(response as GetAccuseListResponseDto | ResponseDto | null));
-        // }
-
-        // // effect: 마운트 될 때 신고  불러오기 //
-        // useEffect(() => {
-
-        //     const accessToken = cookies[ACCESS_TOKEN];
-        //     if (!accessToken) {
-        //         alert('접근 권한이 없습니다.');
-        //         return;
-        //     }
-        //     if (!signInUser || !signInUser.userId) return;
-
-        //     getAccuseList();
-        // }, [accuse.accuseId]);
 
         return (
             <>
@@ -548,11 +524,10 @@ export default function Accuse() {
                 <div className="user-box">
                     <div className="main-profile"></div>
                     <div className="mypage-info">
-                        <div className="mypage-nickname">관리자</div>
-                        <div className="mypage-id">{signInUser?.nickName}</div>
+                        <div className="mypage-nickname">{signInUser?.name} - 관리자</div>
+                        <div className="mypage-id">@ {signInUser?.userId}</div>
                     </div>
                 </div>
-                <div className="mypage-state-message">관리자 계정 입니다. </div>
                 <div className='accuse-title-box'>
                     <div className="accuse-title">신고 접수 목록</div>
                     <div className='search-box'>
