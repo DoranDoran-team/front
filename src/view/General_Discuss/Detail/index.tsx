@@ -1,27 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import './style.css';
 import AccuseModal from '../../../components/modal/accuse';
-import { deleteCommentRequest, getDiscussionRequest, patchCommentRequest, postCommentRequest } from '../../../apis';
+import { deleteCommentRequest, deleteLikeRequest, getDiscussionRequest, getLikeRequest, getVoteResultRequest, patchCommentRequest, postCommentRequest, postLikeRequest, postVoteRequest } from '../../../apis';
 import Comment from '../../../types/Comment.interface';
-import { usePagination } from '../../../hooks';
 import PostCommentRequestDto from '../../../apis/dto/request/comment/post-comment.request.dto';
-import { useParams } from 'react-router';
-import { postAccuseRequest } from '../../../apis';
+import { useNavigate, useParams } from 'react-router';
 import { useCookies } from 'react-cookie';
-import { ACCESS_TOKEN } from '../../../constants';
+import { ACCESS_TOKEN, GEN_DISC_ABSOLUTE_PATH } from '../../../constants';
 import ResponseDto from '../../../apis/dto/response/response.dto';
 import { GetDiscussionResponseDto } from '../../../apis/dto/response/gd_discussion';
 import DiscussionData from '../../../types/discussionData.interface';
-import { useSignInUserStore } from '../../../stores';
-import { PostAccuseRequestDto } from '../../../apis/dto/request/accuse';
+import { useCategoryStore, useSignInUserStore } from '../../../stores';
 import PatchCommentRequestDto from '../../../apis/dto/request/comment/patch-comment.request.dto';
+import PostVoteRequestDto from '../../../apis/dto/request/vote/post-vote.request.dto';
+import GetVoteResultResponseDto from '../../../apis/dto/response/vote/get-vote-result.response.dto';
+import GetLikeListResponseDto from '../../../apis/dto/response/like/get-like.response.dto';
+
 
 // interface: 댓글 Props //
 interface commentProps {
     comment: Comment
     depth: number
+    getDiscussion:()=>void;
+    postLike:(targetId:number, userId:string ,likeType:string)=>void
+    click: {[key: number]: boolean}
+    
 }
-function Comments({ comment, depth }: commentProps) {
+function Comments({ comment, depth, getDiscussion, postLike, click}: commentProps) {
 
     const { roomId } = useParams();
     const [cookies] = useCookies();
@@ -33,11 +38,14 @@ function Comments({ comment, depth }: commentProps) {
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const [editCotents, setEditContents] = useState<{ [key: number]: boolean }>({});
     const { signInUser } = useSignInUserStore();
-    const discussionId = signInUser?.userId
+    const [seeMoreBrt, setSeeMoreBrt] = useState<{[key:number]:boolean}>({});
     
+    const discussionId = signInUser?.userId ?? "";
+    const isReplies = comment.replies.length > 0;
 
 
     const editContentsHandler = (commentId:number) =>{
+        
         setEditContents((prev) => ({
             ...prev,
             [commentId]: !prev[commentId],
@@ -56,6 +64,14 @@ function Comments({ comment, depth }: commentProps) {
         setIsReportModalOpen(!isReportModalOpen);
     };
 
+    // event handler: 더보기 버튼 클릭 이벤트 처리 //
+    const onSeeMoreBrtClickHandler = (commentId:number) => {
+        setSeeMoreBrt((prev)=> ({
+            ...prev,
+            [commentId]:!(prev[commentId] ?? false),
+        }))
+    }
+
     // function: 대댓글 수정 response 처리 //
     const patchCommentResponse = (responseBody:ResponseDto | null) => {
         const message =
@@ -65,19 +81,19 @@ function Comments({ comment, depth }: commentProps) {
                     responseBody.code ==='NP' ? '잘못된 접근입니다. ' :
                         responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ' : '';
 
-    const isSuccessed = responseBody !== null && responseBody.code === 'SU';
-    if (!isSuccessed) {
-        alert(message);
-        return;
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
     }
 
-    }
     // event handler: 댓글 수정 이벤트 처리 //
-    const handleEditComment = (commentId: number) => {
+    const handleEditComment = async(commentId: number) => {
         const accessToken = cookies[ACCESS_TOKEN];
         if (!roomId || !accessToken || !commentId) return;
         const requestBody :PatchCommentRequestDto = { contents:newReply};
-        patchCommentRequest(requestBody,roomId,commentId,accessToken).then(patchCommentResponse);
+        await patchCommentRequest(requestBody,roomId,commentId,accessToken).then(patchCommentResponse);
 
         setEditContents((prev) => ({
             ...prev,
@@ -87,6 +103,7 @@ function Comments({ comment, depth }: commentProps) {
             ...prev,
             [commentId]: false,
         }));
+        await getDiscussion();
     };
 
     // function: 댓글 삭제 response 처리 //
@@ -106,17 +123,17 @@ function Comments({ comment, depth }: commentProps) {
     }
 
     // event handler: 댓글 삭제 이벤트 처리 //
-    const handleDeleteComment = (commentId: number) => {
+    const handleDeleteComment = async(commentId: number) => {
         const accessToken = cookies[ACCESS_TOKEN];
         
         if (!discussionId || !roomId || !commentId || !accessToken) return;
 
-        deleteCommentRequest(roomId,commentId,discussionId,accessToken).then(deleteCommentResponse);
+        await deleteCommentRequest(roomId,commentId,discussionId,accessToken).then(deleteCommentResponse);
         setCommentOptions((prev) => ({
             ...prev,
             [commentId]: false,
         }));
-        console.log(discussionId);
+        await getDiscussion();
     };
 
     const toggleCommentOptions = (commentId: number) => {
@@ -142,7 +159,7 @@ function Comments({ comment, depth }: commentProps) {
     }
 
     // event handler: 대댓글 작성하기 버튼 클릭 이벤트 처리 //
-    const handleReplySubmit = (commentId: number) => {
+    const handleReplySubmit = async(commentId: number) => {
 
         const accessToken = cookies[ACCESS_TOKEN];
         if (!roomId || !accessToken || !discussionId) return;
@@ -150,7 +167,7 @@ function Comments({ comment, depth }: commentProps) {
             userId: discussionId, contents: newReply, discussionType: '찬성', parentId: commentId
         }
 
-        postCommentRequest(requestBody, roomId, accessToken).then(postCommentResponse);
+        await postCommentRequest(requestBody, roomId, accessToken).then(postCommentResponse);
         setNewReply('');
         
         if(replyTo || subReplyTo || nestedReplyTo){
@@ -158,7 +175,15 @@ function Comments({ comment, depth }: commentProps) {
             setSubReplyTo(null);
             setNestedReplyTo(null);
         }
+        await getDiscussion();
     };
+
+    useEffect(()=>{
+        setSeeMoreBrt((prev)=>({
+        ...prev,
+        [comment.commentId]: true,
+        }))
+    },[])
 
     return (
         <div>
@@ -166,7 +191,10 @@ function Comments({ comment, depth }: commentProps) {
                 {!editCotents[comment.commentId] ? <div className='comment-item-box'>
                     <div className="comment-user-info">
                         <div className='comment-user'>
-                            <div className="profile-image"></div>
+                            <div className="profile-image" 
+                                style={{backgroundImage: `url(${comment.profileImage ? 
+                                comment.profileImage : '/defaultProfile.png'})`}}>
+                            </div>
                             <div>
                                 <div className='comment-user-nickname'>{comment.nickName}</div>
                                 <div className='comment-date-and-modify'>
@@ -177,8 +205,8 @@ function Comments({ comment, depth }: commentProps) {
                         </div>
                         {!comment.deleteStatus && <div className='reply-option'>
                             <div className='comment-recommendation-icon-and-count'>
-                                <div className='recommendation-icon'></div>
-                                <div className='recommendation-count'>8</div>
+                                <div className={`recommendation-icon ${ click[comment.commentId] ? 'active' : ''}`} onClick={()=>postLike(comment.commentId,discussionId,'COMMENT')}></div>
+                                <div className='recommendation-count'>{comment.likeCount}</div>
                                 {discussionId === comment.userId ? (
                                     <div className='comment-option' onClick={() => toggleCommentOptions(comment.commentId)}>⋮</div>
                                 ) : (
@@ -198,6 +226,10 @@ function Comments({ comment, depth }: commentProps) {
                         <div className="comment-content">{comment.deleteStatus ? '삭제된 메세지 입니다. ' : comment.contents}</div>
                         {!comment.deleteStatus && <div className="reply"><span onClick={() => setReplyTo(comment.commentId)}>댓글 쓰기</span></div>}
                     <hr />
+                    {(seeMoreBrt[comment.commentId] && isReplies) ? 
+                    <div className='see-more' onClick={()=>onSeeMoreBrtClickHandler(comment.commentId)}>
+                        더보기
+                    </div>:''}
                 </div> : 
                 <div className='reply-box' style={{ marginLeft: '20px', marginRight: '0' }}>
                         <div className='reply-textarea-and-button'>
@@ -228,25 +260,28 @@ function Comments({ comment, depth }: commentProps) {
                         </div>
                     </div>
                 )}
-                {comment.replies && comment.replies.filter(reply => reply.parentId === comment.commentId).map((reply, index) => (
-                    <div key={index} className="reply" style={{ marginLeft: (reply.depth ?? 1) * 20 + "px" }}>
+                {!seeMoreBrt[comment.commentId] && (comment.replies && comment.replies.filter(reply => reply.parentId === comment.commentId).map((reply, index) => (
+                    <div key={reply.commentId} className="reply" style={{ marginLeft: (reply.depth ?? 1) * 20 + "px" }}>
                         {!editCotents[reply.commentId] ? <div className='reply-item-box'>
                             <div className="comment-user-info">
                                 <div className='comment-user'>
-                                    <div className="profile-image"></div>
+                                <div className="profile-image" 
+                                style={{backgroundImage: `url(${reply.profileImage ? 
+                                    reply.profileImage : '/defaultProfile.png'})`}}>
+                                </div>
                                     <div>
                                         <div className='comment-user-nickname'>{reply.nickName}</div>
                                         <div className='comment-date-and-modify'>
                                             <div className="comment-date">{reply.createdAt}</div>
-                                            <div className="modify">(수정됨)</div>
+                                            <div className="modify">{reply.updateStatus ? '(수정됨)' : ''}</div>
                                         </div>
                                     </div>
                                 </div>
                                 <div>
                                     {!reply.deleteStatus && <div className='reply-option'>
                                         <div className='comment-recommendation-icon-and-count'>
-                                            <div className='recommendation-icon'></div>
-                                            <div className='recommendation-count'>8</div>
+                                            <div className={`recommendation-icon ${click[reply.commentId] ? 'active' : ''}`} onClick={()=>postLike(reply.commentId,discussionId,'COMMENT')}></div>
+                                            <div className='recommendation-count'>{reply.likeCount}</div>
                                         </div>
                                         {discussionId === reply.userId ? (
                                             <div className='comment-option' onClick={() => toggleCommentOptions(reply.commentId)}>⋮</div>
@@ -265,8 +300,7 @@ function Comments({ comment, depth }: commentProps) {
                             </div>
                             </div>
                             <div className="comment-content">{reply.deleteStatus ? '삭제된 메세지 입니다. ': reply.contents}</div>
-                            {!reply.deleteStatus && <div className="reply"><span onClick={() => setSubReplyTo(comment.commentId)}>댓글 쓰기</span></div> }
-                            <hr />
+                            <hr/>
                         </div> : 
                             <div className='reply-box' style={{ marginLeft: '20px', marginRight: '0' }}>
                                 <div className='reply-textarea-and-button'>
@@ -281,95 +315,12 @@ function Comments({ comment, depth }: commentProps) {
                                     </div>
                                 </div>
                             </div>}
-                        {subReplyTo === comment.commentId && (
-                            <div className='reply-box' style={{ marginLeft: (reply.depth) * 20 + "px", marginRight: '0' }}>
-                                <div className='reply-textarea-and-button'>
-                                    <textarea
-                                        className='input-reply-text'
-                                        placeholder='댓글을 입력해주세요. '
-                                        onChange={(e) => setNewReply(e.target.value)}
-                                    />
-                                    <div className='comment-button-box'>
-                                        <button className='comment-button' type='button' onClick={() => setSubReplyTo(null)}>취소</button>
-                                        <button className='comment-button' type='button' onClick={() => handleReplySubmit(reply.commentId)}>작성하기</button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                        {reply.replies && reply.replies.map((nestedReply) => (
-                            <div key={nestedReply.commentId} className="reply" style={{ marginLeft: (nestedReply.depth) * 20 + "px" }}>
-                                {!editCotents[nestedReply.commentId] ? <div className='reply-item-box'>
-                                    <div className="comment-user-info">
-                                        <div className='comment-user'>
-                                            <div className="profile-image"></div>
-                                            <div>
-                                                <div className='comment-user-nickname'>{nestedReply.nickName}</div>
-                                                <div className='comment-date-and-modify'>
-                                                    <div className="comment-date">{nestedReply.createdAt}</div>
-                                                    <div className="modify">{nestedReply.updateStatus ? '(수정됨)' : ''}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            {!nestedReply.deleteStatus && <div className='reply-option'>
-                                                <div className='comment-recommendation-icon-and-count'>
-                                                    <div className='recommendation-icon'></div>
-                                                    <div className='recommendation-count'>8</div>
-                                                </div>
-                                                {discussionId === nestedReply.userId ? (
-                                                    <div className='comment-option' onClick={() => toggleCommentOptions(nestedReply.commentId)}>⋮</div>
-                                                ) : (
-                                                    <div className='siren-button' onClick={() => openReportModal()}></div>
-                                                )}
-                                                {commentOptions[nestedReply.commentId] && (
-                                                    <div className='dropdown-menu-box'>
-                                                        <div className='dropdown-menu'>
-                                                            <div className='dropdown-item' onClick={() => editContentsHandler(nestedReply.commentId)}>수정하기</div>
-                                                            <div className='dropdown-item' onClick={() => handleDeleteComment(nestedReply.commentId)}>삭제하기</div>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>}
-                                        </div>
-                                    </div>
-                                    <div className="comment-content">{nestedReply.deleteStatus ? '삭제된 메세지 입니다. ' : nestedReply.contents}</div>
-                                    {!nestedReply.deleteStatus && <div className="reply"><span onClick={() => setNestedReplyTo(comment.commentId)}>댓글 쓰기</span></div>}
-                                    <hr />
-                                </div>:
-                                    <div className='reply-box' style={{ marginLeft: '20px', marginRight: '0' }}>
-                                        <div className='reply-textarea-and-button'>
-                                            <textarea
-                                                className='input-reply-text'
-                                                placeholder={nestedReply.contents}
-                                                value={newReply}
-                                                onChange={(e) => setNewReply(e.target.value)}
-                                            />
-                                            <div className='comment-button-box'>
-                                                <button className='comment-button' type='button' onClick={() => editContentsHandler(nestedReply.commentId)}>취소</button>
-                                                <button className='comment-button' type='button' onClick={() => handleEditComment(nestedReply.commentId)}>수정하기</button>
-                                            </div>
-                                        </div>
-                                    </div>}
-                                {nestedReplyTo === comment.commentId && (
-                                    <div className='reply-box' style={{ marginLeft: (nestedReply.depth ?? 1) * 20 + "px", marginRight: '0' }}>
-                                        <div className='reply-textarea-and-button'>
-                                            <textarea
-                                                className='input-reply-text'
-                                                placeholder='댓글을 입력해주세요. '
-                                                onChange={(e) => setNewReply(e.target.value)}
-                                            />
-                                            <div className='comment-button-box'>
-                                                <button className='comment-button' type='button' onClick={()=>setNestedReplyTo(null)}>취소</button>
-                                                <button className='comment-button' type='button' onClick={() => handleReplySubmit(nestedReply.commentId)}>작성하기</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
                     </div>
-                ))}
+                )))}
             </div>
+            {(!seeMoreBrt[comment.commentId] && isReplies) ? <div className='see-more' onClick={()=>onSeeMoreBrtClickHandler(comment.commentId)}>
+                        접기
+                    </div> : ''}
         </div>
     )
 }
@@ -378,26 +329,57 @@ function Comments({ comment, depth }: commentProps) {
 interface voteProps {
     agreeOpinion: string | undefined;
     oppositeOpinion: string | undefined;
+    opinionAgreeUsers: number;
+    opinionOppositeUsers: number;
+    getVoteResult:()=>void;
+    isVoted: boolean;
 }
 
 // component: 찬/반 의견 선택 컴포넌트 //
-function OpinionSelector({ agreeOpinion, oppositeOpinion }: voteProps) {
+function OpinionSelector({ agreeOpinion, oppositeOpinion, opinionAgreeUsers, opinionOppositeUsers,getVoteResult, isVoted }: voteProps) {
     const [selectedOpinion, setSelectedOpinion] = useState<string>('');
     const [submitted, setSubmitted] = useState<boolean>(false);
-    const [opinionAUsers, setOpinionAUsers] = useState<number>(27); // 의견 A 유저 비율
-    const [opinionBUsers, setOpinionBUsers] = useState<number>(73); // 의견 B 유저 비율
+    const [cookies] = useCookies();
+    const {roomId} = useParams();
+    const {signInUser} = useSignInUserStore();
 
     const handleOpinionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 
         setSelectedOpinion(event.target.value);
     };
 
-    const handleSubmit = () => {
+    // function: 투표하기 post vote response 처리 //
+    const postVoteResponse = (responseBody:ResponseDto | null) => {
+        const message = !responseBody ? '서버에 문제가 있습니다.' :
+                    responseBody.code === 'VF' ? '투표를 해주세요. ':
+                    responseBody.code === 'DV' ? '이미 처리된 투표 입니다. ':
+                    responseBody.code === 'NR' ? '존재하지 않는 토론방 입니다. ':
+                    responseBody.code === 'NP' ? '잘못된 접근입니다. ':
+                    responseBody.code === 'AF' ? '잘못된 접근입니다.  ': 
+                    responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ': '';
+        const isSuccessd = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessd) {
+            alert(message);
+            return;
+        }
+    };
+
+    // event handler: 찬`반 투표하기 이벤트 처리 //
+    const handleSubmit = async() => {
+        
+        const accessToken = cookies[ACCESS_TOKEN];
+        const userId = signInUser?.userId;
+        if (!roomId || !accessToken || !userId) return;
+        const requestBody:PostVoteRequestDto = {voteChoice:selectedOpinion};
+
         if (selectedOpinion) {
-            setSubmitted(true);
+            await postVoteRequest(requestBody, userId, roomId, accessToken).then(postVoteResponse);
+            setSubmitted(!submitted);
         } else {
             alert("의견을 선택해 주세요.");
         }
+        await getVoteResult();
+        
     };
 
     return (
@@ -405,36 +387,35 @@ function OpinionSelector({ agreeOpinion, oppositeOpinion }: voteProps) {
             <div className='vote-opinions'>
                 <div>
                     <label>
-                        <input
+                        {<input
                             type="radio"
-                            value="A"
-                            checked={selectedOpinion === 'A'}
+                            value={agreeOpinion}
+                            checked={selectedOpinion === agreeOpinion}
                             onChange={handleOpinionChange}
-                        />
+                        />}
                         {agreeOpinion}
                     </label>
                     <label>
                         <input
                             type="radio"
-                            value="B"
-                            checked={selectedOpinion === 'B'}
+                            value={oppositeOpinion}
+                            checked={selectedOpinion === oppositeOpinion}
                             onChange={handleOpinionChange}
                         />
                         {oppositeOpinion}
                     </label>
                 </div>
-                <button className='vote-select-button' onClick={handleSubmit}>선택 완료하기</button>
+                {!isVoted && <button className='vote-select-button' onClick={handleSubmit}>선택 완료하기</button>}
             </div>
-
-            {submitted && (
+            {(submitted || isVoted) && (
                 <div className="bar-container">
                     <div className="bar">
-                        <div className="bar-a" style={{ width: `${opinionAUsers}%` }} />
-                        <div className="bar-b" style={{ width: `${opinionBUsers}%` }} />
+                        <div className="bar-a" style={{ width: `${opinionAgreeUsers}%` }} />
+                        <div className="bar-b" style={{ width: `${opinionOppositeUsers}%` }} />
                     </div>
                     <div className="percentage-labels">
-                        <span className="label-a">{opinionAUsers}%</span>
-                        <span className="label-b">{opinionBUsers}%</span>
+                        <span className="label-a">{opinionAgreeUsers}%</span>
+                        <span className="label-b">{opinionOppositeUsers}%</span>
                     </div>
                 </div>
             )}
@@ -447,43 +428,44 @@ export default function GDDetail() {
 
     // state: 로그인 유저 정보 상태 //
     const { signInUser } = useSignInUserStore();
-    const discussionId = signInUser?.userId;
-
     const { roomId } = useParams();
-    const roomIdNumber = Number(roomId);
-    const [discussionData, setDiscussionData] = useState<DiscussionData | null>(null);
     const [cookies] = useCookies();
+    
+
+    const [opinionAgreeUsers, setOpinionAgreeUsers] = useState<number>(0);
+    const [opinionOppositeUsers, setOpinionOppositeUsers] = useState<number>(0);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isDropdownOptionOpen, setIsDropdownOptionOpen] = useState(false);
-    const [isDropdownCommentOptionOpen, setIsDropdownCommentOptionOpen] = useState(false);
-    const [commentOptions, setCommentOptions] = useState<{ [key: number]: boolean }>({});
     const [selectedOption, setSelectedOption] = useState<string>('정렬순');
     const [comments, setComments] = useState<Comment[]>([]);
     const [newComment, setNewComment] = useState<string>('');
-    const [newReply, setNewReply] = useState<string>('');
-    const [replyContent, setReplyContent] = useState<{ [key: number]: string }>({});
-    const [replyTo, setReplyTo] = useState<number | null>(null);
+    const {category, setCategory} = useCategoryStore();
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-    const [selectedReportReason, setSelectedReportReason] = useState<string | null>(null);
-    const [clicked, setClicked] = useState<boolean>(false);
     const [commentId] = useState<number>();
+    const [likeClick, setLikeClick] = useState<{[key:number]:boolean}>({}); // -> 댓글 같이 공유 타겟아이디 별 각각 상태가 적용된다 
+    const [isVoted, setIsVoted] = useState<boolean>(false);
+    const [roomIdNumber] = useState<number>(Number(roomId));
+    const [discussionData, setDiscussionData] = useState<DiscussionData|null>(null);
+    const [seeMoreBtn, setSeeMoreBtn] = useState<boolean>(false);
 
-
+    // variable: 상수 //
+    const discussionId = signInUser?.userId ?? "";
+    const isMaxed = comments.length > 10
+    
     // state: 원본 리스트 상태 //
     const [originalList, setOriginalList] = useState<Comment[]>([]);
+    
+    // function: 네비게이션 처리 함수 //
+    const navigator = useNavigate();
 
-    // state: 페이징 관련 상태 //
-    const {
-        currentPage,
-        viewList,
-        pageList,
-        setTotalList,
-        initViewList } = usePagination<Comment>();
+    // event handler: 프로필 클릭 이벤트 처리 //
+    const onProfileClickHandler = () => {
+        // 다른 유저 프로필 보기 화면이 있어야 구현 가능
+    }
 
     const openReportModal = () => {
         setIsReportModalOpen(!isReportModalOpen);
     };
-
 
     const closeReportModal = () => {
         setIsReportModalOpen(!isReportModalOpen);
@@ -497,44 +479,36 @@ export default function GDDetail() {
         setIsDropdownOptionOpen(!isDropdownOptionOpen);
     };
 
-    const toggleCommentOptions = (commentId: number) => {
-        setCommentOptions((prev) => ({
-            ...prev,
-            [commentId]: !prev[commentId],
-        }));
-    };
 
     const handleOptionSelect = (option: string) => {
-        if (option === '수정하기' || option === '삭제하기') {
-            setIsDropdownOptionOpen(false);
-            setIsDropdownCommentOptionOpen(false);
-            console.log(`선택한 옵션: ${option}`);
-        } else {
-            setSelectedOption(option);
-            setIsDropdownOptionOpen(false);
-            setIsDropdownCommentOptionOpen(false);
-            console.log(`선택한 정렬순: ${option}`);
+        
+        if (option === '최신순') {
+            const recentList = comments.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            setComments(recentList);
+        
+
+        } else if(option === '추천순'){
+            const popularList = comments.sort((a, b) => b.likeCount - a.likeCount);
+            setComments(popularList);
         }
+        setSelectedOption(option);
+        setIsDropdownOpen(!isDropdownOpen);
     };
 
-    const handleCancelReply = () => {
-        setReplyTo(null);
-        setReplyContent({});
-    };
+    // event handler: 토론방 카테고리 클릭 이벤트 처리 함수 //
+    const onCategoryClickHandler = () => {
+        if(!discussionData?.discussionType) return;
+        navigator(GEN_DISC_ABSOLUTE_PATH);
+        setCategory(discussionData.discussionType);
+    }
 
-    const handleEditComment = (commentId: number) => {
-        // 수정 로직 구현해야 합니다!
-        console.log(`댓글 ${commentId} 수정하기`);
-    };
-
-    const handleDeleteComment = (commentId: number) => {
-        const updatedComments = comments.filter(comment => comment.commentId !== commentId);
-        setComments(updatedComments);
-        console.log(`댓글 ${commentId} 삭제하기`);
-    };
+    // event handler: 댓글 더보기 클릭 이벤트 처리 함수 //
+    const onSeeMoreClickHandler = () => {
+        setSeeMoreBtn(!seeMoreBtn);
+    }
 
     // function: post comment response 처리 함수 //
-    const postCommentResponse = (responseBody: ResponseDto | null) => {
+    const postCommentResponse = async(responseBody: ResponseDto | null) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다. ' :
                 responseBody.code === 'AF' ? '접근이 잘못되었습니다. ' :
@@ -549,7 +523,7 @@ export default function GDDetail() {
     }
 
     // event handler: 댓글 작성하기 버튼 클릭 이벤트 처리 //
-    const handleCommentSubmit = () => {
+    const handleCommentSubmit = async() => {
 
         const accessToken = cookies[ACCESS_TOKEN];
         if (!accessToken || !discussionId || !roomId) return;
@@ -557,25 +531,12 @@ export default function GDDetail() {
         const requestBody: PostCommentRequestDto = {
             userId: discussionId, contents: newComment, discussionType: '찬성', parentId: commentId
         }
-        postCommentRequest(requestBody, roomId, accessToken).then(postCommentResponse);
+        await postCommentRequest(requestBody, roomId, accessToken).then(postCommentResponse);
         setNewComment('');
-        setClicked(!clicked);
+        await getDiscussion();
     };
 
-    // event handler: 대댓글 작성하기 버튼 클릭 이벤트 처리 //
-    const handleReplySubmit = (commentId: number) => {
-
-        const accessToken = cookies[ACCESS_TOKEN];
-        if (!roomId || !accessToken || !discussionId) return;
-        const requestBody: PostCommentRequestDto = {
-            userId: discussionId, contents: newReply, discussionType: '찬성', parentId: commentId
-        }
-
-        postCommentRequest(requestBody, roomId, accessToken).then(postCommentResponse);
-        setNewReply('');
-    };
-
-    // function: get dicussion list response 처리 //
+    // function: get dicussion response 처리 //
     const getDiscussionResponse = (responseBody: GetDiscussionResponseDto | ResponseDto | null) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다. ' :
@@ -589,8 +550,7 @@ export default function GDDetail() {
         if ("discussionResultSet" in responseBody) {
             setDiscussionData(responseBody.discussionResultSet);
             setComments(responseBody.comments);
-            console.log(responseBody.comments);
-            setTotalList(responseBody.comments);
+
             setOriginalList(responseBody.comments);
         } else {
             alert('서버 응답이 올바르지 않습니다.');
@@ -598,33 +558,173 @@ export default function GDDetail() {
     }
 
     // function: 토론 정보 불러 오기 함수 //
-    const getDiscussion = () => {
+    const getDiscussion = async() => {
 
         const accessToken = cookies[ACCESS_TOKEN];
         if (!accessToken) {
             alert('토큰 오류');
             return;
         }
+        await getDiscussionRequest(roomIdNumber, accessToken).then(getDiscussionResponse);
+    }
 
-        if (roomId) {
-            getDiscussionRequest(roomIdNumber, accessToken).then(getDiscussionResponse);
+    // function: 토론방 투표 결과 가져오기 response 처리 //
+    const getVoteResultResponse = (responseBody:GetVoteResultResponseDto | ResponseDto | null) => {
+        const message = !responseBody ? '서버에 문제가 있습니다. ':
+            responseBody.code === 'AF' ? '잘못된 접근입니다. ':
+            responseBody.code === 'NR' ? '존재하지 않는 토론방입니다. ':
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ': '';
+        const isSuccessd = responseBody!== null && responseBody.code === 'SU';
+        if (!isSuccessd){
+            alert(message);
+            return;
         }
+        const {voteResult} = responseBody as GetVoteResultResponseDto;
+        
+        const agreeCount = voteResult.filter(agree => agree.voteChoice === discussionData?.agreeOpinion).length;
+        const oppositeCount = voteResult.filter(opposite => opposite.voteChoice === discussionData?.oppositeOpinion).length;
+        const totalVotes = voteResult.length;
+        
+        const agreePercentage = totalVotes > 0 ? (agreeCount / totalVotes) * 100 : 0;
+        const oppositePercentage = totalVotes > 0 ? (oppositeCount / totalVotes) * 100 : 0;
+        
+        setOpinionAgreeUsers(Math.round(agreePercentage * 10) / 10);
+        setOpinionOppositeUsers(Math.round(oppositePercentage * 10) / 10);
+        setIsVoted(voteResult.some((vote)=>{return vote.userId === signInUser?.userId}));
+    }
+
+    // function: 토론방 투표 결과 list 불러오 기 함수 // 
+    const getVoteResult = async() => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken || !roomIdNumber) return;
+
+        await getVoteResultRequest(roomIdNumber,accessToken).then(getVoteResultResponse);
+    }
+
+    // function: post like response 처리 함수 //
+    const postLikeResponse = (responseBody: ResponseDto | null) => {
+        const message = !responseBody ? '서버에 문제가 있습니다. ': 
+            responseBody.code === 'AF' ? '잘못된 접근입니다. ':
+            responseBody.code === 'DL' ? '중복된 값입니다. ':
+            responseBody.code === 'NR' ? '존재하지 않는 토론방입니다. ':
+            responseBody.code === 'NM' ? '존재하지 않는 댓글입니다. ':
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ': '';
+        const isSuccessd = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessd){
+            alert(message);
+        }
+        
+    }
+
+    // function: delete like response 처리 함수 //
+    const deleteLikeResponse = (responseBody: ResponseDto | null) => {
+        const message = !responseBody ? '서버에 문제가 있습니다. ': 
+            responseBody.code === 'AF' ? '잘못된 접근입니다. ':
+            responseBody.code === 'NT' ? '잘못된 게시물(댓글)입니다. ':
+            responseBody.code === 'NP' ? '잘못된 접근입니다. ':
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ': '';
+        const isSuccessd = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessd){
+            alert(message);
+        }
+    }
+    
+    // event handler: 좋아요 버튼 클릭 이벤트 처리 // 
+    const onLikeClickHandler = async (targetId: number, userId: string, likeType: string) => {
+        const accessToken = cookies[ACCESS_TOKEN];
+    
+        if (!accessToken || !targetId || !likeType || !userId) return;
+        
+        
+        setLikeClick((prevLikeClick) => {
+            const newState = { 
+                ...prevLikeClick, 
+                [targetId]: !prevLikeClick[targetId],  // 이전 상태를 반전시켜서 업데이트
+            };
+            return newState;
+        });
+
+        try {
+            
+            if (!likeClick[targetId]) {
+                await postLikeRequest(targetId, likeType, userId, accessToken).then(postLikeResponse);
+                
+            } else {
+                await deleteLikeRequest(targetId, likeType, userId, accessToken).then(deleteLikeResponse);
+                
+            }
+            await getDiscussion();
+        } catch (error) {
+            console.error("요청 실패:", error);
+        }
+    };
+
+    // function: get LikeResponse 처리  //
+    const getLikeResponse = (responseBody: GetLikeListResponseDto | ResponseDto | null) => {
+        const message = !responseBody ? '서버에 문제가 있습니다. ': 
+        responseBody.code === 'AF' ? '잘못된 접근입니다. ':
+        responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ': '';
+
+        const isSuccessd = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessd){
+            alert(message);
+        }
+
+        const { roomId,likePost, isLikeComment } = responseBody as GetLikeListResponseDto
+        
+        const isCommentLiked = isLikeComment.filter(like => like.commentId && like.isCommentLike === true);
+        
+        if (likePost || isCommentLiked) {
+            setLikeClick((prev) => {
+        
+                const newLikeClick = { 
+                    ...prev,
+                    [roomId]: likePost,
+                };
+                // isCommentLiked가 여러 개 있을 수 있으므로, 이를 모두 반영
+                isCommentLiked.forEach(comment => {
+                    newLikeClick[comment.commentId] = !likeClick[comment.commentId];
+                });
+                
+                return newLikeClick;
+            });
+        }
+    }
+
+    // function: 좋아요 정보 가져오기 함수 처리 //
+    const getLike = async() => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken || !roomIdNumber || !signInUser?.userId) {
+            return;
+        }
+        await getLikeRequest(roomIdNumber, discussionId, accessToken).then(getLikeResponse);
     }
 
     // Effect: 토론 정보 불러오기 //
     useEffect(() => {
+        
         getDiscussion();
-    }, []);
+        getVoteResult();
+        getLike();
+        if (!isMaxed){
+            setSeeMoreBtn(false);
+        }else{
+            setSeeMoreBtn(true);
+        }
+    }, [comments.length]);
 
-
+    useEffect(()=>{
+        if (discussionData) {
+            getVoteResult();
+        }
+    },[discussionData])
 
     return (
         <div id="gd-detail-wrapper">
             <div className="gd-detail-wrapper-in">
                 <div className='gd-detail-box'>
                     <div className="gd-detail-category">
-
-                        <div className="width-line"><span>{discussionData?.discussionType}</span></div>
+                        <div className="width-line" onClick={onCategoryClickHandler}><span>{discussionData?.discussionType}</span></div>
                     </div>
                     <div className="post-info">
                         <div className="post-user-info">
@@ -642,7 +742,6 @@ export default function GDDetail() {
                             {discussionId === discussionData?.userId ? (
                                 <div className='option' onClick={toggleDropdownOption}>⋮</div>
                             ) : (
-
                                 <div className="siren-button" onClick={() => openReportModal()}></div>
                             )}
                         </div>
@@ -650,7 +749,6 @@ export default function GDDetail() {
                     {isDropdownOptionOpen && (
                         <div className='dropdown-menu-box'>
                             <div className='dropdown-menu'>
-                                <div className='dropdown-item' onClick={() => handleOptionSelect('수정하기')}>수정하기</div>
                                 <div className='dropdown-item' onClick={() => handleOptionSelect('삭제하기')}>삭제하기</div>
                             </div>
                         </div>
@@ -667,12 +765,12 @@ export default function GDDetail() {
                         </div>
                     </div>
                     <div className="vote-info">
-                        <OpinionSelector agreeOpinion={discussionData?.agreeOpinion} oppositeOpinion={discussionData?.oppositeOpinion} />
+                        <OpinionSelector agreeOpinion={discussionData?.agreeOpinion} oppositeOpinion={discussionData?.oppositeOpinion} opinionAgreeUsers={opinionAgreeUsers} opinionOppositeUsers={opinionOppositeUsers} getVoteResult={getVoteResult} isVoted={isVoted}/>
                     </div>
                     <div className="comment-and-recommendation">
                         <div className="comment-icon"></div>
                         <div className="comment-count">{discussionData?.commentCount}</div> 
-                        <div className="recommendation-icon"></div>
+                        <div className={`recommendation-icon ${likeClick[roomIdNumber] ? 'active':''}`} onClick={()=>onLikeClickHandler(roomIdNumber, discussionId,'POST')}></div>
                         <div className="recommendation-count">{discussionData?.likeCount}</div>
                     </div>
                     <hr />
@@ -704,9 +802,16 @@ export default function GDDetail() {
                         </div>
                     )}
 
-                    {viewList.map(comment => (
-                        <Comments key={comment.commentId} comment={comment} depth={1} />
+                    {((isMaxed && seeMoreBtn) ? comments.slice(0,9) : comments).map(comment => (
+                        <Comments key={comment.commentId} comment={comment} depth={comment.depth} getDiscussion={getDiscussion} postLike={(targetId:number, userId:string, likeType:string) => onLikeClickHandler(targetId, userId, likeType)} click={likeClick}/>
                     ))}
+                    {(seeMoreBtn && isMaxed) ?<div className='see-more' onClick={onSeeMoreClickHandler}>
+                        <div className='see-more-item'>더보기</div>
+                    </div>: ''}
+                    { (!seeMoreBtn && isMaxed) ?<div className='see-more' onClick={onSeeMoreClickHandler}>
+                        <div className='see-more-item'>접기</div>
+                    </div>:''
+                    }
                 </div>
             </div>
         </div>

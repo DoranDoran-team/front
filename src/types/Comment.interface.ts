@@ -9,6 +9,7 @@ export default interface Comment {
     contents:string;
     createdAt:string;
     discussionType:string;
+    likeCount:number;
     updateStatus:boolean;
     parentId:number;
     depth:number;

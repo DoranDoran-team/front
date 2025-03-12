@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 import { Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 
-import { ACCESS_TOKEN, GEN_DISC_DETAIL_ABSOLUTE_PATH, GEN_DISC_PATH, GEN_DISC_WRITE_ABSOLUTE_PATH, LOGIN_ABSOLUTE_PATH, LOGIN_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, MY_PATH, NOTICE, OTHERS_PATH, ROOT_PATH, RT_DISC_PATH, SCHEDULE, SNS_SUCCESS_PATH, CHANGE_PW, FIND_ID, FIND_ID_RESULT, FIND_PW, SIGN_UP, ADMIN_PATH, MY_UPDATE_PATH, NOTICE_WRITE, NOTICE_DETAIL, MY_INFO_UPDATE_PATH, MY_INFO_PW_PATH, ADMIN_ABSOLUTE_ACCUSE_PATH, ADMIN_ABSOLUTE_MILEAGE_PATH, MY_MILEAGE_PATH, MY_ATTENDANCE_CHECK_PATH, NOTICE_PATCH, MY_ACCOUNT_MANAGEMENT_PATH } from './constants';
+import { ACCESS_TOKEN, GEN_DISC_DETAIL_ABSOLUTE_PATH, GEN_DISC_PATH, GEN_DISC_WRITE_ABSOLUTE_PATH, LOGIN_ABSOLUTE_PATH, LOGIN_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, MY_PATH, NOTICE, OTHERS_PATH, ROOT_PATH, RT_DISC_PATH, SCHEDULE, SNS_SUCCESS_PATH, CHANGE_PW, FIND_ID, FIND_ID_RESULT, FIND_PW, SIGN_UP, ADMIN_PATH, MY_UPDATE_PATH, NOTICE_WRITE, NOTICE_DETAIL, MY_INFO_UPDATE_PATH, MY_INFO_PW_PATH, ADMIN_ABSOLUTE_ACCUSE_PATH, ADMIN_ABSOLUTE_MILEAGE_PATH, MY_MILEAGE_PATH, MY_ATTENDANCE_CHECK_PATH, MY_ACCOUNT_MANAGEMENT_PATH } from './constants';
 import MainLayout from './layouts/MainLayout';
 import GD from './view/General_Discuss';
 import RTDiscuss from './view/RT_Discuss';
@@ -97,7 +97,7 @@ export default function DoranDoran() {
 
   // state: cookie 상태 //
   const [cookies, setCookie, removeCookie] = useCookies();
-
+  
   // function: navigator 함수 //
   const navigator = useNavigate();
 
@@ -119,8 +119,8 @@ export default function DoranDoran() {
     }
 
     const {userId, name, telNumber, profileImage, role, nickName, mileage, 
-      statusMessage} = responseBody as GetSignInResponseDto;
-    setSignInUser({userId, name, telNumber, profileImage, role, nickName, mileage, statusMessage});
+      statusMessage, isVoted} = responseBody as GetSignInResponseDto;
+    setSignInUser({userId, name, telNumber, profileImage, role, nickName, mileage, statusMessage, isVoted});
   };
   
   //effect: cookie의 accesstoken 값이 변경될 때 마다 로그인 유저 정보를 요청하는 함수 //
@@ -130,8 +130,6 @@ export default function DoranDoran() {
     else setSignInUser(null);
   }, [cookies[ACCESS_TOKEN]]);
 
-  // variable: room id //
-  const roomId = "123"; // 일단 roomId 하드코딩
 
   // render: 메인 화면 렌더링 //
   return (
