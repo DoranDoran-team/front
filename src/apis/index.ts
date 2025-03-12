@@ -37,6 +37,7 @@ import { PostAdminMileageRequestDto } from "./dto/request/mileage/post-admin-mil
 import { PostAccountRequestDto } from "./dto/request/account/post-account.request.dto";
 import { GetAccountsResponseDto } from "./dto/response/mypage/account_management/get-account-management.response.dto";
 import GetMyDiscussionListResposneDto from "./dto/response/mypage/myInfo/get-my-discussion-list.response.dto";
+import GetAccuseUserListResponseDto from "./dto/response/accuse/get-accuse-user-list.response.dto";
 import { GetNotificationsResponseDto } from "./dto/response/notification/get-notifications.reponse.dto";
 import GetSearchUserListResponseDto from "./dto/response/user/get-search-user-list.response.dto";
 
@@ -66,6 +67,7 @@ const PATCH_PASSWORD_API_URL = `${AUTH_MODULE_URL}/change-pw`;
 // 토론방 API URL //
 const WRITE_GENENRAL_DISCUSSION_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}/write`;
 const GET_GENENRAL_DISCUSSION_LIST_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}`;
+const GET_KEYWORD_GENERAL_DISCUSSION_LIST = (keyword: string) => `${GENERAL_DISCUSSION_MODULE_URL}/search?keyword=${keyword}`;
 
 const GET_GENERAL_DISCUSSION_API_URL = (roomId: number | string) => `${GENERAL_DISCUSSION_MODULE_URL}/${roomId}`;
 
@@ -74,10 +76,14 @@ const POST_COMMENT_API_URL = (roomId: number | string) => `${COMMENT_MODULE_URL}
 const PATCH_COMMENT_API_URL = (roomId: number | string, commentId: number | string) => `${COMMENT_MODULE_URL}/${roomId}/${commentId}`;
 const DELETE_COMMENT_API_URL = (roomId: number | string, commentId: number | string) => `${COMMENT_MODULE_URL}/delete/${roomId}/${commentId}`;
 
+//* ============= 신고
 
 const POST_ACCUSE_URL = `${DORANDORAN_API_DOMAIN}/accuse`;
 const GET_ACCUSE_LIST_URL = (userId: string) => `${DORANDORAN_API_DOMAIN}/accuse?userId=${userId}`;
 const GET_ACCUSE_URL = (accuseId: number) => `${DORANDORAN_API_DOMAIN}/accuse/${accuseId}`;
+const GET_ACCUSE_USER_LIST = (keyword: string) => `${DORANDORAN_API_DOMAIN}/accuse/user?keyword=${keyword}`;
+const PATCH_ACCUSE_APROVED = (accuseId: number) => `${DORANDORAN_API_DOMAIN}/accuse/approve/${accuseId}`;
+const PATCH_ACCUSE_REJECTED = (accuseId: number) => `${DORANDORAN_API_DOMAIN}/accuse/rejected/${accuseId}`;
 
 
 const MILEAGE_API_URL = `${DORANDORAN_API_DOMAIN}/mypage/mileage`;
@@ -99,7 +105,7 @@ const MYPAGE_USER_CHANGE_PW_API_URL = `${MYPAGE_USER_INFO_API_URL}/change-pw`;
 const MYPAGE_PATCH_USER_INFO_API_URL = `${MYPAGE_USER_INFO_API_URL}/patch-user`;
 const MYPAGE_USER_DELETE_API_URL = `${MYPAGE_USER_INFO_API_URL}/delete-user`;
 const MYPAGE_MY_DISCUSSION_LIST_API_URL = `${MYPAGE_USER_INFO_API_URL}/get-my-discussion`;
-const MYPAGE_DELETE_MY_DISCUSSION_API_URL = (roomId: number | string) => 
+const MYPAGE_DELETE_MY_DISCUSSION_API_URL = (roomId: number | string) =>
     `${MYPAGE_USER_INFO_API_URL}/delete/${roomId}`;
 
 const NOTICE_API_URL = `${DORANDORAN_API_DOMAIN}/notice`;
@@ -236,6 +242,13 @@ export const getDiscussionListRequest = async (accessToken: string) => {
     return responseBody;
 }
 
+// function: 일반 토론방 검색어 get discussionList 요청 함수 //
+export const getSearchDiscussionListRequest = async (keyword: string, accessToken: string) => {
+    const responseBody = await axios.get(GET_KEYWORD_GENERAL_DISCUSSION_LIST(keyword), bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
 
 // function: 토론방 상세보기 get discussion 요청 함수 //
 export const getDiscussionRequest = async (roomId: number | string, accessToken: string) => {
@@ -265,12 +278,13 @@ export const patchCommentRequest = async (requestBody: PatchCommentRequestDto, r
 }
 
 // function: 댓글 삭제 patch comment 요청 함수 //
-export const deleteCommentRequest = async(roomId:number|string, commentId:number|string,userId:string, accessToken:string) => {
-    const responseBody = await axios.patch(DELETE_COMMENT_API_URL(roomId,commentId), userId, bearerAuthorization(accessToken))
+export const deleteCommentRequest = async (roomId: number | string, commentId: number | string, userId: string, accessToken: string) => {
+    const responseBody = await axios.patch(DELETE_COMMENT_API_URL(roomId, commentId), userId, bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
 }
+
 // function: POST 신고 요청 함수 //
 export const postAccuseRequest = async (requestBody: PostAccuseRequestDto, accessToken: string) => {
     const reseponseBody = await axios.post(POST_ACCUSE_URL, requestBody, bearerAuthorization(accessToken))
@@ -291,6 +305,31 @@ export const getAccuseListRequest = async (userId: string, accessToken: string) 
 export const getAccuseRequest = async (accuseId: number, accessToken: string) => {
     const responseBody = await axios.get(GET_ACCUSE_URL(accuseId), bearerAuthorization(accessToken))
         .then(responseDataHandler<GetAccuseResponseDto>)
+        .catch(responseDataHandler);
+    return responseBody;
+}
+
+// function: 신고 PATCH 처리 함수 //
+export const patchAccuseApproved = async (accuseId: number, accessToken: string) => {
+
+    const responseBody = await axios.patch(PATCH_ACCUSE_APROVED(accuseId), {}, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseDataHandler);
+    return responseBody;
+}
+
+// function: 신고 PATCH 반려 함수 //
+export const patchAccuseRejected = async (accuseId: number, accessToken: string) => {
+    const responseBody = await axios.patch(PATCH_ACCUSE_REJECTED(accuseId), {}, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseDataHandler);
+    return responseBody;
+}
+
+// function: 유저 리스트 불러오기 요청 함수 //
+export const getAccuseUserListRequest = async (keyword: string, accessToken: string) => {
+    const responseBody = await axios.get(GET_ACCUSE_USER_LIST(keyword), bearerAuthorization(accessToken))
+        .then(responseDataHandler<GetAccuseUserListResponseDto>)
         .catch(responseDataHandler);
     return responseBody;
 }
@@ -436,7 +475,7 @@ export const searchUsersRequest = async (keyword: string, accessToken: string) =
     const responseBody = await axios.get(url, bearerAuthorization(accessToken))
         .then(responseDataHandler<GetSearchUserListResponseDto>)
         .catch(responseErrorHandler);
-    
+
     return responseBody;
 };
 
@@ -545,7 +584,7 @@ export const deleteUserRequest = async (accessToken: string) => {
 }
 
 // function: 마이페이지 - 내가 작성한 게시글 불러오기 함수 //
-export const getMyDiscussionRequest = async(accessToken: string) => {
+export const getMyDiscussionRequest = async (accessToken: string) => {
     const responseBody = await axios.get(MYPAGE_MY_DISCUSSION_LIST_API_URL, bearerAuthorization(accessToken))
         .then(responseDataHandler<GetMyDiscussionListResposneDto>)
         .catch(responseErrorHandler);
@@ -553,7 +592,7 @@ export const getMyDiscussionRequest = async(accessToken: string) => {
 }
 
 // function: 내가 작성한 게시글 삭제하기 요청 함수 //
-export const deleteMyDiscussionRequest = async(accessToken: string, roomId: string | number) => {
+export const deleteMyDiscussionRequest = async (accessToken: string, roomId: string | number) => {
     const responseBody = await axios.delete(MYPAGE_DELETE_MY_DISCUSSION_API_URL(roomId), bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);

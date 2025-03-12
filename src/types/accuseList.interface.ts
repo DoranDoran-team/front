@@ -9,4 +9,5 @@ export default interface AccuseComponentProps {
   replyId: string, // 댓글 신고
   postId: number, // 일반 게시글 신고
   accuseDate: string // 신고 당한 날짜
+  accuseState: string // 신고 타입
 }
