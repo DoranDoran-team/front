@@ -1,3 +1,5 @@
+import Subscribers from "./subscribers.interface";
+
 export default interface SignInUser {
     userId: string;
     profileImage: string | null;
@@ -7,4 +9,6 @@ export default interface SignInUser {
     role: boolean;
     mileage: string | null;
     statusMessage : string | null;
+    subscribers: Subscribers[];
+    subscribersCount: number | null;
 }

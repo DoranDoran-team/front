@@ -65,21 +65,6 @@ export default function PwCheck() {
         }
     }
 
-    // event handler: 게시물 메뉴 버튼 클릭 이벤트 처리 함수 //
-    const onPostMenuButtonHandler = () => {
-        setEditButton(!editbutton);
-    }
-
-    const navigateToMileage = () => {
-        navigator(MY_ABSOLUTE_MILEAGE_PATH);
-    };
-
-    // event handler: 개인 정보 수정 버튼 클릭 이벤트 핸들러 //
-    const onChangeInfoClickHandler = () => {
-        navigator(MY_INFO_PW_ABSOLUTE_PATH('qwer1234'));
-    }
-
-
     // function: navigator //
     const navigator = useNavigate();
 
@@ -88,12 +73,14 @@ export default function PwCheck() {
 
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
-                responseBody.code === 'VF' ? '일치하는 정보가 없습니다.' :
-                    responseBody.code === 'AF' ? '일치하는 정보가 없습니다.' :
-                        responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
-                            responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' :
-                                responseBody.code === 'MT' ? '비밀번호가 일치하지 않습니다.' : '';
-
+            responseBody.code === 'VF' ? '일치하는 정보가 없습니다.' :
+            responseBody.code === 'AF' ? '일치하는 정보가 없습니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' :
+            responseBody.code === 'MT' ? '비밀번호가 일치하지 않습니다.' : 
+            responseBody.code === 'NP' ? '일치하는 정보가 없습니다.' : '' ;
+        
+        console.log(responseBody);
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
 
         if (!isSuccessed) {
@@ -103,7 +90,7 @@ export default function PwCheck() {
             return;
         }
 
-        navigator(MY_INFO_UPDATE_ABSOLUTE_PATH(`${signInUser?.userId}`));
+        navigator(MY_INFO_UPDATE_ABSOLUTE_PATH);
     };
 
     // render: 비밀번호 확인 화면 렌더링 //

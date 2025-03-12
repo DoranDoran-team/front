@@ -84,15 +84,11 @@ function TopNavigation() {
 // component: 상단 네비게이션 컴포넌트 //
 function TopPersonalNavigation() {
 
-    // state: path 상태 //
-    const { pathname } = useLocation();
-
     // state: 로그인 유저 정보 상태 //
     const { signInUser, setSignInUser } = useSignInUserStore();
 
     // state: cookie 상태 //
     const [cookies, setCookie, removeCookie] = useCookies();
-    const accessToken = cookies[ACCESS_TOKEN];
 
     // state: hovering 상태 //
     const [isHovered, setIsHovered] = useState(false);
@@ -156,7 +152,7 @@ function TopPersonalNavigation() {
                         <div className='menu' onClick={onLogoutButtonClickHandler}>로그아웃</div>
                         <div className='menu' onClick={
                             signInUser?.role ? () => navigator('/admin') :
-                                () => navigator('/mypage')}>마이페이지</div>
+                            () => navigator('/mypage')}>마이페이지</div>
                     </div>
                 </div>)
             }
@@ -173,71 +169,6 @@ function AlarmMessage() {
             <div className='menu'><strong>@abc123</strong> 님이 회원님의 게시글에 댓글을 달았습니다.</div>
             <hr />
         </>
-    )
-}
-
-// component: 랭킹 컴포넌트 //
-function Ranking() {
-
-    // state: 랭킹 클릭 상태 //
-    const { clickRank, setClickRank } = RankingClickResultStore();
-
-    const onClickRankHandler = () => {
-        setClickRank(!clickRank);
-    }
-
-    return (
-        <div className='ranking-box-gather'>
-            <div className='cancel-ranking'>
-                <p style={{ margin: '0px', fontSize: '20px', fontWeight: 'bolder' }}>랭킹</p>
-                <p style={{ margin: '0px' }} onClick={onClickRankHandler}>X</p>
-            </div>
-            <div className='ranking-box'>
-                <div>1등</div>
-                <div>나무와선녀꾼</div>
-                <div>100,000P</div>
-            </div>
-            <div className='ranking-box'>
-                <div>2등</div>
-                <div>나무와선녀꾼</div>
-                <div>90,000P</div>
-            </div>
-            <div className='ranking-box'>
-                <div>3등</div>
-                <div>나무와선녀꾼</div>
-                <div>80,000P</div>
-            </div>
-            <div className='ranking-box'>
-                <div>4등</div>
-                <div>나무와선녀꾼</div>
-                <div>70,000P</div>
-            </div>
-            <div className='ranking-box'>
-                <div>5등</div>
-                <div>나무와선녀꾼</div>
-                <div>60,000P</div>
-            </div>
-            <div className='ranking-box'>
-                <div>6등</div>
-                <div>나무와선녀꾼</div>
-                <div>50,000P</div>
-            </div>
-            <div className='ranking-box'>
-                <div>7등</div>
-                <div>나무와선녀꾼</div>
-                <div>40,000P</div>
-            </div>
-            <div className='ranking-box'>
-                <div>8등</div>
-                <div>나무와선녀꾼</div>
-                <div>30,000P</div>
-            </div>
-            <div className='ranking-box'>
-                <div>9등</div>
-                <div>나무와선녀꾼</div>
-                <div>20,000P</div>
-            </div>
-        </div>
     )
 }
 
@@ -283,18 +214,6 @@ export default function MainLayout() {
                 <TopPersonalNavigation />
             </div>
             <div id='main-wrapper'>
-                {isMainPage && (
-                    <div className="ranking-section" onClick={onClickRankHandler} style={clickRank ? { background: 'black', color: 'white' } : { background: 'white' }}>
-                        랭킹
-                        {clickRank && (
-                            <div className='ranking'>
-                                <Ranking />
-                            </div>
-                        )}
-                    </div>
-
-                )}
-
                 <Outlet />
             </div>
             {/* <ArrowToTop /> */}

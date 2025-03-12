@@ -71,6 +71,7 @@
 
 #gd-detail-wrapper .post-user-info {
     display: flex;
+    cursor: pointer;
 }
 
 #gd-detail-wrapper .status-and-option {
@@ -384,7 +385,7 @@
 
 #gd-detail-wrapper .comment-user {
     display: flex;
-
+    cursor: pointer;
 }
 
 #gd-detail-wrapper .comment-date-and-modify {

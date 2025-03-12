@@ -49,6 +49,7 @@
     background-color: #FBFBFB;
     width: 1000px;
     border-radius: 50px;
+    flex-direction: column;
 }
 
 #password-check .background-in {
@@ -81,7 +82,7 @@
 
 #password-check .background .pw-check-input {
     box-sizing: border-box;
-    width: 100%;
+    width: 300px;
     height: 48px;
     padding: 10px;
     border-radius: 6px;
@@ -106,7 +107,7 @@
     border-radius: 6px;
     border: 1px solid #b4b4b4;
     background-color: #b4b4b4;
-    width: 200px;
+    width: 300px;
     height: 45px;
 
     font-size: 16px;
@@ -123,7 +124,7 @@
     border-radius: 6px;
     border: 1px solid #ABF6BE;
     background-color: #ABF6BE;
-    width: 270px;
+    width: 300px;
     height: 45px;
 
     font-size: 16px;

@@ -1,10 +1,7 @@
-import React, { MouseEvent, useEffect, useState } from "react";
+import React, { MouseEvent, useEffect, useRef, useState } from "react";
 import './style.css';
-import { useLocation, useNavigate } from "react-router-dom";
-
-import { MY_ABSOLUTE_ACCOUNT_MANAGEMENT_PATH } from "../../constants";
-import { ACCESS_TOKEN, GEN_DISC_DETAIL_ABSOLUTE_PATH, MY_ABSOLUTE_ATTENDANCE_CHECK_PATH, MY_ABSOLUTE_MILEAGE_PATH, MY_ABSOLUTE_UPDATE_PATH, MY_INFO_PW_ABSOLUTE_PATH, MY_INFO_UPDATE_ABSOLUTE_PATH, MY_MILEAGE_PATH, MY_UPDATE_PATH } from "../../constants";
-import { FaUserEdit, FaCoins, FaHistory, FaCalendarCheck } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { ACCESS_TOKEN, GEN_DISC_DETAIL_ABSOLUTE_PATH, MY_ABSOLUTE_UPDATE_PATH } from "../../constants";
 import { useSignInUserStore } from "../../stores";
 import { useCookies } from "react-cookie";
 import { deleteMyDiscussionRequest, getMyDiscussionRequest } from "../../apis";
@@ -12,6 +9,7 @@ import GetMyDiscussionListResposneDto from "../../apis/dto/response/mypage/myInf
 import ResponseDto from "../../apis/dto/response/response.dto";
 import MyDiscussion from "../../types/my-discussion.interface";
 import MypageSidebar from "../../components/mypage/sidebar";
+import { compareTimes } from "../../components/compare-time/compare_time";
 
 interface DiscussionRowProps {
     discussion: MyDiscussion;
@@ -21,8 +19,6 @@ interface DiscussionRowProps {
 function RoomList({discussion}: DiscussionRowProps) {
 
     // state: 내가 개설한 게시글 상태 //
-    const [editbutton, setEditButton] = useState<boolean>(false);
-    const [state] = useState<boolean>(true);
     const [cookies, setCookie] = useCookies();
 
     // variable: 엑세스 토큰 //
@@ -36,12 +32,6 @@ function RoomList({discussion}: DiscussionRowProps) {
         navigator(GEN_DISC_DETAIL_ABSOLUTE_PATH(discussion.roomId));
     }
 
-    // event handler: 게시물 메뉴 버튼 클릭 이벤트 처리 함수 //
-    const onPostMenuButtonHandler = (event: MouseEvent<HTMLDivElement>) => {
-        event.stopPropagation();
-        setEditButton(!editbutton);
-    }
-
     // event handler: 게시물 삭제 이벤트 핸들러 //
     const onDeleteDiscussion = (event: MouseEvent<HTMLDivElement>) => {
         event.stopPropagation();
@@ -50,7 +40,6 @@ function RoomList({discussion}: DiscussionRowProps) {
             if(!accessToken || !discussion.roomId) return;
             deleteMyDiscussionRequest(accessToken, discussion.roomId).then(deleteRoomResponse);
         }else return;
-        
     }
 
     // function: 게시물 삭제 응답 처리 //
@@ -81,35 +70,30 @@ function RoomList({discussion}: DiscussionRowProps) {
                 <div className="discussion-title-box">
                     <div className="discussion-title">{discussion.roomTitle}</div>
                     <div className="discussion-icon-box">
-                        <div className="discussion-icon" onClick={onPostMenuButtonHandler}></div>
-                            {editbutton && <div className="discussion-edit-box">
-                                <div className="edit-item">수정</div>
-                                <div className="edit-item" onClick={onDeleteDiscussion}>삭제</div>
-                            </div>}
-                        </div>
+                        <div className="discussion-icon" onClick={onDeleteDiscussion}></div>
                     </div>
-                    <div className="discussion-contents">{discussion.roomDescription}</div>
-                    <div className="discussion-bottom">
-                        <div className="discussion-bottom-box">
-                            <div className="discussion-created">{discussion.createdRoom}</div>
-                            {discussion.updateStatus ? <div className="discussion-fixed">(수정됨)</div> : ''}
-                            {!state ? 
-                                <div className="discussion-state-box continue">
-                                    <div className="discussion-state ">진행중</div>
-                                </div> 
-                            :
-                                <div className="discussion-state-box end">
-                                    <div className="discussion-state ">마감</div>
-                                </div>
-                            }
-                        </div>
-                        <div className="discussion-icons">
-                            <div className="discussion-comment-icon"></div>
-                            <div className="discussion-comment">{discussion.commentCount}</div>
-                            <div className="discussion-like-icon"></div>
-                            <div className="discussion-like">{discussion.likeCount}</div>
-                        </div>
+                </div>
+                <div className="discussion-contents">{discussion.roomDescription}</div>
+                <div className="discussion-bottom">
+                    <div className="discussion-bottom-box">
+                        <div className="discussion-created">{discussion.createdRoom}</div>
+                        {compareTimes(discussion.discussionEnd) ? 
+                            <div className="discussion-state-box continue">
+                                <div className="discussion-state ">진행 중</div>
+                            </div> 
+                        :    
+                            <div className="discussion-state-box end">
+                                <div className="discussion-state ">마감</div>
+                            </div>
+                        }
                     </div>
+                    <div className="discussion-icons">
+                        <div className="discussion-comment-icon"></div>
+                        <div className="discussion-comment">{discussion.commentCount}</div>
+                        <div className="discussion-like-icon"></div>
+                        <div className="discussion-like">{discussion.likeCount}</div>
+                    </div>
+                </div>
             </div>
         </div>
     );
@@ -123,57 +107,50 @@ export default function Mypage() {
     const { signInUser, setSignInUser } = useSignInUserStore();
 
     // state: 마이페이지 상태 //
-    const [state] = useState<boolean>(true);
-    const [subscribe, setSubscribe] = useState<boolean>(false);
-    const [user] = useState<boolean>(false);
-    const [stateType, setStateType] = useState<boolean>(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+    const [stateType, setStateType] = useState<string>("진행 중");
     const [cookies, setCookie] = useCookies();
     const [discussionList, setDiscussionList] = useState<MyDiscussion[]>([]);
+    const [profileImage, setProfileImage] = useState<string>('');
     
     // variable: 자기자신 확인 //
-    const isUser = user && true;
     const accessToken = cookies[ACCESS_TOKEN];
-
-    // // event handler: menu 클릭 이벤트 처리 함수 //
-    // const onMenuButtonHandler = () => {
-
-    //     setMenu(!menu);
-    // }
-
-    // event handler: 구독 버튼 클릭 이벤츠 처리 함수 //
-    const onSubscribeButtonHandler = () => {
-        setSubscribe(!subscribe)
-    }
 
     // function: 네비게이터 함수 처리 //
     const navigator = useNavigate();
 
     // event handler: 내 정보 수정 클릭 이벤트 처리 함수 //
     const onUpdateButtonHandler = () => {
-        navigator(MY_ABSOLUTE_UPDATE_PATH(1));
+        navigator(MY_ABSOLUTE_UPDATE_PATH);
     }
 
     // event handler: 토론방 상태 클릭 이벤트 처리 함수 //
-    const onStateTypeButtonHandler = () => {
-        setStateType(!stateType)
-    }
-
-    const navigateToMileage = () => {
-        navigator(MY_ABSOLUTE_MILEAGE_PATH);
+    const toggleDropdown = () => {
+        setIsDropdownOpen((prev) => !prev);
     };
 
-    // event handler: 개인 정보 수정 버튼 클릭 이벤트 핸들러 //
-    const onChangeInfoClickHandler = () => {
-        navigator(MY_INFO_PW_ABSOLUTE_PATH('qwer1234'));
-    }
+    // event handler: 토론방 상태 클릭 이벤트 처리 //
+    const onStateTypeSelect = (type: string) => {
+        setStateType(type);
+        setIsDropdownOpen(false); // 선택 후 닫기
+    };
 
-    // event handler: 출석체크 버튼 클릭 이벤트 핸들러 //
-    const naviagateToAttendance = () => {
-        navigator(MY_ABSOLUTE_ATTENDANCE_CHECK_PATH);
-    }
+    // event handler: 토론방 상태에 따른 정렬 함수 //
+    const filteredDiscussions = discussionList.filter(
+        (discussion) => 
+            (stateType === "진행 중" && compareTimes(discussion.discussionEnd)) ||
+            (stateType === "마감" && !compareTimes(discussion.discussionEnd))
+    );
 
     // function: 내가 작성한 게시글 불러오기 처리 함수 //
     const getMyDiscussionResponse = (responseBody: GetMyDiscussionListResposneDto | ResponseDto | null) => {
+        
+        if(!signInUser) return;
+
+        if(signInUser.profileImage) setProfileImage(signInUser.profileImage);
+        else setProfileImage("http://localhost:3000/defaultProfile.png");
+        
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'VF' ? '일치하는 정보가 없습니다.' :
@@ -194,10 +171,26 @@ export default function Mypage() {
 
     // effect: //
     useEffect(()=> {
-        if(!accessToken) return;
+        if(!accessToken || !signInUser) return;
         getMyDiscussionRequest(accessToken).then(getMyDiscussionResponse);
-        //console.log(signInUser);
-    }, []);
+    }, [signInUser]);
+
+    // effect: //
+    useEffect(() => {
+        const handleClickOutside = (event: globalThis.MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsDropdownOpen(false);
+            }
+        };
+    
+        if (isDropdownOpen) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+    
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isDropdownOpen]);
 
     // render: 마이페이지 화면 렌더링 //
     return (
@@ -205,44 +198,37 @@ export default function Mypage() {
             <MypageSidebar />
             <div className="mypage-main-wrapper">
                 <div className="user-box">
-                    <div id="main-profile" style={{ backgroundImage: `url(${signInUser?.profileImage})` }}></div>
+                    <div id="main-profile" style={{ backgroundImage: `url(${profileImage})` }}></div>
                     <div className="mypage-info">
                         <div className="mypage-info-top">
                             <div className="mypage-info-top-a">
                                 <div className="mypage-nickname">{signInUser?.nickName}</div>
-                                {!isUser ? <div className="subscribe-button-box" onClick={onSubscribeButtonHandler}>
-                                    {/* {subscribe ? <div className="subscribe-button">구독</div>
-                                        : <div className="subscribe-button">구독 취소</div>} */}
-                                </div> : ''}
                             </div>
                             <div className="top-icon-setting" onClick={onUpdateButtonHandler}></div>
                         </div>
                         <div className="mypage-id">@{signInUser?.userId}</div>
                         <div className="mypage-info-bottom">
-                            <div className="mypage-user">구독자 <strong>28</strong></div>
+                            <div className="mypage-user">구독자 <strong>{signInUser?.subscribersCount}</strong></div>
                             <div className="mypage-user">토론방 <strong>{discussionList.length}</strong></div>
                         </div>
                         <div className="mypage-state-message">{signInUser?.statusMessage}</div>
-
                     </div>
-
-                    {!isUser ? <div className="subscribe-button-box" onClick={onSubscribeButtonHandler}>
-
-                    </div> : ''}
                 </div>
 
                 <div className="mypage-discussion-room-top">
                     <div className="mypage-discussion-room">내가 개설한 토론방</div>
-                    <div className="discussion-state-box" onClick={onStateTypeButtonHandler}>진행중
-                        {stateType && <div className="state-type-box" >
-                            <div className="state-type">진행중</div>
-                            <div className="state-type">마감</div>
-                        </div>}
+                    <div className="discussion-state-box" ref={dropdownRef}>
+                        <div className="selected-state" onClick={toggleDropdown}>{stateType} ▼</div>  
+                        {isDropdownOpen && (
+                            <div className="dropdown-menu">
+                                <div className="dropdown-item" onClick={() => onStateTypeSelect("진행 중")}>진행 중</div>
+                                <div className="dropdown-item" onClick={() => onStateTypeSelect("마감")}>마감</div>
+                            </div>
+                        )}
                     </div>
                 </div>
 
-                {discussionList.map((discussion) => <RoomList key={discussion.roomId} discussion={discussion}/>)}
-                {/*  */}
+                {filteredDiscussions.map((discussion) => (<RoomList key={discussion.roomId} discussion={discussion}/>))}
                 
             </div>
         </div>

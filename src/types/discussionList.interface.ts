@@ -13,4 +13,6 @@ export default interface DiscussionList {
     updateStatus:boolean;
     commentCount:number;
     likeCount:number;
+
+    userId: string;
 }

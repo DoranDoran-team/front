@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import './style.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ACCESS_TOKEN, MY_PATH } from '../../../constants';
 import { useSignInUserStore } from '../../../stores';
 import PatchProfileRequestDto from '../../../apis/dto/request/mypage/myInfo/patch-profile.request.dto';
@@ -80,15 +80,29 @@ export default function Update() {
             const formData = new FormData();
             formData.append('file', storeImageUrl);
             url = await fileUploadRequest(formData);
+            //if(url) setPreviewUrl(url);
         }
 
-        const requestBody: PatchProfileRequestDto = {
-            nickName: nickname,
-            profileImage: url,
-            statusMessage: stateMessage,
+        if(url) {
+            // 새로운 프로필 이미지 등록
+            const requestBody: PatchProfileRequestDto = {
+                nickName: nickname,
+                profileImage: url,
+                statusMessage: stateMessage,
+            }
+            console.log(requestBody);
+            patchProfileRequest(requestBody, accessToken).then(patchProfileResponse);
+
+        } else {
+            // 기존의 프로필 이미지 유지
+            const requestBody: PatchProfileRequestDto = {
+                nickName: nickname,
+                profileImage: signInUser.profileImage,
+                statusMessage: stateMessage,
+            }
+            console.log(requestBody);
+            patchProfileRequest(requestBody, accessToken).then(patchProfileResponse);
         }
-        console.log(requestBody);
-        patchProfileRequest(requestBody, accessToken).then(patchProfileResponse);
     }
 
     // function: 프로필 수정 완료 처리 함수 //

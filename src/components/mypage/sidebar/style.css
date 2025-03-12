@@ -84,8 +84,10 @@
 
 .subscribe-box {
     display: flex;
-    gap: 10px;
     align-items: center;
+    gap: 10px;
+    width: 100%;
+    justify-content: space-between;
 }
 
 .subscribe-image {
@@ -102,9 +104,19 @@
     height: 30px;
     border: 1px solid rgba(255, 7, 7, 1);
     border-radius: 15px;
-    margin-left: 30px;
+    cursor: pointer;
 }
 
+.subscribe-cancel-button:hover {
+    width: 70px;
+    height: 30px;
+    border: 1px solid rgba(255, 7, 7, 1);
+    border-radius: 15px;
+    cursor: pointer;
+    background-color: rgba(255, 7, 7, 1);
+}
+
+/* ✅ 구독 취소 텍스트 */
 .subscribe-cancel {
     font-weight: bold;
     font-size: 13px;
@@ -199,5 +211,13 @@
 
 .search-subscribe-button:hover {
     background-color: #0095f6;
+    color: white;
+}
+.subscribe-cancel:hover {
+    font-weight: bold;
+    font-size: 13px;
+    text-align: center;
+    color: rgba(255, 7, 7, 1);
+    margin: 6px 0px;
     color: white;
 }

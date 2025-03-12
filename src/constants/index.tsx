@@ -23,19 +23,21 @@ export const NOTICE_PATCH = (noticeNumber: string | number) => `patch/${noticeNu
 
 export const SCHEDULE = '/schedule';
 
+// 마이페이지 관련 url
 export const MY_PATH = '/mypage';
-export const MY_UPDATE_PATH = (userId: string | number) => `${userId}/update`;
+export const MY_UPDATE_PATH = `update`;
 export const MY_ATTENDANCE_CHECK_PATH = 'attendance';
 export const MY_MILEAGE_PATH = 'mileage';
 export const MY_ACCOUNT_MANAGEMENT_PATH = 'account-management';
 export const MY_MILEAGE_REQUEST_PATH = '/request';
+export const ANOTHER_USER_PROFILE = 'profile';
 
 export const ADMIN_PATH = '/admin';
 export const ADMIN_ACCUSE_PATH = 'accuse';
 export const ADMIN_MILEAGE_PATH = 'mileage';
 
-export const MY_INFO_PW_PATH = (userId: string | number) => `${userId}/pw-check`;
-export const MY_INFO_UPDATE_PATH = (userId: string | number) => `${userId}/change-info`;
+export const MY_INFO_PW_PATH = `pw-check`;
+export const MY_INFO_UPDATE_PATH = `change-info`;
 
 export const SNS_SUCCESS_PATH = '/sns-success';
 export const OTHERS_PATH = '*';
@@ -68,9 +70,10 @@ export const NOTICE_PATCH_ABSOLUTE_PATH = (noticeNumber: string | number) => `${
 export const SCHEDULE_ABSOLUTE_PATH = SCHEDULE;
 
 export const MY_ABSOLUTE_PATH = MY_PATH;
-export const MY_ABSOLUTE_UPDATE_PATH = (userId: string | number) => `${MY_PATH}/${MY_UPDATE_PATH(userId)}`
-export const MY_INFO_PW_ABSOLUTE_PATH = (userId: string | number) => `${MY_PATH}/${MY_INFO_PW_PATH(userId)}`;
-export const MY_INFO_UPDATE_ABSOLUTE_PATH = (userId: string | number) => `${MY_PATH}/${MY_INFO_UPDATE_PATH(userId)}`;
+export const MY_ABSOLUTE_UPDATE_PATH = `${MY_PATH}/${MY_UPDATE_PATH}`
+export const MY_INFO_PW_ABSOLUTE_PATH = `${MY_PATH}/${MY_INFO_PW_PATH}`;
+export const MY_INFO_UPDATE_ABSOLUTE_PATH = `${MY_PATH}/${MY_INFO_UPDATE_PATH}`;
+export const ANOTHER_USER_PROFILE_ABSOULTE_PATH = `${MY_PATH}/${ANOTHER_USER_PROFILE}`;
 
 export const ADMIN_ABSOULTE_PATH = ADMIN_PATH;
 export const ADMIN_ABSOLUTE_ACCUSE_PATH = `${ADMIN_PATH}/${ADMIN_ACCUSE_PATH}`
@@ -83,3 +86,4 @@ export const MY_ABSOLUTE_ATTENDANCE_CHECK_PATH =  `${MY_PATH}/${MY_ATTENDANCE_CH
 
 // variable: HTTP BEARER TOKEN COOKIE NAME //
 export const ACCESS_TOKEN = 'accessToken';
+export const SELECTED_USER = 'selectedUser';
