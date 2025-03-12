@@ -41,7 +41,7 @@ export default function Admin() {
     const onSortOptionClickHandler = (option: string) => {
         setSortingState({
             selected: option,
-            
+
         })
         setToggleDown(!toggleDown)
     }
@@ -106,7 +106,7 @@ export default function Admin() {
                 <div className="user-box">
                     <div className="main-profile" style={{ backgroundImage: `url(${profileUrl})` }}></div>
                     <div className="mypage-info">
-                        <div className="mypage-nickname">{signInUser?.name}</div>
+                        <div className="mypage-nickname">{signInUser?.name} - 관리자</div>
                         <div className="mypage-id">@ {signInUser?.userId}</div>
                         <div className="mypage-state-message" style={{marginTop: "20px"}}>관리자 계정 입니다. </div>
                     </div>
@@ -152,9 +152,9 @@ export default function Admin() {
                             <div className="discussion-bottom-box">
                                 <div className="discussion-created">20204.12.30 16:30</div>
                                 <div className="discussion-fixed">(수정됨)</div>
-                                <div className={`discussion-state-box ${sortingState.selected === '진행중' ? 'continue': sortingState.selected === '마감'? 'end': 'continue'}`}>
-                                    <div className="discussion-state ">{sortingState.selected === '진행중' ? '진행중': sortingState.selected === '마감'? '마감': '진행중'}</div>
-                                </div> 
+                                <div className={`discussion-state-box ${sortingState.selected === '진행중' ? 'continue' : sortingState.selected === '마감' ? 'end' : 'continue'}`}>
+                                    <div className="discussion-state ">{sortingState.selected === '진행중' ? '진행중' : sortingState.selected === '마감' ? '마감' : '진행중'}</div>
+                                </div>
                             </div>
                             <div className="discussion-icons">
                                 <div className="discussion-participants-icon"></div>
@@ -162,7 +162,7 @@ export default function Admin() {
                             </div>
                         </div>
                     </div>
-                </div> 
+                </div>
             </div>
         </div>
     )

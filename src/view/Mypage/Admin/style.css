@@ -92,7 +92,7 @@
 .mypage-discussion-room-top .magnifier-and-search-input {
     display: flex;
     flex: 1;
-    width: 100%;
+    width: 400px;
 }
 
 .mypage-discussion-room-top .search-input {

@@ -69,6 +69,7 @@ const PATCH_PASSWORD_API_URL = `${AUTH_MODULE_URL}/change-pw`;
 // 토론방 API URL //
 const WRITE_GENENRAL_DISCUSSION_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}/write`;
 const GET_GENENRAL_DISCUSSION_LIST_API_URL = `${GENERAL_DISCUSSION_MODULE_URL}`;
+const GET_KEYWORD_GENERAL_DISCUSSION_LIST = (keyword: string) => `${GENERAL_DISCUSSION_MODULE_URL}/search?keyword=${keyword}`;
 
 const GET_GENERAL_DISCUSSION_API_URL = (roomId: number | string) => `${GENERAL_DISCUSSION_MODULE_URL}/${roomId}`;
 
@@ -82,7 +83,7 @@ const DELETE_COMMENT_API_URL = (roomId: number | string, commentId: number | str
 const POST_ACCUSE_URL = `${DORANDORAN_API_DOMAIN}/accuse`;
 const GET_ACCUSE_LIST_URL = (userId: string) => `${DORANDORAN_API_DOMAIN}/accuse?userId=${userId}`;
 const GET_ACCUSE_URL = (accuseId: number) => `${DORANDORAN_API_DOMAIN}/accuse/${accuseId}`;
-const GET_ACCUSE_USER_LIST = (keyword: string) => `${DORANDORAN_API_DOMAIN}/accuse/user?keyword=${keyword}`
+const GET_ACCUSE_USER_LIST = (keyword: string) => `${DORANDORAN_API_DOMAIN}/accuse/user?keyword=${keyword}`;
 const PATCH_ACCUSE_APROVED = (accuseId: number) => `${DORANDORAN_API_DOMAIN}/accuse/approve/${accuseId}`;
 const PATCH_ACCUSE_REJECTED = (accuseId: number) => `${DORANDORAN_API_DOMAIN}/accuse/rejected/${accuseId}`;
 
@@ -249,6 +250,13 @@ export const getDiscussionListRequest = async (accessToken: string) => {
     return responseBody;
 }
 
+// function: 일반 토론방 검색어 get discussionList 요청 함수 //
+export const getSearchDiscussionListRequest = async (keyword: string, accessToken: string) => {
+    const responseBody = await axios.get(GET_KEYWORD_GENERAL_DISCUSSION_LIST(keyword), bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
 
 // function: 토론방 상세보기 get discussion 요청 함수 //
 export const getDiscussionRequest = async (roomId: number | string, accessToken: string) => {
@@ -415,7 +423,7 @@ export const getNotifications = async (accessToken: string, page: number = 1) =>
 
         return response.data;
     } catch (error) {
-        console.error("🚨 Error fetching notifications:", error);
+        console.error("알림 목록 조회 실패:", error);
         return [];
     }
 };
@@ -434,7 +442,7 @@ export const markNotificationAsRead = async (notificationId: number, accessToken
         );
         return response.data as ResponseDto;
     } catch (error) {
-        console.error("🚨 Error marking notification as read:", error);
+        console.error("알림 읽음 처리 실패", error);
         return null;
     }
 };
@@ -446,7 +454,7 @@ export const getAccounts = async (accessToken: string): Promise<GetAccountsRespo
         const response = await axios.get(`${ACCOUNT_MANAGEMENT_API_URL}`, bearerAuthorization(accessToken));
         return response.data;
     } catch (error) {
-        console.error("Error", error);
+        console.error("계좌 목록 조회 실패", error);
         return null;
     }
 };
@@ -467,14 +475,15 @@ export const deleteAccount = async (accountNumber: string, accessToken: string) 
     return response.data;
 };
 
-// function: get search user 요청 함수 //
+
+// function: 사용자 검색 GET 요청 함수 //
 export const searchUsersRequest = async (keyword: string, accessToken: string) => {
     const url = `${USER_API_URL}/search?keyword=${encodeURIComponent(keyword)}`;
 
     const responseBody = await axios.get(url, bearerAuthorization(accessToken))
         .then(responseDataHandler<GetSearchUserListResponseDto>)
         .catch(responseErrorHandler);
-    
+
     return responseBody;
 };
 
@@ -486,7 +495,7 @@ export const getAttendanceRecordsRequest = async (accessToken: string) => {
             .catch(responseErrorHandler);
         return responseBody;
     } catch (error) {
-        console.error("출석체크 조회 API 에러", error);
+        console.error("출석체크 기록 조회 실패", error);
         return null;
     }
 };
@@ -499,7 +508,29 @@ export const checkAttendanceRequest = async (accessToken: string) => {
             .catch(responseErrorHandler);
         return responseBody;
     } catch (error) {
-        console.error("출석체크 API 에러", error);
+        console.error("출석체크 실패", error);
+        return null;
+    }
+};
+
+// function: (관리자) 생일 마일리지 지급 POST 요청 함수 //
+export const awardBirthdayBonus = async (accessToken: string) => {
+    try {
+        const response = await axios.post(`${ADMIN_MILEAGE_API_URL}/birthday`, {}, bearerAuthorization(accessToken));
+        return response.data;
+    } catch (error) {
+        console.error("생일 마일리지 지급 오류:", error);
+        return null;
+    }
+};
+
+// function: 알림 삭제 요청 함수 //
+export const deleteNotification = async (notificationId: number, accessToken: string) => {
+    try {
+        const response = await axios.delete(`${NOTIFICATION_API_URL}/${notificationId}`, bearerAuthorization(accessToken));
+        return response.data;
+    } catch (error) {
+        console.error("알림 삭제 오류:", error);
         return null;
     }
 };

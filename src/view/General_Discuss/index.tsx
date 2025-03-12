@@ -8,11 +8,12 @@ import { usePagination } from "../../hooks";
 
 import { useCookies } from "react-cookie";
 import ResponseDto from "../../apis/dto/response/response.dto";
-import { getDiscussionListRequest } from "../../apis";
+import { getDiscussionListRequest, getSearchDiscussionListRequest } from "../../apis";
 import Pagination from "../../components/pagination";
 import { GetDiscussionListResponseDto } from "../../apis/dto/response/gd_discussion";
 import { useSignInUserStore } from "../../stores";
 
+const DEBOUNCE_DELAY = 200; // 0.2초 (200ms)
 
 interface TableRowProps {
     discussionList: DiscussionList
@@ -51,10 +52,12 @@ function TableRow({ discussionList, getDiscussionList }: TableRowProps) {
             <div className='main-box' onClick={onDiscussionClickHandler}>
                 <div className="box1" onClick={onProfileClickHandler}>
                     <div>
-                    <div className="profile-image"
-                        style={{backgroundImage: `url(${discussionList.profileImage ? 
-                            discussionList.profileImage : '/defaultProfile.png'})`}}
-                    ></div>
+                        <div className="profile-image"
+                            style={{
+                                backgroundImage: `url(${discussionList.profileImage ?
+                                    discussionList.profileImage : '/defaultProfile.png'})`
+                            }}
+                        ></div>
                     </div>
                     <div className='user-nickname'>{discussionList.nickName}</div>
                 </div>
@@ -156,10 +159,10 @@ export default function GD() {
         }
 
         const { discussionList } = responseBody as GetDiscussionListResponseDto
-        console.log(discussionList);
         setTotalList(discussionList);
         setOriginalList(discussionList);
     }
+
     // function: 일반 토론방 list 불러오기 함수 //
     const getDiscussionList = () => {
         const accessToken = cookies[ACCESS_TOKEN];
@@ -174,12 +177,12 @@ export default function GD() {
     // event handler: 토론방 카테고리 클릭 이벤트 처리 //
     const onCategoryHandler = (type: string) => {
         setCategory(type);
+        setSearched('');
     }
 
     // event handler: 검색어 변경 이벤트 처리 //
     const onSearchedChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-        const { value } = event.target;
-        setSearched(value);
+        setSearched(event.currentTarget.value);
     }
 
     // event handler: 검색 버튼 클릭 이벤트 처리 //
@@ -189,6 +192,26 @@ export default function GD() {
         initViewList(searchedDiscussionList);
     }
 
+    // effect: autoSerchVisible GET 요청 //
+    useEffect(() => {
+
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) {
+            alert('토큰 오류');
+            return;
+        }
+
+        const handler = setTimeout(() => {
+
+            getSearchDiscussionListRequest(searched, accessToken)
+                .then(getDiscussionListResponse);
+        }, DEBOUNCE_DELAY);
+
+        return () => {
+            clearTimeout(handler);
+        };
+
+    }, [searched]);
 
     // effect: 컴포넌트 로드시 일반 토론방 리스트 불러오기 함수 //
     useEffect(getDiscussionList, []);
@@ -212,7 +235,7 @@ export default function GD() {
                                     <span>{type}</span>
                                 </div>
                             ))}
-                        </div> 
+                        </div>
                         <div className="search-bar-and-sequence">
                             <div className='search-bar'>
                                 <div className="magnifier-and-search-input">

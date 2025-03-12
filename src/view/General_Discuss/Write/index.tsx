@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import './style.css';
 import { ACCESS_TOKEN, GEN_DISC_ABSOLUTE_PATH } from '../../../constants';
 import Modal from '../../../components/modal';
@@ -13,7 +13,7 @@ import { access } from 'fs';
 export default function GDWrite() {
 
     const defaultProfileImageUrl = 'https://blog.kakaocdn.net/dn/4CElL/btrQw18lZMc/Q0oOxqQNdL6kZp0iSKLbV1/img.png';
-    
+
     const [firstOpinion, setFirstOpinion] = useState<string>('');
     const [secondOpinion, setSecondOpinion] = useState<string>('');
     const [title, setTitle] = useState<string>('');
@@ -24,14 +24,15 @@ export default function GDWrite() {
     const [showModal, setShowModal] = useState<boolean>(false);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [cookies] = useCookies();
-    const {signInUser} = useStore();
+    const { signInUser } = useStore();
+    const modalBackground = useRef<HTMLDivElement | null>(null);
 
     // state: params 상태 관리 //
     const { roomId } = useParams();
 
     // function: navigator 함수 처리 //
     const navigator = useNavigate();
-    
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const first = firstOpinion || '찬성';
@@ -61,11 +62,11 @@ export default function GDWrite() {
 
     // function: 일반 토론방 작성 response 처리 함수 //
     const writeDiscussionResponse = (responseBody: ResponseDto | null) => {
-        const message = 
-            !responseBody ? '서버에 문제가 있습니다. ':
-            responseBody.code === "VF" ? '값을 모두 입력하세요 ':
-            responseBody.code === "DBE" ? '서버에 문제가 있습니다. ':
-            responseBody.code === "AF" ? '서버에 문제가 있습니다.' : '';
+        const message =
+            !responseBody ? '서버에 문제가 있습니다. ' :
+                responseBody.code === "VF" ? '값을 모두 입력하세요 ' :
+                    responseBody.code === "DBE" ? '서버에 문제가 있습니다. ' :
+                        responseBody.code === "AF" ? '서버에 문제가 있습니다.' : '';
 
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
@@ -76,9 +77,9 @@ export default function GDWrite() {
     }
 
     // event handler: 게시하기 버튼 클릭 이벤트 처리//
-    const onRegisterClickHandler = async() => {
+    const onRegisterClickHandler = async () => {
         const accessToken = cookies[ACCESS_TOKEN];
-        if(!accessToken) return;
+        if (!accessToken) return;
 
         if (!signInUser) return;
 
@@ -92,9 +93,9 @@ export default function GDWrite() {
 
         const requestBody: PostDiscussionWirteRequestDto = {
 
-            userId:signInUser.userId, discussionType:category, roomTitle:title,
-            roomDescription:content, discussionImage:url, discussionEnd:deadline, 
-            agreeOpinion:firstOpinion, oppositeOpinion:secondOpinion
+            userId: signInUser.userId, discussionType: category, roomTitle: title,
+            roomDescription: content, discussionImage: url, discussionEnd: deadline,
+            agreeOpinion: firstOpinion, oppositeOpinion: secondOpinion
         };
         postDiscussionRequest(requestBody, accessToken).then(writeDiscussionResponse);
     }
@@ -189,12 +190,15 @@ export default function GDWrite() {
             </div>
 
             {showModal && (
-                <Modal 
-                content="게시하시겠습니까?" 
-                lt_btn='아니요' 
-                rt_btn='예' 
-                lt_handler={()=>setShowModal(false)} 
-                rt_handler={onRegisterClickHandler}/>
+                <Modal
+                    content="게시하시겠습니까?"
+                    lt_btn="아니요"
+                    rt_btn="예"
+                    lt_handler={() => setShowModal(false)}
+                    rt_handler={onRegisterClickHandler}
+                    modalOpen={showModal}
+                    setModalOpen={setShowModal}
+                />
             )}
         </div>
     );
