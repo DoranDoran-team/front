@@ -15,6 +15,7 @@ export default function GDWrite() {
     const defaultProfileImageUrl = 'https://blog.kakaocdn.net/dn/4CElL/btrQw18lZMc/Q0oOxqQNdL6kZp0iSKLbV1/img.png';
 
     const [firstOpinion, setFirstOpinion] = useState<string>('찬성');
+    const [secondOpinion, setSecondOpinion] = useState<string>('반대');
 
     const [title, setTitle] = useState<string>('');
     const [content, setContent] = useState<string>('');

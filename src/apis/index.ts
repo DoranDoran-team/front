@@ -92,7 +92,6 @@ const POST_LIKE_API_URL = (targetId:number , likeType: string ) => `${LIKE_MODUL
 const DELETE_LIKE_API_URL = (targetId:number , likeType: string ) => `${LIKE_MODULE_URL}/${targetId}/${likeType}`; 
 const GET_LIKE_API_URL = (roomId:number) => `${LIKE_MODULE_URL}/${roomId}`;
 
-=======
 //* ============= 신고
 
 const POST_ACCUSE_URL = `${DORANDORAN_API_DOMAIN}/accuse`;
@@ -349,7 +348,6 @@ export const getLikeRequest = async(roomId:number, userId:string, accessToken:st
     return responseBody;
 }
 
-=======
 // function: POST 신고 요청 함수 //
 export const postAccuseRequest = async (requestBody: PostAccuseRequestDto, accessToken: string) => {
     const reseponseBody = await axios.post(POST_ACCUSE_URL, requestBody, bearerAuthorization(accessToken))

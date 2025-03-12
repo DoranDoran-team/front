@@ -6,7 +6,7 @@ import Comment from '../../../types/Comment.interface';
 import PostCommentRequestDto from '../../../apis/dto/request/comment/post-comment.request.dto';
 import { useNavigate, useParams } from 'react-router';
 import { useCookies } from 'react-cookie';
-import { ACCESS_TOKEN, GEN_DISC_ABSOLUTE_PATH } from '../../../constants';
+import { ACCESS_TOKEN, ANOTHER_USER_PROFILE_ABSOULTE_PATH, GEN_DISC_ABSOLUTE_PATH, MY_PATH } from '../../../constants';
 import ResponseDto from '../../../apis/dto/response/response.dto';
 import { GetDiscussionResponseDto } from '../../../apis/dto/response/gd_discussion';
 import DiscussionData from '../../../types/discussionData.interface';
@@ -26,15 +26,13 @@ interface commentProps {
     click: {[key: number]: boolean}
 }
 
-
-function Comments({ comment, depth }: commentProps) {
+function Comments({ comment, depth, getDiscussion, postLike, click }: commentProps) {
     const { roomId } = useParams();
     const [cookies] = useCookies();
     const [commentOptions, setCommentOptions] = useState<{ [key: number]: boolean }>({});
     const [newReply, setNewReply] = useState<string>('');
     const [replyTo, setReplyTo] = useState<number | null>(null);
     const [subReplyTo, setSubReplyTo] = useState<number | null>(null);
-    const [nestedReplyTo, setNestedReplyTo] = useState<number | null>(null);
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const [editCotents, setEditContents] = useState<{ [key: number]: boolean }>({});
     const { signInUser } = useSignInUserStore();
@@ -171,10 +169,9 @@ function Comments({ comment, depth }: commentProps) {
 
         await postCommentRequest(requestBody, roomId, accessToken).then(postCommentResponse);
         setNewReply('');
-        if (replyTo || subReplyTo || nestedReplyTo) {
+        if (replyTo || subReplyTo) {
             setReplyTo(null);
             setSubReplyTo(null);
-            setNestedReplyTo(null);
         }
         await getDiscussion();
     };
@@ -185,6 +182,7 @@ function Comments({ comment, depth }: commentProps) {
         [comment.commentId]: true,
         }))
     },[])
+
     // 댓글 프로필 클릭 후 마이페이지 이동 //
     const onCommentClickHandler = (event: MouseEvent<HTMLDivElement>) => {
         if(signInUser?.userId === comment.userId) navigator(MY_PATH);
@@ -228,26 +226,9 @@ function Comments({ comment, depth }: commentProps) {
                                         <div className='dropdown-item' onClick={() => editContentsHandler(comment.commentId)}>수정하기</div>
                                         <div className='dropdown-item' onClick={() => handleDeleteComment(comment.commentId)}>삭제하기</div>
                                     </div>
-                                    {commentOptions[comment.commentId] && (
-                                        <div className='dropdown-menu-box'>
-                                            <div className='dropdown-menu'>
-                                                <div className='dropdown-item' onClick={() => editContentsHandler(comment.commentId)}>수정하기</div>
-                                                <div className='dropdown-item' onClick={() => handleDeleteComment(comment.commentId)}>삭제하기</div>
-                                            </div>
-                                        </div>
-                                    )}
                                 </div>
                             )}
-                        </div>
-                        <div className="comment-content">
-                            {comment.deleteStatus ? '삭제된 메세지 입니다.' : comment.contents}
-                        </div>
-                        {!comment.deleteStatus && (
-                            <div className="reply">
-                                <span onClick={() => setReplyTo(comment.commentId)}>댓글 쓰기</span>
-                            </div>
-                        )}
-                        <hr />
+                        </div>}
                     </div>
                         <div className="comment-content">{comment.deleteStatus ? '삭제된 메세지 입니다. ' : comment.contents}</div>
                         {!comment.deleteStatus && <div className="reply"><span onClick={() => setReplyTo(comment.commentId)}>댓글 쓰기</span></div>}
@@ -259,10 +240,30 @@ function Comments({ comment, depth }: commentProps) {
                 </div> : 
                 <div className='reply-box' style={{ marginLeft: '20px', marginRight: '0' }}>
                         <div className='reply-textarea-and-button'>
-                            <MentionInput value={newReply} onChange={setNewReply} />
+                        <MentionInput value={newReply} onChange={setNewReply} />
+                            <textarea
+                                className='input-reply-text'
+                                placeholder={comment.contents}
+                                value={newReply}
+                                onChange={(e) => setNewReply(e.target.value)}
+                            />
                             <div className='comment-button-box'>
                                 <button className='comment-button' type='button' onClick={() => editContentsHandler(comment.commentId)}>취소</button>
                                 <button className='comment-button' type='button' onClick={() => handleEditComment(comment.commentId)}>수정하기</button>
+                            </div>
+                        </div>
+                </div>}
+                {replyTo === comment.commentId && (
+                    <div className='reply-box' style={{ marginLeft: '20px', marginRight: '0' }}>
+                        <div className='reply-textarea-and-button'>
+                            <textarea
+                                className='input-reply-text'
+                                placeholder='댓글을 입력해주세요. '
+                                onChange={(e) => setNewReply(e.target.value)}
+                            />
+                            <div className='comment-button-box'>
+                                <button className='comment-button' type='button' onClick={()=>setReplyTo(null)}>취소</button>
+                                <button className='comment-button' type='button' onClick={() => handleReplySubmit(comment.commentId)}>작성하기</button>
                             </div>
                         </div>
                     </div>
@@ -300,42 +301,23 @@ function Comments({ comment, depth }: commentProps) {
                                                 <div className='dropdown-menu'>
                                                     <div className='dropdown-item' onClick={() => editContentsHandler(reply.commentId)}>수정하기</div>
                                                     <div className='dropdown-item' onClick={() => handleDeleteComment(reply.commentId)}>삭제하기</div>
-
                                                 </div>
-                                                {discussionId === reply.userId ? (
-                                                    <div className='comment-option' onClick={() => toggleCommentOptions(reply.commentId)}>⋮</div>
-                                                ) : (
-                                                    <div className='siren-button' onClick={() => openReportModal()}></div>
-                                                )}
-                                                {commentOptions[reply.commentId] && (
-                                                    <div className='dropdown-menu-box'>
-                                                        <div className='dropdown-menu'>
-                                                            <div className='dropdown-item' onClick={() => editContentsHandler(reply.commentId)}>수정하기</div>
-                                                            <div className='dropdown-item' onClick={() => handleDeleteComment(reply.commentId)}>삭제하기</div>
-                                                        </div>
-                                                    </div>
-                                                )}
                                             </div>
                                         )}
-                                    </div>
-                                </div>
-                                <div className="comment-content">
-                                    {reply.deleteStatus ? '삭제된 메세지 입니다.' : reply.contents}
-                                </div>
-                                {!reply.deleteStatus && (
-                                    <div className="reply">
-                                        <span onClick={() => setSubReplyTo(comment.commentId)}>댓글 쓰기</span>
-                                    </div>
-                                )}
-                                <hr />
+                                    </div>}
                             </div>
-
+                            </div>
                             <div className="comment-content">{reply.deleteStatus ? '삭제된 메세지 입니다. ': reply.contents}</div>
                             <hr/>
                         </div> : 
                             <div className='reply-box' style={{ marginLeft: '20px', marginRight: '0' }}>
                                 <div className='reply-textarea-and-button'>
-                                    <MentionInput value={newReply} onChange={setNewReply} />
+                                <MentionInput value={newReply} onChange={setNewReply} />
+                                    <textarea
+                                        className='input-reply-text'
+                                        placeholder={reply.contents}
+                                        onChange={(e) => setNewReply(e.target.value)}
+                                    />
                                     <div className='comment-button-box'>
                                         <button className='comment-button' type='button' onClick={() => editContentsHandler(reply.commentId)}>취소</button>
                                         <button className='comment-button' type='button' onClick={() => handleEditComment(reply.commentId)}>수정하기</button>
@@ -348,97 +330,8 @@ function Comments({ comment, depth }: commentProps) {
             {(!seeMoreBrt[comment.commentId] && isReplies) ? <div className='see-more' onClick={()=>onSeeMoreBrtClickHandler(comment.commentId)}>
                         접기
                     </div> : ''}
-                            </div>
-                        )}
-                        {subReplyTo === comment.commentId && (
-                            <div className='reply-box' style={{ marginLeft: (reply.depth) * 20 + "px", marginRight: '0' }}>
-                                <div className='reply-textarea-and-button'>
-                                    <MentionInput value={newReply} onChange={setNewReply} />
-                                    <div className='comment-button-box'>
-                                        <button className='comment-button' type='button' onClick={() => setSubReplyTo(null)}>취소</button>
-                                        <button className='comment-button' type='button' onClick={() => handleReplySubmit(reply.commentId)}>작성하기</button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                        {reply.replies &&
-                            reply.replies.map((nestedReply) => (
-                                <div key={nestedReply.commentId} className="reply" style={{ marginLeft: (nestedReply.depth) * 20 + "px" }}>
-                                    {!editCotents[nestedReply.commentId] ? (
-                                        <div className='reply-item-box'>
-                                            <div className="comment-user-info">
-                                                <div className='comment-user'>
-                                                    <div className="profile-image"></div>
-                                                    <div>
-                                                        <div className='comment-user-nickname'>{nestedReply.nickName}</div>
-                                                        <div className='comment-date-and-modify'>
-                                                            <div className="comment-date">{nestedReply.createdAt}</div>
-                                                            <div className="modify">{nestedReply.updateStatus ? '(수정됨)' : ''}</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    {!nestedReply.deleteStatus && (
-                                                        <div className='reply-option'>
-                                                            <div className='comment-recommendation-icon-and-count'>
-                                                                <div className='recommendation-icon'></div>
-                                                                <div className='recommendation-count'>8</div>
-                                                            </div>
-                                                            {discussionId === nestedReply.userId ? (
-                                                                <div className='comment-option' onClick={() => toggleCommentOptions(nestedReply.commentId)}>⋮</div>
-                                                            ) : (
-                                                                <div className='siren-button' onClick={() => openReportModal()}></div>
-                                                            )}
-                                                            {commentOptions[nestedReply.commentId] && (
-                                                                <div className='dropdown-menu-box'>
-                                                                    <div className='dropdown-menu'>
-                                                                        <div className='dropdown-item' onClick={() => editContentsHandler(nestedReply.commentId)}>수정하기</div>
-                                                                        <div className='dropdown-item' onClick={() => handleDeleteComment(nestedReply.commentId)}>삭제하기</div>
-                                                                    </div>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                            <div className="comment-content">
-                                                {nestedReply.deleteStatus ? '삭제된 메세지 입니다.' : nestedReply.contents}
-                                            </div>
-                                            {!nestedReply.deleteStatus && (
-                                                <div className="reply">
-                                                    <span onClick={() => setNestedReplyTo(comment.commentId)}>댓글 쓰기</span>
-                                                </div>
-                                            )}
-                                            <hr />
-                                        </div>
-                                    ) : (
-                                        <div className='reply-box' style={{ marginLeft: '20px', marginRight: '0' }}>
-                                            <div className='reply-textarea-and-button'>
-                                                <MentionInput value={newReply} onChange={setNewReply} />
-                                                <div className='comment-button-box'>
-                                                    <button className='comment-button' type='button' onClick={() => editContentsHandler(nestedReply.commentId)}>취소</button>
-                                                    <button className='comment-button' type='button' onClick={() => handleEditComment(nestedReply.commentId)}>수정하기</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                    {nestedReplyTo === comment.commentId && (
-                                        <div className='reply-box' style={{ marginLeft: (nestedReply.depth ?? 1) * 20 + "px", marginRight: '0' }}>
-                                            <div className='reply-textarea-and-button'>
-                                                <MentionInput value={newReply} onChange={setNewReply} />
-                                                <div className='comment-button-box'>
-                                                    <button className='comment-button' type='button' onClick={() => setNestedReplyTo(null)}>취소</button>
-                                                    <button className='comment-button' type='button' onClick={() => handleReplySubmit(nestedReply.commentId)}>작성하기</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                    </div>
-                ))}
         </div>
-    );
+    )
 }
 
 // interface: 투표 Props
@@ -542,9 +435,7 @@ function OpinionSelector({ agreeOpinion, oppositeOpinion, opinionAgreeUsers, opi
 export default function GDDetail() {
 
     // state: 로그인 유저 정보 상태 //
-    const { signInUser } = useSignInUserStore();
     const { signInUser, setSignInUser } = useSignInUserStore();
-    const discussionId = signInUser?.userId;
     const { roomId } = useParams();
     const [cookies] = useCookies();
     
@@ -559,6 +450,7 @@ export default function GDDetail() {
     const {category, setCategory} = useCategoryStore();
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const [commentId] = useState<number>();
+    const [commentOptions, setCommentOptions] = useState<{ [key: number]: boolean }>({});
 
     const [likeClick, setLikeClick] = useState<{[key:number]:boolean}>({}); // -> 댓글 같이 공유 타겟아이디 별 각각 상태가 적용된다 
     const [isVoted, setIsVoted] = useState<boolean>(false);
@@ -569,10 +461,6 @@ export default function GDDetail() {
     // variable: 상수 //
     const discussionId = signInUser?.userId ?? "";
     const isMaxed = comments.length > 10
-    
-
-    // function: navigator //
-    const navigator = useNavigate();
 
     // state: 원본 리스트 상태 //
     const [originalList, setOriginalList] = useState<Comment[]>([]);
@@ -656,7 +544,6 @@ export default function GDDetail() {
         await getDiscussion();
     };
 
-   
     const onUserProfileClickHandler = () => {
         if(discussionData?.userId === signInUser?.userId) navigator(MY_PATH);
         else navigator(ANOTHER_USER_PROFILE_ABSOULTE_PATH);
@@ -847,7 +734,6 @@ export default function GDDetail() {
             getVoteResult();
         }
     },[discussionData])
-    }, []);
 
     return (
         <div id="gd-detail-wrapper">
