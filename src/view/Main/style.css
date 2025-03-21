@@ -253,8 +253,9 @@
   width: 600px;
   height: 350px;
   object-fit: cover;
-  object-position: top;
+  object-position: center;
   background-size: cover;
+
 
   border: 0 none;
   vertical-align: top;

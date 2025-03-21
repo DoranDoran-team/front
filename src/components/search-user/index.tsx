@@ -64,12 +64,12 @@ export default function MentionInput({ value, onChange }: MentionInputProps) {
 
     return (
         <div className="mention-input-container">
-            <textarea
+            {/* <textarea
                 className="input-comment-text"
                 placeholder="댓글을 입력해주세요."
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-            />
+            /> */}
             {showSuggestions && suggestions.length > 0 && (
                 <div className="mention-dropdown">
                     <div className="mention-dropdown-close" onClick={() => setShowSuggestions(false)}>
