@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import './style.css';
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
-import { ACCESS_TOKEN, GEN_DISC_DETAIL_ABSOLUTE_PATH } from "../../constants";
+import { ACCESS_TOKEN, GEN_DISC_ABSOLUTE_PATH, GEN_DISC_DETAIL_ABSOLUTE_PATH } from "../../constants";
 import { getMainGenDiscListRequest } from "../../apis";
 import ResponseDto from "../../apis/dto/response/response.dto";
 import GetMainGenDiscListResponseDto from "../../apis/dto/response/main/get-main-gen-disc-list.response.dto";
 import Discussion from "../../types/main-gen-disc.interface";
+import { useCategoryStore } from "../../stores";
 
 // component: 메인 화면 컴포넌트 //
 export default function Main() {
@@ -38,6 +39,10 @@ export default function Main() {
     const [opinionBUsers, setOpinionBUsers] = useState<number>(73); // 의견 B 유저 비율
 
     const [posts, setPosts] = useState<Discussion[]>([]); // posts를 상태로 관리
+    const setCategory = useCategoryStore(state => state.setCategory);
+
+    // function: navigator //
+    const navigator = useNavigate();
 
     // event handler: 다음 게시물 전환 함수 //
     const handleNextPost = () => {
@@ -63,20 +68,10 @@ export default function Main() {
     }
 
     // event handler: 일반 토론 - 태그 클릭 이벤트 //
-    // const onGenDiscTagClickHandler = (tag: string) => {
-    //     if(tag === "시사·교양") navigator();
-    //     else if (tag === "과학") navigator();
-    //     else if (tag === "기타") navigator();
-    //     else navigator(); //경제
-    // }
-
-    // event handler: 일반 토론 제목 & 내용 클릭 이벤트 //
-    // const onTitleNContentsClickHandler = (postIndex: number) => {
-    //     navigator(GEN_DISC_DETAIL_ABSOLUTE_PATH(postIndex));
-    // }
-
-    // function: navigator //
-    const navigator = useNavigate();
+    const onCategoryClick = (category: string) => {
+        setCategory(category);  
+        navigator(GEN_DISC_ABSOLUTE_PATH);     
+    };
 
     // function: 메인 화면 일반 토론 게시글 리스트 가져오기 처리 함수 //
     const getNoticeListResponse = (responseBody: GetMainGenDiscListResponseDto | ResponseDto | null) => {
@@ -94,7 +89,6 @@ export default function Main() {
     
         const { mainGenDiscs } = responseBody as GetMainGenDiscListResponseDto;
         setPosts(mainGenDiscs);
-        //console.log(mainGenDiscs);
     }
 
     // effect: 메인 화면 일반 토론 게시글 가져오기 //
@@ -135,7 +129,8 @@ export default function Main() {
                     <div className='main-general-content'>
                         <em className="subject-tit">
                             <div>
-                                <div className="main-category">일반 토론 - {posts[postIndex]?.tag}</div>
+                                <div className="main-category" onClick={() => onCategoryClick(posts[postIndex]?.tag)}>
+                                    일반 토론 - {posts[postIndex]?.tag}</div>
                             </div>
                             <div className="arrow-circles">
                                 <div className="arrow-circle-left" onClick={handlePrevPost}></div>
@@ -143,9 +138,9 @@ export default function Main() {
                             </div>
                         </em>
                         <div className="general-news-tit">
-                            <div>{posts[postIndex]?.title}</div>
+                            <div onClick={() => onGenDiscClickHandler(posts[postIndex].roomId)}>{posts[postIndex]?.title}</div>
                         </div>
-                        <div className="general-news-content">{posts[postIndex]?.content}</div>
+                        <div className="general-news-content" onClick={() => onGenDiscClickHandler(posts[postIndex].roomId)}>{posts[postIndex]?.content}</div>
                     </div>
                 </div>
             </div>

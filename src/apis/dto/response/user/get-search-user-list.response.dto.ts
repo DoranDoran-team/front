@@ -6,6 +6,7 @@ export interface SearchUserData {
     nickName: string;
     profileImage: string | null;
     statusMessage: string | null;
+    role: boolean;
 }
 
 // /api/users/search 결과 전체

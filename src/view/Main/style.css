@@ -188,11 +188,13 @@
   -webkit-box-orient: vertical;
 
   -webkit-line-clamp: 2;
+  cursor: pointer;
 }
 
 .general-news-content {
   line-height: 30px;
   margin-top: 20px;
+  cursor: pointer;
 }
 
 .general-news-tit a {
@@ -467,6 +469,7 @@
 .main-category {
   cursor: pointer;
 }
-/* .main-category:hover {
+
+.main-category:hover {
   text-decoration: underline;
-} */
+}

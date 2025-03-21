@@ -30,8 +30,6 @@ function TableRow({ discussionList, getDiscussionList, postLike, click}: TableRo
     const { signInUser, setSignInUser } = useSignInUserStore();
     const user = signInUser?.userId ?? "";
 
-    
-
     // function: navigate 함수 처리 //
     const navigator = useNavigate();
 
@@ -47,6 +45,7 @@ function TableRow({ discussionList, getDiscussionList, postLike, click}: TableRo
     
         return endDate < today ? "마감" : "진행중";
     };
+    
     // event handler: 게시글 작성자 프로필 클릭 이벤트 처리 //
     const onProfileClickHandler = (event: MouseEvent<HTMLDivElement>) => {
         event.stopPropagation();
@@ -113,7 +112,7 @@ export default function GD() {
     // state: 쿠키 상태 //
     const [cookies] = useCookies();
     
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
     const [selectedOption, setSelectedOption] = useState<string>('정렬순');
     const [likeClick, setLikeClick] = useState<{[key:number]:boolean}>({});
     const [discussion] = useState<DiscussionList>();
@@ -146,14 +145,15 @@ export default function GD() {
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
+        console.log(isDropdownOpen);
     };
 
     const handleOptionSelect = (option: string) => {
-
+        //console.log("작동주");
         let sortedList = [...originalList];
 
         if (option === '최신순') {
-            sortedList.sort((after, before) => new Date(after.createdRoom).getTime() - new Date(before.createdRoom).getTime());
+            sortedList.sort((after, before) => new Date(before.createdRoom).getTime() - new Date(after.createdRoom).getTime());
 
         } else if (option === '추천순') {
             sortedList.sort((up, down) => down.likeCount - up.likeCount);
@@ -190,7 +190,6 @@ export default function GD() {
         const accessToken = cookies[ACCESS_TOKEN];
         if (!accessToken) return;
         await getDiscussionListRequest(accessToken).then(getDiscussionListResponse);
-    
     }
 
     // event handler: 토론방 작성 클릭 이벤트 처리 //
@@ -217,7 +216,7 @@ export default function GD() {
         initViewList(searchedDiscussionList);
     }
 
-    // event handler: 엔터키로 로그인 버튼 동작 //
+    // event handler: 엔터키로 검색 버튼 동작 //
         const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
             if (event.key === 'Enter') {
                 onSearchButtonClickHandler();
@@ -319,7 +318,7 @@ export default function GD() {
         //         [roomId]: isLiked,
         //     }));
         // }
-        console.log(likeClick);
+        //console.log(likeClick);
 
     }, [category]);
 

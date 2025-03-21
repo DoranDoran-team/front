@@ -57,24 +57,31 @@ export default function ChangeInfo() {
     const onBirthChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
         setBirth(value);
-
+        
         if (value.length === 8) {
             const year = parseInt(value.substring(0, 4), 10);
             const month = parseInt(value.substring(4, 6), 10) - 1; // 월은 0부터 시작
             const day = parseInt(value.substring(6, 8), 10);
-
+        
             const inputDate = new Date(year, month, day);
             const today = new Date();
             today.setHours(0, 0, 0, 0); // 오늘의 시간 초기화
-
+        
+            // 만 14세 이상인지 확인
+            const fourteenYearsAgo = new Date();
+            fourteenYearsAgo.setFullYear(today.getFullYear() - 14); // 현재 날짜에서 14년 전 날짜
+        
             if (inputDate > today) {
                 setBirthMessage('일치하지 않는 형식입니다.');
+                setBirthMsgBool(false);
+            } else if (inputDate > fourteenYearsAgo) {
+                setBirthMessage('만 14세 이상만 서비스를 이용할 수 있습니다.');
                 setBirthMsgBool(false);
             } else {
                 setBirthMessage('');
                 setBirthMsgBool(true);
             }
-
+        
         } else if (value.length === 0) {
             setBirthMessage('');
             setBirthMsgBool(false);
@@ -350,7 +357,6 @@ export default function ChangeInfo() {
         const onPasswordChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
             const { value } = event.target;
             setPassword(value);
-            //console.log(value);
 
             const pattern = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,13}$/;
             let isTrue = pattern.test(value);
@@ -397,11 +403,11 @@ export default function ChangeInfo() {
         const changePwResponse = (responseBody: ResponseDto | null) => {
             const message =
                 !responseBody ? '서버에 문제가 있습니다.' :
-                    responseBody.code === 'VF' ? '일치하는 정보가 없습니다.' :
-                        responseBody.code === 'AF' ? '일치하는 정보가 없습니다.' :
-                            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
-                                responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' :
-                                    responseBody.code === 'MP' ? '비밀번호가 일치하지 않습니다.' : '';
+                responseBody.code === 'VF' ? '일치하는 정보가 없습니다.' :
+                responseBody.code === 'AF' ? '일치하는 정보가 없습니다.' :
+                responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
+                responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' :
+                responseBody.code === 'MP' ? '비밀번호가 일치하지 않습니다.' : '';
 
             const isSuccessed = responseBody !== null && responseBody.code === 'SU';
 
@@ -425,7 +431,7 @@ export default function ChangeInfo() {
             <div id='modal'>
                 {modalOpen &&
                     <>
-                        <div className="modal-overlay" onClick={() => setModalOpen(false)}></div>
+                        <div className="modal-overlay-mypage" onClick={() => setModalOpen(false)}></div>
                         <div>
                             <div className='modal-container' ref={modalBackground} onClick={e => {
                                 if (e.target === modalBackground.current) { setModalOpen(false); }
@@ -489,7 +495,7 @@ export default function ChangeInfo() {
                         : ''}
 
                     <div className='changePWbtn' onClick={onChangePwBtnClickHandler}>비밀번호 변경</div>
-                    {modalOpen && <ChangePassword />}
+                    {modalOpen && <ChangePassword/>}
 
                     <div style={{ display: "flex", flexDirection: "row", marginTop: "60px" }}>
                         <div className='secession-btn' onClick={onSecesstionClickHandler}>탈퇴</div>

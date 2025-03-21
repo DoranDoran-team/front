@@ -76,7 +76,7 @@ export default function Attendance() {
               info.el.style.backgroundImage = `url(/public/mypage/attendance.png)`;
             }}
           />
-          <button onClick={handleAttendance}>출석체크</button>
+          <button className='attendance-btn' onClick={handleAttendance}>출석체크</button>
         </div>
       </div>
     </div>

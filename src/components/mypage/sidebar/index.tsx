@@ -9,8 +9,9 @@ import useNoticePagination from "../../../hooks/notice.pagination.hooks";
 import { useCookies } from "react-cookie";
 import ResponseDto from "../../../apis/dto/response/response.dto";
 import { SearchUserData } from "../../../apis/dto/response/user/get-search-user-list.response.dto";
-import { cancleFollowRequest, searchUsersRequest } from "../../../apis";
+import { cancleFollowRequest, postUserFollowRequest, searchUsersRequest } from "../../../apis";
 import { getCookie } from "../../get-user-cookie/get.user.cookie";
+import PostUserFollowRequestDto from "../../../apis/dto/request/follow/post-user-follow.request.dto";
 
 interface SubProps {
     subers: Subscribers
@@ -24,9 +25,6 @@ export default function MypageSidebar() {
 
     // state: 마이페이지 상태 //
     const [subscribe, setSubscribe] = useState<boolean>(false);
-    const [user] = useState<boolean>(false);
-    // const [stateType, setStateType] = useState<boolean>(false);
-    const [editbutton, setEditButton] = useState<boolean>(false);
     const [subscribers, setSubscribers] = useState<Subscribers[]>([]);
     const [searchWord, setSearchWord] = useState<string>('');
 
@@ -37,10 +35,6 @@ export default function MypageSidebar() {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [searchResults, setSearchResults] = useState<SearchUserData[]>([]);
     const [showResults, setShowResults] = useState<boolean>(false);
- 
-
-    // variable: 자기자신 확인 //
-    const isUser = signInUser?.userId === userId; // 로그인한 사람이 본인인지 확인
 
     // function: 네비게이터 함수 처리 //
     const navigator = useNavigate();
@@ -73,25 +67,12 @@ export default function MypageSidebar() {
         navigator(MY_ABSOLUTE_ATTENDANCE_CHECK_PATH);
     }
 
-    // event handler: 아이디 검색 입력 변경 이벤트 핸들러 //
-    const onIdChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-        const { value } = event.target;
-        setSearchWord(value);
-    };
-
     // event handler: 공지사항 검색 버튼 //
     const onSearchButtonHandler = () => {
         const searchedList = originalList.filter(notice => notice.userId.includes(searchWord));
         setTotalList(searchedList);
         initViewList(searchedList);
     };
-
-    // event handler: 엔터키로 검색 버튼 동작 //
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
-            onSearchButtonHandler();
-        }
-    }
 
     const performSearch = async (keyword: string) => {
         if (!keyword.trim()) {
@@ -154,10 +135,44 @@ export default function MypageSidebar() {
     };
 
     // event handler: 구독 버튼 클릭 시 (UI만 구현)
-    const onSubscribeButtonClick = (userId: string) => {
-        alert(`(구독 기능은 아직 미구현), ${userId} 님을(를) 구독합니다`);
+    const onSubscribeButtonClick = (event: MouseEvent<HTMLDivElement>, userId: string) => {
+        event.stopPropagation();
+        if(!accessToken || !signInUser?.userId || !userId) return;
+            
+        const requestBody : PostUserFollowRequestDto = {
+            userId: userId,
+            subscriber: signInUser.userId
+        }
+        postUserFollowRequest(requestBody, accessToken).then(postUserFollowResponse);
     };
 
+    // event handler: 게시글 작성자 프로필 클릭 이벤트 처리 //
+    const onProfileClickHandler = (event: MouseEvent<HTMLDivElement>, userId: string) => {
+        event.stopPropagation();
+        document.cookie = `selectedUser=${userId}; path=/;`;
+        navigator(ANOTHER_USER_PROFILE_ABSOULTE_PATH);
+        document.cookie = "yourCookieName=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    }
+
+    // function: 구독 후 응답 처리 함수 //
+    const postUserFollowResponse = (responseBody: ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'VF' ? '일치하는 정보가 없습니다.' :
+            responseBody.code === 'AF' ? '일치하는 정보가 없습니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' : '';
+                    
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+                    
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        } else {
+            setSubscribe(true);
+            window.location.reload();
+        }
+    }
 
     // effect: 컴포넌트 마운트 시 signInUser 확인용 //
     useEffect(() => {
@@ -165,6 +180,9 @@ export default function MypageSidebar() {
             setSubscribers(signInUser.subscribers);
         }
     }, [signInUser]);
+
+    // 일반 유저 아이디 검색, 관리자 아이디 걸러내기
+    const filteredResults = searchResults.filter(user => !user.role);
 
     //* 커스텀 훅 가져오기
     const {
@@ -263,9 +281,6 @@ export default function MypageSidebar() {
                     <div style={{display: "flex", flexDirection: "column"}}>
                         <h2 className="subscribe-title">내가 구독한 사람 {subscribers.length}명</h2>
                         <div className="subscribe-search-box">
-                            {/* <input className="input" placeholder="아이디를 입력하세요. " 
-                                value={searchWord} onChange={onIdChangeHandler} onKeyDown={handleKeyDown}/> 
-                            <div className="button active">검색</div>*/}    
                             <input
                                 className="input"
                                 placeholder="아이디를 입력하세요. "
@@ -280,28 +295,23 @@ export default function MypageSidebar() {
                         {showResults && (
                             <div className="search-dropdown">
                                 <div className="search-dropdown-close" onClick={closeDropdown}>닫기</div>
-                                {searchResults.length === 0 ? (
-                                    <div className="search-no-result">검색 결과가 없습니다.</div>
-                                ) : (
-                                    searchResults.map((user) => (
-                                        <div className="search-result" key={user.userId}>
-                                            <div
-                                                className="search-result-image"
-                                                style={{ backgroundImage: `url(${user.profileImage || ''})` }}
-                                            ></div>
-                                            <div className="search-result-text">
-                                                <div className="search-result-nickname">{user.nickName}</div>
-                                                <div className="search-result-userId">@{user.userId}</div>
+                                {filteredResults.length === 0 ? (
+                                        <div className="search-no-result">검색 결과가 없습니다.</div>
+                                    ) : (
+                                        filteredResults.map((user) => (
+                                            <div className="search-result" key={user.userId} 
+                                                onClick={(event) => onProfileClickHandler(event, user.userId)}>
+                                                <div className="search-result-image"
+                                                    style={{ backgroundImage: `url(${user.profileImage || ''})` }}></div>
+                                                <div className="search-result-text">
+                                                    <div className="search-result-nickname">{user.nickName}</div>
+                                                    <div className="search-result-userId">@{user.userId}</div>
+                                                </div>
+                                                <div className="search-subscribe-button"
+                                                    onClick={(event) => onSubscribeButtonClick(event, user.userId)}>구독</div>
                                             </div>
-                                            <div
-                                                className="search-subscribe-button"
-                                                onClick={() => onSubscribeButtonClick(user.userId)}
-                                            >
-                                                구독
-                                            </div>
-                                        </div>
-                                    ))
-                                )}
+                                        ))
+                                    )}
                             </div>
                         )}
 

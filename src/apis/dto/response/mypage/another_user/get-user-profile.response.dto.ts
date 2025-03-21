@@ -7,4 +7,5 @@ export default interface GetUserProfileResponseDto extends ResponseDto{
     statusMessage : string | '';
     myDiscussions: MyDiscussion[];
     subscribers: number;
+    role: boolean;
 }

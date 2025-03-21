@@ -166,6 +166,8 @@
     border-radius: 6px;
     transition: background-color 0.2s;
     margin-bottom: 5px;
+
+    cursor: pointer;
 }
 
 .search-result:hover {
