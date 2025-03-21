@@ -79,18 +79,29 @@
     display: flex;
 }
 
-#gd-detail-wrapper .status {
+#gd-detail-wrapper .status.active {
     font-size: 16px;
     padding: 4px 16px;
     background-color: #ABF6BE;
     border-radius: 15px;
     margin-right: 15px;
 }
+#gd-detail-wrapper .status.end {
+    font-size: 16px;
+    padding: 4px 16px;
+    background-color: #7a7d81;
+    border-radius: 15px;
+    margin-right: 15px;
+}
 
 #gd-detail-wrapper .option {
-    font-size: 24px;
-    font-weight: bold;
+    width: 20px;
+    height: 30px;
+    background-repeat: no-repeat;
+    background-position: center;
     cursor: pointer;
+    
+    background-image: url(/public/trash-icon.png);
 }
 
 #gd-detail-wrapper .discussion-info {
@@ -420,7 +431,7 @@
 }
 
 #gd-detail-wrapper .dropdown-menu {
-    width: 4.6%;
+    width: 5.4%;
     display: flex;
     flex-direction: column;
     justify-content: end;
@@ -438,7 +449,6 @@
     font-size: 14px;
     padding: 10px 15px;
     cursor: pointer;
-    /* background-image: url(/public/trash-icon.png); */
 }
 
 #gd-detail-wrapper .dropdown-item:hover {

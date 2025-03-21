@@ -115,9 +115,11 @@ export default function GD() {
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState<string>('정렬순');
-    const [likeClick, setLikeClick] = useState<{ [key: number]: boolean }>({});
-    const [discussion] = useState<DiscussionList>();
-    const roomId = discussion?.roomId ?? 0
+    const [likeClick, setLikeClick] = useState<{[key:number]:boolean}>({});
+    const {signInUser} = useSignInUserStore();
+
+    const userId = signInUser?.userId ?? "";
+
 
 
     // state: 검색어 상태 //
@@ -126,12 +128,15 @@ export default function GD() {
     // state: 원본 리스트 상태 //
     const [originalList, setOriginalList] = useState<DiscussionList[]>([]);
 
+    const [discussion]=useState<DiscussionList>()
+
     // state: 페이징 관련 상태 //
     const {
         currentPage,
         viewList,
         pageList,
         setTotalList,
+        setViewList,
         initViewList,
         onPageClickHandler,
         onPreSectionClickHandler,
@@ -140,9 +145,6 @@ export default function GD() {
     // state: zustand 일반 토론방 상태 //
     const { category, setCategory } = useCategoryStore();
     const [categoryItem, setCategoryItem] = useState(category);
-
-    // variable: 좋아요 여부 확인 변수 //
-    // const isLiked = !!signInUser?.isLikePost.find((like)=>{return like.roomId === discussion?.roomId && like.isPostLike === true}) 
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -162,7 +164,7 @@ export default function GD() {
         initViewList(sortedList);
 
         setSelectedOption(option);
-        setIsDropdownOpen(false);
+        setIsDropdownOpen(!isDropdownOpen);
     };
 
     // function: get general discussion list response 처리 함수 //
@@ -180,8 +182,18 @@ export default function GD() {
         }
 
         const { discussionList } = responseBody as GetDiscussionListResponseDto
+        const isLiked = discussionList.filter( like => like.roomId && like.isLike===true );
+        if (isLiked.length > 0) {
+            isLiked.forEach(discussion => {
+                setLikeClick((prev) => ({
+                    ...prev,
+                    [discussion.roomId]: true
+                }));
+            });
+        }
         setTotalList(discussionList);
         setOriginalList(discussionList);
+        
     }
 
     // function: 일반 토론방 list 불러오기 함수 //
@@ -189,6 +201,8 @@ export default function GD() {
         const accessToken = cookies[ACCESS_TOKEN];
         if (!accessToken) return;
         await getDiscussionListRequest(accessToken).then(getDiscussionListResponse);
+
+        await setViewList((prevList)=> prevList.filter((item)=>item.roomId !== discussion?.roomId));
 
     }
 
@@ -202,6 +216,7 @@ export default function GD() {
         setCategory(type);
         setCategoryItem(type);
         setSearched('');
+        getDiscussionList();
     }
 
     // event handler: 검색어 변경 이벤트 처리 //
@@ -216,10 +231,12 @@ export default function GD() {
         initViewList(searchedDiscussionList);
     }
 
-    // event handler: 엔터키로 로그인 버튼 동작 //
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
-            onSearchButtonClickHandler();
+    // event handler: 엔터키로 검색 버튼 동작 //
+        const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+            if (event.key === 'Enter') {
+                onSearchButtonClickHandler();
+            }
+
         }
     }
 
@@ -254,71 +271,51 @@ export default function GD() {
     const onLikeClickHandler = async (targetId: number, user: string, likeType: string, event: MouseEvent<HTMLDivElement>) => {
         event.stopPropagation();
         const accessToken = cookies[ACCESS_TOKEN];
-        if (!targetId || !likeType || !accessToken || !user) return;
-
-        // 현재 상태 값 기반으로 like 상태를 변경 (상태가 반영된 후에 API 호출)
-        const currentLikeClick = likeClick[targetId];  // 현재 상태 값
-        const newLikeClick = !currentLikeClick;  // 변경된 상태
-
-        // 먼저 상태를 업데이트
-        setLikeClick((prevLikeClick) => ({
-            ...prevLikeClick,
-            [targetId]: newLikeClick,
-        }));
+        if (!targetId || !likeType || !accessToken || !user ) return;
+    
+        setLikeClick((prevLikeClick) => {
+            const newState = { 
+                ...prevLikeClick, 
+                [targetId]: !prevLikeClick[targetId],  // 이전 상태를 반전시켜서 업데이트
+            };
+            return newState;
+        });
 
         try {
-            // 새로 변경된 상태에 맞게 API 호출
-            if (newLikeClick) {
-                await postLikeRequest(targetId, likeType, user, accessToken).then(postLikeResponse);
-                await getDiscussionList();
+            if (!likeClick[targetId]) {
+                await postLikeRequest(targetId, likeType, userId, accessToken).then(postLikeResponse);
+
             } else {
-                await deleteLikeRequest(targetId, likeType, user, accessToken).then(deleteLikeResponse);
-                await getDiscussionList();
+                await deleteLikeRequest(targetId, likeType, userId, accessToken).then(deleteLikeResponse);
             }
+            await getDiscussionList();
         } catch (error) {
             console.error("요청 실패:", error);
-            // 실패 시 상태를 롤백할 수도 있습니다.
-            setLikeClick((prevLikeClick) => ({
-                ...prevLikeClick,
-                [targetId]: currentLikeClick,  // 실패하면 원래 상태로 복원
-            }));
         }
     }
 
     // effect: autoSerchVisible GET 요청 //
     useEffect(() => {
-
         const accessToken = cookies[ACCESS_TOKEN];
         if (!accessToken) {
             alert('토큰 오류');
             return;
         }
-
         const handler = setTimeout(() => {
-
             getSearchDiscussionListRequest(searched, accessToken)
                 .then(getDiscussionListResponse);
         }, DEBOUNCE_DELAY);
-
         return () => {
             clearTimeout(handler);
         };
-
     }, [searched]);
 
     // effect: 컴포넌트 로드시 일반 토론방 리스트 불러오기 함수 //
-    useEffect(() => {
+    useEffect(()=>{
+
         getDiscussionList();
         if (!category) return;
         setCategoryItem(category);
-
-        // if (isLiked) { // isLiked가 null/undefined가 아닐 때만 실행
-        //     setLikeClick((prev) => ({
-        //         ...prev,
-        //         [roomId]: isLiked,
-        //     }));
-        // }
-        console.log(likeClick);
 
     }, [category]);
 
@@ -350,9 +347,8 @@ export default function GD() {
                                 </div>
                                 <div className='search-button' onClick={onSearchButtonClickHandler}>검색</div>
                             </div>
-                            <div className='sequence-choice'>
-                                <button className='sequence-choice-button' type='button' onClick={toggleDropdown}>{selectedOption}</button>
-                            </div>
+                            <div className='sequence-choice'><button className='sequence-choice-button' type='button' onClick={toggleDropdown}>{selectedOption}</button></div>
+
                         </div>
                         {isDropdownOpen && (
                             <div className='dropdown-menu-box'>
@@ -370,7 +366,7 @@ export default function GD() {
                                     key={index}
                                     discussionList={discussionList}
                                     getDiscussionList={getDiscussionList}
-                                    postLike={(targetId: number, userId: string, likeType: string, event) => onLikeClickHandler(targetId, userId, likeType, event)}
+                                    postLike={(targetId:number, userId:string, likeType:string,event) => onLikeClickHandler(targetId, userId, likeType, event)}
                                     click={likeClick}
                                 />
                             ))}

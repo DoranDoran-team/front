@@ -294,6 +294,8 @@
     border-radius: 8px;
     padding: 10px;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+
 }
 
 #gd-wrapper .dropdown-menu-box {
@@ -303,7 +305,7 @@
 }
 
 #gd-wrapper .dropdown-menu {
-    width: 6%;
+    width: 5.7%;
     display: flex;
     flex-direction: column;
     position: absolute;

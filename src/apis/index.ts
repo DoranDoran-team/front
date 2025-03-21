@@ -688,7 +688,7 @@ export const cancleFollowRequest = async (userId: string, subscriber: string, ac
 }
 
 // function: 내가 작성한 게시글 삭제하기 요청 함수 //
-export const deleteMyDiscussionRequest = async (accessToken: string, roomId: string | number) => {
+export const deleteMyDiscussionRequest = async (accessToken: string, roomId: string | number, userId:string) => {
     const responseBody = await axios.delete(MYPAGE_DELETE_MY_DISCUSSION_API_URL(roomId), bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
