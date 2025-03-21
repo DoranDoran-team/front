@@ -297,7 +297,23 @@
     border: 1px solid #d4d4d4;
 }
 
-#modal .modal-overlay {
+#modal {
+    position: fixed;
+    background-color: white;
+    
+    width: 700px;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    margin-left: -200px;
+    
+    border-radius: 24px;
+    border: 2px solid lightgray;
+    
+    z-index: 1000; /* overlay보다 위 */
+}
+
+.modal-overlay-mypage {
     position: fixed;
     top: 0;
     left: 0;
@@ -306,21 +322,6 @@
     background-color: rgba(0, 0, 0, 0.5); 
     display: block;
     z-index: 998;
-}
-
-#change-info #modal {
-    position: fixed;
-    background-color: white;
-    
-    width: 700px;
-    height: 400px;
-    display: flex;
-    align-items: center;
-    
-    border-radius: 24px;
-    border: 2px solid lightgray;
-    
-    z-index: 1000; /* overlay보다 위 */
 }
 
 #change-info #modal .modal-container {
@@ -333,7 +334,7 @@
 }
 
 #change-info #modal .modal-container div {
-    width: 400px;
+    width: 320px;
 }
 
 #change-info .modal-title {
@@ -422,4 +423,13 @@
     font-weight: 200;
     color: red;
     margin-top: 5px;
+}
+
+#modal .input-box3 {
+    border-radius: 6px;
+    border: 1px solid #B4B4B4;
+    
+    padding: 10px;
+    height: 30px;
+    width: 300px;
 }

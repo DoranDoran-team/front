@@ -3,5 +3,6 @@ export default interface AccuseUserProps {
   userId: string,
   name: string,
   profileImage: string,
-  accuseCount: number
+  accuseCount: number,
+  role: boolean
 }

@@ -655,4 +655,5 @@
 
 .mypage-discussion-room-top .dropdown-item:hover {
     background-color: #ddd;
+    border-radius: 15px;
 }

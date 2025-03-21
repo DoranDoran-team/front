@@ -1,7 +1,7 @@
 import React, { MouseEvent, useEffect, useRef, useState } from 'react'
 import './style.css'
 import { useCookies } from 'react-cookie';
-import { ACCESS_TOKEN, GEN_DISC_DETAIL_ABSOLUTE_PATH, SELECTED_USER } from '../../../constants';
+import { ACCESS_TOKEN, GEN_DISC_DETAIL_ABSOLUTE_PATH, MAIN_ABSOLUTE_PATH, SELECTED_USER } from '../../../constants';
 import { cancleFollowRequest, deleteMyDiscussionRequest, getUserProfileRequest, postUserFollowRequest } from '../../../apis';
 import GetUserProfileResponseDto from '../../../apis/dto/response/mypage/another_user/get-user-profile.response.dto';
 import ResponseDto from '../../../apis/dto/response/response.dto';
@@ -76,6 +76,7 @@ export default function UserProfile() {
     const [subscribers, setSubscribers] = useState<number>(0);
     const [profileImage, setProfileImage] = useState<string>('');
     const [subscribe, setSubscribe] = useState<boolean>(false);
+    const [role, setRole] = useState<boolean>(false);
 
     // state: 드롭다운 메뉴 상태 //
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -85,6 +86,8 @@ export default function UserProfile() {
     // variable: //
     const accessToken = cookies[ACCESS_TOKEN];
     const isUser = signInUser?.userId === userId; // 로그인한 사람이 본인인지 확인
+
+    const navigator = useNavigate();
 
     // event handler: 구독 버튼 클릭 이벤트 처리 함수 //
     const onSubscribeButtonHandler = () => {
@@ -133,17 +136,17 @@ export default function UserProfile() {
                     
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
             
-                    
         if (!isSuccessed) {
             alert(message);
             return;
         } else {
-            const {myDiscussions, profileImage, nickName, statusMessage, subscribers} = responseBody as GetUserProfileResponseDto;
+            const {myDiscussions, profileImage, nickName, statusMessage, subscribers, role} = responseBody as GetUserProfileResponseDto;
             setDiscussionList(myDiscussions);
             SetNickName(nickName);
             setMessage(statusMessage);
             setProfileImage(profileImage);
             setSubscribers(subscribers);
+            setRole(role);
         }
     }
 
@@ -216,6 +219,15 @@ export default function UserProfile() {
         };
     }, [isDropdownOpen])
 
+    // effect: 일반 유저는 관리자 페이지를 못 들어가도록 막음 //
+    useEffect(() => {
+        if(!signInUser?.role && role) {
+            console.log("권한 확인", signInUser?.role, role);
+            alert("접근 권한이 없습니다.");
+            navigator(MAIN_ABSOLUTE_PATH);
+        }
+    }, [signInUser, role]);
+
     // render: 타 유저 프로필 렌더링 //
     return (
         <div className="mypage-wrapper">
@@ -227,12 +239,16 @@ export default function UserProfile() {
                             <div className="mypage-info-top-a">
                                 <div className="mypage-nickname">{nickName}</div>
                                 <div className="subscribe-button-box">
-                                    {subscribe ? 
-                                        <div className="subscribe-button" onClick={onSubscribeCancleHandler}>구독 취소</div>
+                                    {signInUser?.role ? <div /> // 활동 중지 관련 버튼 생성 필요
                                     : 
-                                        <div className="subscribe-button" onClick={onSubscribeButtonHandler}>구독</div>
+                                        (subscribe? 
+                                            <div className="subscribe-button" onClick={onSubscribeCancleHandler}>구독 취소</div>
+                                        : 
+                                            <div className="subscribe-button" onClick={onSubscribeButtonHandler}>구독</div>
+                                        )
                                     }
-                                </div> 
+                                </div>
+
                             </div>
                         </div>
                         <div className="mypage-id">@{userId}</div>

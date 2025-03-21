@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { MouseEvent, useState } from 'react';
 import './style.css';
-import { ADMIN_ABSOULTE_PATH, ADMIN_ABSOLUTE_ACCUSE_PATH, ADMIN_ABSOLUTE_MILEAGE_PATH } from '../../../constants';
+import { ADMIN_ABSOULTE_PATH, ADMIN_ABSOLUTE_ACCUSE_PATH, ADMIN_ABSOLUTE_MILEAGE_PATH, ANOTHER_USER_PROFILE_ABSOULTE_PATH } from '../../../constants';
 import { useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { searchUsersRequest } from '../../../apis';
@@ -25,6 +25,8 @@ export default function AdminSideBar() {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [searchResults, setSearchResults] = useState<any[]>([]);
     const [showResults, setShowResults] = useState<boolean>(false);
+
+    const navigator = useNavigate();
 
     const performSearch = async (keyword: string) => {
         if (!keyword.trim()) {
@@ -66,10 +68,21 @@ export default function AdminSideBar() {
         setShowResults(false);
     };
 
+    // event handler: 게시글 작성자 프로필 클릭 이벤트 처리 //
+    const onProfileClickHandler = (event: MouseEvent<HTMLDivElement>, userId: string) => {
+        event.stopPropagation();
+        document.cookie = `selectedUser=${userId}; path=/;`;
+        navigator(ANOTHER_USER_PROFILE_ABSOULTE_PATH);
+        document.cookie = "yourCookieName=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    }
+
     // 활동 중지(블랙리스트) 처리 – 추후 기능 구현
     const onSuspendUser = (userId: string) => {
         alert(`(활동 중지 기능 미구현) ${userId} 유저의 활동을 중지합니다.`);
     };
+
+    // 일반 유저 아이디 검색, 관리자 아이디 걸러내기
+    const filteredResults = searchResults.filter(user => !user.role);
 
     return (
         <div className="admin-sidebar-container">
@@ -106,28 +119,24 @@ export default function AdminSideBar() {
                 </div>
                 {showResults && (
                     <div className="search-dropdown">
-                        <div className="search-dropdown-close" onClick={closeDropdown}>
-                            닫기
-                        </div>
-                        {searchResults.length === 0 ? (
-                            <div className="search-no-result">검색 결과가 없습니다.</div>
-                        ) : (
-                            searchResults.map((user: any) => (
-                                <div className="search-result" key={user.userId}>
-                                    <div
-                                        className="search-result-image"
-                                        style={{ backgroundImage: `url(${user.profileImage || ''})` }}
-                                    ></div>
-                                    <div className="search-result-text">
-                                        <div className="search-result-nickname">{user.nickName}</div>
-                                        <div className="search-result-userId">@{user.userId}</div>
+                        <div className="search-dropdown-close" onClick={closeDropdown}>닫기</div>
+                        {filteredResults.length === 0 ? (
+                                <div className="search-no-result">검색 결과가 없습니다.</div>
+                            ) : (
+                                filteredResults.map((user) => (
+                                    <div className="search-result" key={user.userId} 
+                                        onClick={(event) => onProfileClickHandler(event, user.userId)}>
+                                        <div className="search-result-image"
+                                            style={{ backgroundImage: `url(${user.profileImage || ''})` }}></div>
+                                        <div className="search-result-text">
+                                            <div className="search-result-nickname">{user.nickName}</div>
+                                            <div className="search-result-userId">@{user.userId}</div>
+                                        </div>
+                                        <div className="search-suspend-button" onClick={() => onSuspendUser(user.userId)}>
+                                            활동 중지</div>
                                     </div>
-                                    <div className="search-suspend-button" onClick={() => onSuspendUser(user.userId)}>
-                                        활동 중지
-                                    </div>
-                                </div>
-                            ))
-                        )}
+                                ))
+                            )}
                     </div>
                 )}
                 <div className="blacklist-box">

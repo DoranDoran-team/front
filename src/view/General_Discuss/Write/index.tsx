@@ -83,6 +83,13 @@ export default function GDWrite() {
 
         if (!signInUser) return;
 
+        if(signInUser.role) {
+            alert("관리자는 작성이 불가합니다.");
+            setShowModal(false);
+            navigator(GEN_DISC_ABSOLUTE_PATH);
+            return;
+        }
+
         let url: string | null = null;
         if (image) {
             const formData = new FormData();

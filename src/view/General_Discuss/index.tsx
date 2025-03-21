@@ -47,6 +47,7 @@ function TableRow({ discussionList, getDiscussionList, postLike, click }: TableR
 
         return endDate < today ? "마감" : "진행중";
     };
+    
     // event handler: 게시글 작성자 프로필 클릭 이벤트 처리 //
     const onProfileClickHandler = (event: MouseEvent<HTMLDivElement>) => {
         event.stopPropagation();
@@ -147,6 +148,7 @@ export default function GD() {
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
+        console.log(isDropdownOpen);
     };
 
     const handleOptionSelect = (option: string) => {

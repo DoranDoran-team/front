@@ -222,9 +222,9 @@
 
 .user-list-box {
     display: flex;
-    gap: 20px;
-    border: 1px solid black;
-    border-radius: 20px;
+    gap: 15px;
+    /* border: 1px solid black;
+    border-radius: 20px; */
     width: 95%;
     height: 80px;
     align-items: center;
@@ -247,7 +247,7 @@
 }
 
 .user-list-box .user-nickname {
-    font-size: 30px;
+    font-size: 18px;
 }
 
 .profile-group {

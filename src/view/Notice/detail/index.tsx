@@ -24,7 +24,7 @@ export default function NoticeDetail() {
     const [title, setTitle] = useState<String>('');
     const [userId, setUserId] = useState<String>('');
     const [noticeId, setNoticeId] = useState<number>(0);
-    const [noticeDate, setNoticeDate] = useState<String>('');
+    const [noticeDate, setNoticeDate] = useState<string>('');
     const [contents, setContents] = useState<String>('');
     const [preTitle, setPreTitle] = useState<String>('');
     const [nextTitle, setNextTitle] = useState<string>('');
@@ -93,6 +93,11 @@ export default function NoticeDetail() {
         setNextTitle(nextTitle);
     };
 
+    // function: 날짜 변환 함수 //
+    const formatDate = (dateString: string): string => {
+        return dateString.replace(/-/g, ".");
+    };
+
     // function: delete notice response 처리 함수 //
     const deleteNoticeResponse = (responseBody: ResponseDto | null) => {
         const message =
@@ -120,13 +125,12 @@ export default function NoticeDetail() {
                 <div className='notice-info'>
                     <div className='title'>{title}</div>
                     <div className='admin'>@{userId}</div>
-                    <div className='date'>{noticeDate}</div>
+                    <div className='date'>{formatDate(noticeDate)}</div>
                 </div>
                 <div className='contents'>{contents}</div>
                 
                 {signInUser?.role ? 
                     <div className='btn-box'>
-                        <div className='patch-btn' onClick={onPatchNoticeClickHandler}>수정</div>
                         <div className='delete-btn' onClick={onDeleteNoticeClickHandler}>삭제</div>
                     </div> 
                 : 

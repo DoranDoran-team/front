@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './style.css';
 import AdminSideBar from '../../../../components/Admin/Sidebar';
-import Modal from '../../../../components/modal';
 import GetAccuseListResponseDto from '../../../../apis/dto/response/accuse/get-accuse-list.response.dto';
 import ResponseDto from '../../../../apis/dto/response/response.dto';
 import { useCookies } from 'react-cookie';
@@ -15,7 +14,6 @@ import GetAccuseResponseDto from '../../../../apis/dto/response/accuse/get-accus
 import AccuseDetail from '../../../../types/accuseDetail.interface';
 import AccuseUserProps from '../../../../types/accuseUserList.interface';
 import GetAccuseUserListResponseDto from '../../../../apis/dto/response/accuse/get-accuse-user-list.response.dto';
-import axios from 'axios';
 
 
 const ITEMS_PER_PAGE = 5;
@@ -137,6 +135,9 @@ export default function Accuse() {
 
         const { accuseUserList } = responseBody as GetAccuseUserListResponseDto;
         setUserList(accuseUserList);
+
+        // 일반 유저 아이디 검색, 관리자 아이디 걸러내기
+        //const filteredResults = userList.filter((user: AccuseUserProps) => !user.role);
     }
 
     // effect: autoSerchVisible GET 요청 //
@@ -537,9 +538,9 @@ export default function Accuse() {
                             {autoSearchVisible && (
                                 <div className='auto-search-container'>
                                     <div className='user-search-container'>
-                                        {userList.map((user) => (
-                                            <UserListBox key={user.userId} userList={user} />
-                                        ))}
+                                    {userList.filter((user: AccuseUserProps) => !user.role).map((user) => (
+                                        <UserListBox key={user.userId} userList={user} />
+                                    ))}
                                     </div>
                                 </div>
                             )}

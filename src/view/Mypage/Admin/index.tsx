@@ -2,11 +2,15 @@ import React, { useEffect, useRef, useState } from 'react'
 import './style.css';
 import AdminSideBar from '../../../components/Admin/Sidebar';
 import { useSignInUserStore } from '../../../stores';
+import { useNavigate } from 'react-router-dom';
+import { MAIN_ABSOLUTE_PATH } from '../../../constants';
 
 export default function Admin() {
 
     // variable: 기본 이미지 URL //
     const defaultProfileImageUrl = 'http://localhost:3000/defaultProfile.png';
+
+    const navigator = useNavigate();
 
     // state: 로그인 유저 정보 상태 //
     const { signInUser, setSignInUser } = useSignInUserStore();
@@ -93,6 +97,14 @@ export default function Admin() {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [isDropdownOpen]);
+
+    // effect: 일반 사용자 관리자 마이페이지 이동 막기 //
+    useEffect(() => {
+        if(!signInUser?.role) {
+            alert('접근권한이 없습니다.');
+            navigator(MAIN_ABSOLUTE_PATH);
+        }
+    }, [signInUser]);
     
     return (
         <div className="mypage-wrapper">
