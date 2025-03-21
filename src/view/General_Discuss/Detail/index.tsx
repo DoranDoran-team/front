@@ -280,7 +280,7 @@ function Comments({ comment, depth, getDiscussion, postLike, click }: commentPro
                                 <button className='comment-button' type='button' onClick={() => handleEditComment(comment.commentId)}>수정하기</button>
                             </div>
                         </div>
-                </div>)}
+                )}
                 {replyTo === comment.commentId && !editContents[comment.commentId] && (
                     <div className='reply-box' style={{ marginLeft: '20px', marginRight: '0' }}>
                         <div className='reply-textarea-and-button'>
@@ -298,11 +298,11 @@ function Comments({ comment, depth, getDiscussion, postLike, click }: commentPro
                 )}
                 {!seeMoreBrt[comment.commentId] && (comment.replies && comment.replies.filter(reply => reply.parentId === comment.commentId).map((reply, index) => (
                     <div key={reply.commentId} className="reply" style={{ marginLeft: (reply.depth ?? 1) * 20 + "px" }}>
-                        {!editContents[reply.commentId] ? (<div className='reply-item-box'>
+                        {!editContents[reply.commentId] ? 
+                        (<div className='reply-item-box'>
                             <div className="comment-user-info">
                                 <div className='comment-user'>
-                                <div className="profile-image" 
-                                style={{backgroundImage: `url(${reply.profileImage})`}}>
+                                <div className="profile-image" style={{backgroundImage: `url(${reply.profileImage})`}}>
                                 </div>
                                     <div>
                                         <div className='comment-user-nickname'>{reply.nickName}</div>
@@ -335,7 +335,6 @@ function Comments({ comment, depth, getDiscussion, postLike, click }: commentPro
                                             </div>
                                         )}
                                     </div>}
-                                </div>
                             </div>
                             </div>
                             <div className="comment-content">{reply.deleteStatus ? '삭제된 메세지 입니다. ': reply.contents}</div>
