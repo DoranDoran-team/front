@@ -5,5 +5,6 @@ export default interface PostAccuseRequestDto {
   accuseUserId: string,
   postId: number | null,
   replyId: number | null,
-  accuseDate: string
+  accuseDate: string,
+  accuseStatus: string
 }
