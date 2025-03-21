@@ -12,7 +12,7 @@ import { useSignInUserStore } from '../../../stores';
 interface accuseModalProps {
     cancelHandler: () => void;
     accuse?: AccuseComponentProps;
-    discussionData: DiscussionData | null;
+    discussionData: DiscussionData|null;
 }
 
 // component: 신고하기 모달창 컴포넌트 //

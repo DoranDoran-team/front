@@ -1,7 +1,7 @@
-import React, { MouseEvent, useEffect, useState } from 'react';
+import React, { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import './style.css';
 import AccuseModal from '../../../components/modal/accuse';
-import { deleteCommentRequest, deleteLikeRequest, getDiscussionRequest, getLikeRequest, getVoteResultRequest, patchCommentRequest, postCommentRequest, postLikeRequest, postVoteRequest } from '../../../apis';
+import { deleteCommentRequest, deleteLikeRequest, deleteMyDiscussionRequest, getDiscussionRequest, getLikeRequest, getVoteResultRequest, patchCommentRequest, postCommentRequest, postLikeRequest, postVoteRequest } from '../../../apis';
 import Comment from '../../../types/Comment.interface';
 import PostCommentRequestDto from '../../../apis/dto/request/comment/post-comment.request.dto';
 import { useNavigate, useParams } from 'react-router';
@@ -27,14 +27,15 @@ interface commentProps {
 }
 
 function Comments({ comment, depth, getDiscussion, postLike, click }: commentProps) {
+    const divRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
     const { roomId } = useParams();
     const [cookies] = useCookies();
     const [commentOptions, setCommentOptions] = useState<{ [key: number]: boolean }>({});
     const [newReply, setNewReply] = useState<string>('');
+    const [editReply, setEditReply] = useState<string>('');
     const [replyTo, setReplyTo] = useState<number | null>(null);
-    const [subReplyTo, setSubReplyTo] = useState<number | null>(null);
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-    const [editCotents, setEditContents] = useState<{ [key: number]: boolean }>({});
+    const [editContents, setEditContents] = useState<{ [key: number]: boolean }>({});
     const { signInUser } = useSignInUserStore();
 
     const [seeMoreBrt, setSeeMoreBrt] = useState<{[key:number]:boolean}>({});
@@ -50,9 +51,10 @@ function Comments({ comment, depth, getDiscussion, postLike, click }: commentPro
         }));
         setCommentOptions((prev) => ({
             ...prev,
-            [commentId]: false,
+            [commentId]: !prev[commentId],
         }));
         setNewReply('');
+        setEditReply('');
     };
 
     const navigator = useNavigate();
@@ -73,14 +75,26 @@ function Comments({ comment, depth, getDiscussion, postLike, click }: commentPro
         }))
     }
 
+    // 클릭 이벤트 처리
+    const handleClickOutside = (event: React.MouseEvent, commentId: number) => {
+        // 클릭한 곳이 현재 div가 아닌 경우 상태 반전
+        if (divRefs.current[commentId] && !divRefs.current[commentId]?.contains(event.target as Node)) {
+            setCommentOptions((prev) => ({
+                ...prev,
+                [commentId]: false, // 상태 반전
+            }));
+        }
+    };
+
     // function: 대댓글 수정 response 처리 //
     const patchCommentResponse = (responseBody:ResponseDto | null) => {
         const message =
         !responseBody ? '서버에 문제가 있습니다. ' :
             responseBody.code === 'AF' ? '접근이 잘못되었습니다. ' :
                 responseBody.code === 'NC' ? '존재하지 않는 댓글입니다. ' :
-                    responseBody.code ==='NP' ? '잘못된 접근입니다. ' :
-                        responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ' : '';    
+                    responseBody.code === 'VF' ? '수정할 내용을 입력 해주세요. ':
+                        responseBody.code ==='NP' ? '잘못된 접근입니다. ' :
+                            responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ' : '';    
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
             alert(message);
@@ -92,7 +106,7 @@ function Comments({ comment, depth, getDiscussion, postLike, click }: commentPro
     const handleEditComment = async(commentId: number) => {
         const accessToken = cookies[ACCESS_TOKEN];
         if (!roomId || !accessToken || !commentId) return;
-        const requestBody :PatchCommentRequestDto = { contents:newReply};
+        const requestBody :PatchCommentRequestDto = { contents:editReply};
         await patchCommentRequest(requestBody,roomId,commentId,accessToken).then(patchCommentResponse);
 
         setEditContents((prev) => ({
@@ -113,7 +127,8 @@ function Comments({ comment, depth, getDiscussion, postLike, click }: commentPro
             responseBody.code === 'AF' ? '접근이 잘못되었습니다. ' :
                 responseBody.code === 'NC' ? '존재하지 않는 댓글입니다. ' :
                     responseBody.code ==='NP' ? '잘못된 접근입니다. ' :
-                        responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ' : '';
+                        responseBody.code === 'AD' ? '이미 삭제된 댓글 입니다. ' :
+                            responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ' : '';
         
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
@@ -143,7 +158,7 @@ function Comments({ comment, depth, getDiscussion, postLike, click }: commentPro
         }));
     };
 
-    // post comment response 처리 함수
+    // function: post comment response 처리 함수 //
     const postCommentResponse = (responseBody: ResponseDto | null) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
@@ -169,9 +184,8 @@ function Comments({ comment, depth, getDiscussion, postLike, click }: commentPro
 
         await postCommentRequest(requestBody, roomId, accessToken).then(postCommentResponse);
         setNewReply('');
-        if (replyTo || subReplyTo) {
+        if (replyTo) {
             setReplyTo(null);
-            setSubReplyTo(null);
         }
         await getDiscussion();
     };
@@ -181,6 +195,21 @@ function Comments({ comment, depth, getDiscussion, postLike, click }: commentPro
         ...prev,
         [comment.commentId]: true,
         }))
+        
+        const handleOutsideClick = (event: Event) => {
+            // event를 unknown으로 캐스팅 후, MouseEvent로 변환
+            const mouseEvent = event as unknown as MouseEvent;
+            Object.keys(divRefs.current).forEach((key) => {
+                handleClickOutside(mouseEvent, parseInt(key)); // 각 commentId에 맞게 상태 반전
+            });
+        };
+
+        // 'EventListener' 타입을 정확히 맞춰서 사용
+        document.addEventListener("click", handleOutsideClick as EventListener);
+
+        return () => {
+            document.removeEventListener("click", handleOutsideClick as EventListener);
+        };
     },[])
 
     // 댓글 프로필 클릭 후 마이페이지 이동 //
@@ -195,12 +224,11 @@ function Comments({ comment, depth, getDiscussion, postLike, click }: commentPro
     return (
         <div>
             <div key={comment.commentId} className='comment-info'>
-                {!editCotents[comment.commentId] ? <div className='comment-item-box'>
+                {!editContents[comment.commentId] ? (<div className='comment-item-box'>
                     <div className="comment-user-info">
                         <div className='comment-user' onClick={onCommentClickHandler}>
                             <div className="profile-image" 
-                                style={{backgroundImage: `url(${comment.profileImage ? 
-                                comment.profileImage : '/defaultProfile.png'})`}}>
+                                style={{backgroundImage: `url(${comment.profileImage})`}}>
                             </div>
                             <div>
                                 <div className='comment-user-nickname'>{comment.nickName}</div>
@@ -215,15 +243,15 @@ function Comments({ comment, depth, getDiscussion, postLike, click }: commentPro
                                 <div className={`recommendation-icon ${ click[comment.commentId] ? 'active' : ''}`} onClick={()=>postLike(comment.commentId,discussionId,'COMMENT')}></div>
                                 <div className='recommendation-count'>{comment.likeCount}</div>
                                 {discussionId === comment.userId ? (
-                                    <div className='comment-option' onClick={() => toggleCommentOptions(comment.commentId)}>⋮</div>
+                                    <div className='comment-option' ref={(item) => (divRefs.current[comment.commentId] = item)} onClick={() => toggleCommentOptions(comment.commentId)}>⋮</div>
                                 ) : (
                                     <div className='siren-button' onClick={() => openReportModal()}></div>
                                 )}
                             </div>
                             {commentOptions[comment.commentId] && (
-                                <div className='dropdown-menu-box'>
+                                <div className='dropdown-menu-box' >
                                     <div className='dropdown-menu'>
-                                        <div className='dropdown-item' onClick={() => editContentsHandler(comment.commentId)}>수정하기</div>
+                                        <div className='dropdown-item'  onClick={() => editContentsHandler(comment.commentId)}>수정하기</div>
                                         <div className='dropdown-item' onClick={() => handleDeleteComment(comment.commentId)}>삭제하기</div>
                                     </div>
                                 </div>
@@ -237,23 +265,22 @@ function Comments({ comment, depth, getDiscussion, postLike, click }: commentPro
                     <div className='see-more' onClick={()=>onSeeMoreBrtClickHandler(comment.commentId)}>
                         더보기
                     </div>:''}
-                </div> : 
-                <div className='reply-box' style={{ marginLeft: '20px', marginRight: '0' }}>
+                </div>) : (<div className='reply-box' style={{ marginLeft: '20px', marginRight: '0' }}>
                         <div className='reply-textarea-and-button'>
-                        <MentionInput value={newReply} onChange={setNewReply} />
+                        <MentionInput value={editReply} onChange={setEditReply} />
                             <textarea
                                 className='input-reply-text'
                                 placeholder={comment.contents}
-                                value={newReply}
-                                onChange={(e) => setNewReply(e.target.value)}
+                                value={editReply}
+                                onChange={(e) => setEditReply(e.target.value)}
                             />
                             <div className='comment-button-box'>
                                 <button className='comment-button' type='button' onClick={() => editContentsHandler(comment.commentId)}>취소</button>
                                 <button className='comment-button' type='button' onClick={() => handleEditComment(comment.commentId)}>수정하기</button>
                             </div>
                         </div>
-                </div>}
-                {replyTo === comment.commentId && (
+                </div>)}
+                {replyTo === comment.commentId && !editContents[comment.commentId] && (
                     <div className='reply-box' style={{ marginLeft: '20px', marginRight: '0' }}>
                         <div className='reply-textarea-and-button'>
                             <textarea
@@ -262,7 +289,7 @@ function Comments({ comment, depth, getDiscussion, postLike, click }: commentPro
                                 onChange={(e) => setNewReply(e.target.value)}
                             />
                             <div className='comment-button-box'>
-                                <button className='comment-button' type='button' onClick={()=>setReplyTo(null)}>취소</button>
+                                <button className='comment-button' type='button' onClick={() => setReplyTo(null)}>취소</button>
                                 <button className='comment-button' type='button' onClick={() => handleReplySubmit(comment.commentId)}>작성하기</button>
                             </div>
                         </div>
@@ -270,12 +297,11 @@ function Comments({ comment, depth, getDiscussion, postLike, click }: commentPro
                 )}
                 {!seeMoreBrt[comment.commentId] && (comment.replies && comment.replies.filter(reply => reply.parentId === comment.commentId).map((reply, index) => (
                     <div key={reply.commentId} className="reply" style={{ marginLeft: (reply.depth ?? 1) * 20 + "px" }}>
-                        {!editCotents[reply.commentId] ? <div className='reply-item-box'>
+                        {!editContents[reply.commentId] ? (<div className='reply-item-box'>
                             <div className="comment-user-info">
                                 <div className='comment-user'>
                                 <div className="profile-image" 
-                                style={{backgroundImage: `url(${reply.profileImage ? 
-                                    reply.profileImage : '/defaultProfile.png'})`}}>
+                                style={{backgroundImage: `url(${reply.profileImage})`}}>
                                 </div>
                                     <div>
                                         <div className='comment-user-nickname'>{reply.nickName}</div>
@@ -292,12 +318,12 @@ function Comments({ comment, depth, getDiscussion, postLike, click }: commentPro
                                             <div className='recommendation-count'>{reply.likeCount}</div>
                                         </div>
                                         {discussionId === reply.userId ? (
-                                            <div className='comment-option' onClick={() => toggleCommentOptions(reply.commentId)}>⋮</div>
+                                            <div className='comment-option' ref={(item) => (divRefs.current[reply.commentId] = item)} onClick={() => toggleCommentOptions(reply.commentId)}>⋮</div>
                                         ) : (
                                             <div className='siren-button' onClick={() => openReportModal()}></div>
                                         )}
                                         {commentOptions[reply.commentId] && (
-                                            <div className='dropdown-menu-box'>
+                                            <div className='dropdown-menu-box' >
                                                 <div className='dropdown-menu'>
                                                     <div className='dropdown-item' onClick={() => editContentsHandler(reply.commentId)}>수정하기</div>
                                                     <div className='dropdown-item' onClick={() => handleDeleteComment(reply.commentId)}>삭제하기</div>
@@ -309,27 +335,26 @@ function Comments({ comment, depth, getDiscussion, postLike, click }: commentPro
                             </div>
                             <div className="comment-content">{reply.deleteStatus ? '삭제된 메세지 입니다. ': reply.contents}</div>
                             <hr/>
-                        </div> : 
-                            <div className='reply-box' style={{ marginLeft: '20px', marginRight: '0' }}>
+                        </div>) : 
+                            (<div className='reply-box' style={{ marginLeft: '20px', marginRight: '0' }}>
                                 <div className='reply-textarea-and-button'>
-                                <MentionInput value={newReply} onChange={setNewReply} />
+                                <MentionInput value={editReply} onChange={setEditReply} />
                                     <textarea
                                         className='input-reply-text'
                                         placeholder={reply.contents}
-                                        onChange={(e) => setNewReply(e.target.value)}
+                                        onChange={(e) => setEditReply(e.target.value)}
                                     />
                                     <div className='comment-button-box'>
                                         <button className='comment-button' type='button' onClick={() => editContentsHandler(reply.commentId)}>취소</button>
                                         <button className='comment-button' type='button' onClick={() => handleEditComment(reply.commentId)}>수정하기</button>
                                     </div>
                                 </div>
-                            </div>}
+                            </div>)}
                     </div>
                 )))}
             </div>
-            {(!seeMoreBrt[comment.commentId] && isReplies) ? <div className='see-more' onClick={()=>onSeeMoreBrtClickHandler(comment.commentId)}>
-                        접기
-                    </div> : ''}
+            {(!seeMoreBrt[comment.commentId] && isReplies) ? 
+            <div className='see-more' onClick={()=>onSeeMoreBrtClickHandler(comment.commentId)}>접기</div> : ''}
         </div>
     )
 }
@@ -342,10 +367,11 @@ interface voteProps {
     opinionOppositeUsers: number;
     getVoteResult:()=>void;
     isVoted: boolean;
+    isEnd: boolean;
 }
 
 // component: 찬/반 의견 선택 컴포넌트 //
-function OpinionSelector({ agreeOpinion, oppositeOpinion, opinionAgreeUsers, opinionOppositeUsers,getVoteResult, isVoted }: voteProps) {
+function OpinionSelector({ agreeOpinion, oppositeOpinion, opinionAgreeUsers, opinionOppositeUsers,getVoteResult, isVoted, isEnd }: voteProps) {
     const [selectedOpinion, setSelectedOpinion] = useState<string>('');
     const [submitted, setSubmitted] = useState<boolean>(false);
     const [cookies] = useCookies();
@@ -414,9 +440,9 @@ function OpinionSelector({ agreeOpinion, oppositeOpinion, opinionAgreeUsers, opi
                         {oppositeOpinion}
                     </label>
                 </div>
-                {!isVoted && <button className='vote-select-button' onClick={handleSubmit}>선택 완료하기</button>}
+                {(!isVoted && !isEnd) && <button className='vote-select-button' onClick={handleSubmit}>선택 완료하기</button>}
             </div>
-            {(submitted || isVoted) && (
+            {(submitted || isVoted || isEnd) && (
                 <div className="bar-container">
                     <div className="bar">
                         <div className="bar-a" style={{ width: `${opinionAgreeUsers}%` }} />
@@ -493,7 +519,6 @@ export default function GDDetail() {
         if (option === '최신순') {
             const recentList = comments.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
             setComments(recentList);
-        
 
         } else if(option === '추천순'){
             const popularList = comments.sort((a, b) => b.likeCount - a.likeCount);
@@ -501,6 +526,15 @@ export default function GDDetail() {
         }
         setSelectedOption(option);
         setIsDropdownOpen(!isDropdownOpen);
+    };
+
+    // function: 마감 여부 확인 함수 처리 //
+    const checkStatus = (discussionEnd: string|null) => {
+        if (!discussionEnd) return;
+        const today = new Date().setHours(0, 0, 0, 0); // 오늘 날짜 (시간 제거)
+        const endDate = new Date(discussionEnd).setHours(0, 0, 0, 0); // 문자열을 Date로 변환
+    
+        return endDate < today ? "마감" : "진행중";
     };
 
     // event handler: 토론방 카테고리 클릭 이벤트 처리 함수 //
@@ -521,7 +555,8 @@ export default function GDDetail() {
             !responseBody ? '서버에 문제가 있습니다. ' :
                 responseBody.code === 'AF' ? '접근이 잘못되었습니다. ' :
                     responseBody.code === 'NR' ? '존재하지 않는 토론방입니다. ' :
-                        responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ' : '';
+                        responseBody.code === 'VF' ? '댓글 내용을 입력해주세요. ': 
+                            responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ' : '';
 
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
@@ -717,6 +752,34 @@ export default function GDDetail() {
         await getLikeRequest(roomIdNumber, discussionId, accessToken).then(getLikeResponse);
     }
 
+    // function: delete Mydiscussion Response 처리 //
+    const deleteMydiscussionResponse = (responseBody:ResponseDto | null) => {
+        const message = !responseBody ? '서버에 문제가 있습니다. ': 
+        responseBody.code === 'AF' ? '잘못된 접근입니다. ':
+        responseBody.code === 'NR' ? '존재하지 않는 토론방입니다. ':
+        responseBody.code === 'NP' ? '잘못된 접근입니다. ':
+        responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ': '';
+
+        const isSuccessd = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessd){
+            alert(message);
+        }
+    }
+
+    // event Handler: 토론방 삭제 버튼 클릭 이벤트 처리 //
+    const onDiscussionDeleteClickHandler = () => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken || !roomIdNumber || !signInUser?.userId) return;
+        const isDeleteDiscussion = window.confirm('정말 해당 '+discussionData?.roomTitle+' 토론방을 삭제하시겠습니까? ')
+        if (isDeleteDiscussion){
+            deleteMyDiscussionRequest(accessToken, roomIdNumber, signInUser.userId).then(deleteMydiscussionResponse);
+            navigator(GEN_DISC_ABSOLUTE_PATH);
+        }
+        else{
+            return;
+        }
+    }
+
     useEffect(() => {
         
         getDiscussion();
@@ -744,7 +807,7 @@ export default function GDDetail() {
                     </div>
                     <div className="post-info">
                         <div className="post-user-info" onClick={onUserProfileClickHandler}>
-                            <div className="profile-image" style={{ backgroundImage: `url(${discussionData?.profileImage || '/defaultProfile.png'})` }}></div>
+                            <div className="profile-image" ></div>
                             <div>
                                 <div className='user-nickname'>{discussionData?.nickName}</div>
                                 <div className='post-date-and-modify'>
@@ -754,21 +817,14 @@ export default function GDDetail() {
                             </div>
                         </div>
                         <div className='status-and-option'>
-                            <div className='status'>진행 중</div>
+                            <div className={`status ${checkStatus(discussionData?.discussionEnd??'')==='마감'?'end':'active'}`} >{checkStatus(discussionData?.discussionEnd??'')}</div>
                             {discussionId === discussionData?.userId ? (
-                                <div className='option' onClick={toggleDropdownOption}>⋮</div>
+                                <div className='option' onClick={onDiscussionDeleteClickHandler}></div>
                             ) : (
                                 <div className="siren-button" onClick={() => openReportModal()}></div>
                             )}
                         </div>
                     </div>
-                    {isDropdownOptionOpen && (
-                        <div className='dropdown-menu-box'>
-                            <div className='dropdown-menu'>
-                                <div className='dropdown-item' onClick={() => handleOptionSelect('삭제하기')}>삭제하기</div>
-                            </div>
-                        </div>
-                    )}
                     {isReportModalOpen && (
                         <AccuseModal cancelHandler={closeReportModal} discussionData={discussionData} />
                     )}
@@ -781,7 +837,7 @@ export default function GDDetail() {
                         </div>
                     </div>
                     <div className="vote-info">
-                        <OpinionSelector agreeOpinion={discussionData?.agreeOpinion} oppositeOpinion={discussionData?.oppositeOpinion} opinionAgreeUsers={opinionAgreeUsers} opinionOppositeUsers={opinionOppositeUsers} getVoteResult={getVoteResult} isVoted={isVoted}/>
+                        <OpinionSelector agreeOpinion={discussionData?.agreeOpinion} oppositeOpinion={discussionData?.oppositeOpinion} opinionAgreeUsers={opinionAgreeUsers} opinionOppositeUsers={opinionOppositeUsers} getVoteResult={getVoteResult} isVoted={isVoted} isEnd={checkStatus(discussionData?.discussionEnd??'')==='마감'}/>
                     </div>
                     <div className="comment-and-recommendation">
                         <div className="comment-icon"></div>
@@ -791,6 +847,12 @@ export default function GDDetail() {
                     </div>
                     <hr />
                     <div className='comment-box'>
+                        <textarea
+                            className="input-comment-text"
+                            placeholder="댓글을 입력해주세요."
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                        />
                         <MentionInput value={newComment} onChange={setNewComment} />
                         <div className='comment-input-and-button'>
                             <div className="comment-button-box">

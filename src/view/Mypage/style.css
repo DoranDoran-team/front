@@ -622,7 +622,7 @@
     background: rgba(0, 0, 0, 0.2);
 }
 
-.dropdown-menu {
+.mypage-discussion-room-top .dropdown-menu {
     position: absolute;
     top: 100%;
     left: 0;
@@ -634,15 +634,15 @@
     z-index: 1000;
 }
 
-.dropdown-item {
+.mypage-discussion-room-top .dropdown-item {
     padding: 8px 12px;
     cursor: pointer;
-    text-align: center; 
+    text-align: center;
     display: flex;
-    align-items: center; 
+    align-items: center;
     justify-content: center;
 }
 
-.dropdown-item:hover {
+.mypage-discussion-room-top .dropdown-item:hover {
     background-color: #ddd;
 }

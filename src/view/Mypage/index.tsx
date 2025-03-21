@@ -21,6 +21,7 @@ function RoomList({discussion}: DiscussionRowProps) {
     // state: 내가 개설한 게시글 상태 //
     const [cookies, setCookie] = useCookies();
 
+    const {signInUser} = useSignInUserStore();
     // variable: 엑세스 토큰 //
     const accessToken = cookies[ACCESS_TOKEN];
 
@@ -35,10 +36,11 @@ function RoomList({discussion}: DiscussionRowProps) {
     // event handler: 게시물 삭제 이벤트 핸들러 //
     const onDeleteDiscussion = (event: MouseEvent<HTMLDivElement>) => {
         event.stopPropagation();
+        if (!accessToken || !discussion.roomId || !signInUser?.userId) return;
         let answer = window.confirm("정말 삭제하시겠습니까?");
         if(answer) {
             if(!accessToken || !discussion.roomId) return;
-            deleteMyDiscussionRequest(accessToken, discussion.roomId).then(deleteRoomResponse);
+            deleteMyDiscussionRequest(accessToken, discussion.roomId, signInUser?.userId).then(deleteRoomResponse);
         }else return;
     }
 

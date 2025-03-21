@@ -15,4 +15,5 @@ export default interface DiscussionList {
     likeCount:number;
 
     userId: string;
+    isLike:boolean;
 }

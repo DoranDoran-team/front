@@ -8,7 +8,6 @@ import PostDiscussionWirteRequestDto from '../../../apis/dto/request/gd_discussi
 import { fileUploadeRequest, postDiscussionRequest } from '../../../apis';
 import useStore from '../../../stores/sign-in-user.store';
 import { useNavigate, useParams } from 'react-router-dom';
-import { access } from 'fs';
 
 export default function GDWrite() {
 
