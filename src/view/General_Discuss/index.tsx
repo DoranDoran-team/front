@@ -112,7 +112,6 @@ export default function GD() {
 
     // state: 쿠키 상태 //
     const [cookies] = useCookies();
-
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState<string>('정렬순');
     const [likeClick, setLikeClick] = useState<{[key:number]:boolean}>({});
@@ -238,7 +237,6 @@ export default function GD() {
             }
 
         }
-    }
 
     // function: post like response 처리 함수 //
     const postLikeResponse = (responseBody: ResponseDto | null) => {
@@ -283,10 +281,10 @@ export default function GD() {
 
         try {
             if (!likeClick[targetId]) {
-                await postLikeRequest(targetId, likeType, userId, accessToken).then(postLikeResponse);
+                await postLikeRequest(targetId, likeType, user, accessToken).then(postLikeResponse);
 
             } else {
-                await deleteLikeRequest(targetId, likeType, userId, accessToken).then(deleteLikeResponse);
+                await deleteLikeRequest(targetId, likeType, user, accessToken).then(deleteLikeResponse);
             }
             await getDiscussionList();
         } catch (error) {
