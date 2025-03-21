@@ -59,6 +59,7 @@ const LIKE_MODULE_URL = `${DORANDORAN_API_DOMAIN}/api/v1/like`
 //* ============= 일정관리 
 const POST_SCHEDULE_URL = `${DORANDORAN_API_DOMAIN}/schedule`;
 const GET_SCHEDULE_LIST_URL = `${DORANDORAN_API_DOMAIN}/schedule`;
+const SCHEDULE_DELETE_API_URL = (scheduleNumber: number) => `${DORANDORAN_API_DOMAIN}/schedule/${scheduleNumber}`;
 
 const ID_CHECK_API_URL = `${AUTH_MODULE_URL}/id-check`;
 const TEL_AUTH_API_URL = `${AUTH_MODULE_URL}/tel-auth`;
@@ -88,9 +89,9 @@ const POST_VOTE_API_URL = (roomId: number | string) => `${VOTE_MODULE_URL}/${roo
 const GET_VOTE_RESULT_API_URL = (roomId: number | string) => `${VOTE_MODULE_URL}/${roomId}`;
 
 // 좋아요 API URL //
-const POST_LIKE_API_URL = (targetId:number , likeType: string ) => `${LIKE_MODULE_URL}/${targetId}/${likeType}`; 
-const DELETE_LIKE_API_URL = (targetId:number , likeType: string ) => `${LIKE_MODULE_URL}/${targetId}/${likeType}`; 
-const GET_LIKE_API_URL = (roomId:number) => `${LIKE_MODULE_URL}/${roomId}`;
+const POST_LIKE_API_URL = (targetId: number, likeType: string) => `${LIKE_MODULE_URL}/${targetId}/${likeType}`;
+const DELETE_LIKE_API_URL = (targetId: number, likeType: string) => `${LIKE_MODULE_URL}/${targetId}/${likeType}`;
+const GET_LIKE_API_URL = (roomId: number) => `${LIKE_MODULE_URL}/${roomId}`;
 
 //* ============= 신고
 
@@ -122,12 +123,12 @@ const MYPAGE_PATCH_USER_INFO_API_URL = `${MYPAGE_USER_INFO_API_URL}/patch-user`;
 const MYPAGE_USER_DELETE_API_URL = `${MYPAGE_USER_INFO_API_URL}/delete-user`;
 const MYPAGE_MY_DISCUSSION_LIST_API_URL = `${MYPAGE_USER_INFO_API_URL}/get-my-discussion`;
 const MYPAGE_GET_USER_PROFILE_API_URL = (userId: string) => `${MYPAGE_USER_INFO_API_URL}/get-user-profile/${userId}`;
-const MYPAGE_DELETE_MY_DISCUSSION_API_URL = (roomId: number | string) => 
+const MYPAGE_DELETE_MY_DISCUSSION_API_URL = (roomId: number | string) =>
     `${MYPAGE_USER_INFO_API_URL}/delete/${roomId}`;
 
 // 구독(취소) api url
 const USER_FOLLOW_API_URL = `${DORANDORAN_API_DOMAIN}/sub`;
-const USER_CACNLE_API_URL = (userId: string, subscriber: string) => 
+const USER_CACNLE_API_URL = (userId: string, subscriber: string) =>
     `${DORANDORAN_API_DOMAIN}/sub/cancle?userId=${userId}&subscriber=${subscriber}`;
 
 const NOTICE_API_URL = `${DORANDORAN_API_DOMAIN}/notice`;
@@ -308,15 +309,15 @@ export const deleteCommentRequest = async (roomId: number | string, commentId: n
 }
 
 // function: 투표 하기 post vote 요청 함수 //
-export const postVoteRequest = async(requsetBody:PostVoteRequestDto, userId:string, roomId:number|string,  accessToken: string) => {
-    const responseBody = await axios.post(POST_VOTE_API_URL(roomId), requsetBody,  bearerAuthorization(accessToken))
+export const postVoteRequest = async (requsetBody: PostVoteRequestDto, userId: string, roomId: number | string, accessToken: string) => {
+    const responseBody = await axios.post(POST_VOTE_API_URL(roomId), requsetBody, bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
 }
 
 // function: 투표 결과 get vote result 요청 함수 //
-export const getVoteResultRequest = async(roomId:number|string, accessToken: string) => {
+export const getVoteResultRequest = async (roomId: number | string, accessToken: string) => {
     const responseBody = await axios.get(GET_VOTE_RESULT_API_URL(roomId), bearerAuthorization(accessToken))
         .then(responseDataHandler<GetVoteResultResponseDto>)
         .catch(responseErrorHandler);
@@ -325,23 +326,23 @@ export const getVoteResultRequest = async(roomId:number|string, accessToken: str
 
 // 좋아요 관련 API //
 // function: 좋아요 post like 요청 함수 //
-export const postLikeRequest = async(targetId:number, likeType:string, userId:string, accessToken:string) => {
-    const responseBody = await axios.post(POST_LIKE_API_URL(targetId,likeType), userId, bearerAuthorization(accessToken))
+export const postLikeRequest = async (targetId: number, likeType: string, userId: string, accessToken: string) => {
+    const responseBody = await axios.post(POST_LIKE_API_URL(targetId, likeType), userId, bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
 }
 
 // function: 좋아요 delete like 요청 함수 //
-export const deleteLikeRequest = async(targetId:number, likeType:string, userId:string,   accessToken:string) => {
-    const responseBody = await axios.delete(DELETE_LIKE_API_URL(targetId,likeType), bearerAuthorization(accessToken))
+export const deleteLikeRequest = async (targetId: number, likeType: string, userId: string, accessToken: string) => {
+    const responseBody = await axios.delete(DELETE_LIKE_API_URL(targetId, likeType), bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
 }
 
 // function: 좋아요 정보 가져오기 get like 요청 함수 //
-export const getLikeRequest = async(roomId:number, userId:string, accessToken:string) => {
+export const getLikeRequest = async (roomId: number, userId: string, accessToken: string) => {
     const responseBody = await axios.get(GET_LIKE_API_URL(roomId), bearerAuthorization(accessToken))
         .then(responseDataHandler<GetLikeListResponseDto>)
         .catch(responseErrorHandler);
@@ -410,6 +411,14 @@ export const getScheduleListRequest = async (accessToken: string) => {
     const responseBody = await axios.get(GET_SCHEDULE_LIST_URL, bearerAuthorization(accessToken))
         .then(responseDataHandler<GetScheduleListResponseDto>)
         .catch(responseDataHandler);
+    return responseBody;
+}
+
+// function: 일정 DELETE 요청 함수 //
+export const deleteScheduleRequest = async (schedulerNumber: number, accessToken: string) => {
+    const responseBody = axios.delete(SCHEDULE_DELETE_API_URL(schedulerNumber), bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
     return responseBody;
 }
 
@@ -655,7 +664,7 @@ export const getMyDiscussionRequest = async (accessToken: string) => {
 }
 
 // function: 마이페이지 - 타 유저 프로필 불러오기 함수 //
-export const getUserProfileRequest = async(accessToken: string, userId: string) => {
+export const getUserProfileRequest = async (accessToken: string, userId: string) => {
     const responseBody = await axios.get(MYPAGE_GET_USER_PROFILE_API_URL(userId), bearerAuthorization(accessToken))
         .then(responseDataHandler<GetUserProfileResponseDto>)
         .catch(responseErrorHandler);
@@ -663,7 +672,7 @@ export const getUserProfileRequest = async(accessToken: string, userId: string) 
 }
 
 // function: 타 유저 구독하기 요청 함수 //
-export const postUserFollowRequest = async(requestBody: PostUserFollowRequestDto, accessToken: string) => {
+export const postUserFollowRequest = async (requestBody: PostUserFollowRequestDto, accessToken: string) => {
     const responseBody = await axios.post(USER_FOLLOW_API_URL, requestBody, bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
@@ -671,8 +680,8 @@ export const postUserFollowRequest = async(requestBody: PostUserFollowRequestDto
 }
 
 // function: 타 유저 구독 취소하기 요청 함수 //
-export const cancleFollowRequest = async(userId: string, subscriber: string, accessToken: string) => {
-    const responseBody = await axios.delete(USER_CACNLE_API_URL(userId, subscriber),bearerAuthorization(accessToken))
+export const cancleFollowRequest = async (userId: string, subscriber: string, accessToken: string) => {
+    const responseBody = await axios.delete(USER_CACNLE_API_URL(userId, subscriber), bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './style.css';
 import AccuseComponentProps from '../../../types/accuseList.interface';
 import { useParams } from 'react-router';
@@ -9,14 +9,16 @@ import { ACCESS_TOKEN } from '../../../constants';
 import { useCookies } from 'react-cookie';
 import DiscussionData from '../../../types/discussionData.interface';
 import { useSignInUserStore } from '../../../stores';
+import Comment from '../../../types/Comment.interface';
 interface accuseModalProps {
     cancelHandler: () => void;
     accuse?: AccuseComponentProps;
-    discussionData: DiscussionData|null;
+    discussionData: DiscussionData | null;
+    commentData: Comment | null;
 }
 
 // component: 신고하기 모달창 컴포넌트 //
-export default function AccuseModal({ accuse, cancelHandler, discussionData }: accuseModalProps) {
+export default function AccuseModal({ accuse, cancelHandler, discussionData, commentData }: accuseModalProps) {
     const { roomId } = useParams<{ roomId: string }>();
     const [cookies] = useCookies();
     const { signInUser } = useSignInUserStore();
@@ -59,14 +61,15 @@ export default function AccuseModal({ accuse, cancelHandler, discussionData }: a
         const accuseDate = formatDate(now);
 
         const requestBody: PostAccuseRequestDto = {
-            reportType: 'POST',
+            reportType: reportTarget.type, // 자동으로 'POST' 또는 'COMMENT'가 설정됨
             reportContents: selectedReportReason,
             userId: discussionId as string,
-            accuseUserId: discussionData?.userId as string,
-            postId: reportTarget.id,
-            replyId: null,
-            accuseDate: accuseDate
-        }
+            accuseUserId: reportTarget.type === 'POST' ? discussionData?.userId as string : commentData?.userId as string,
+            postId: reportTarget.type === 'POST' ? reportTarget.id : null,
+            replyId: reportTarget.type === 'COMMENT' ? reportTarget.id : null, // 댓글 신고 시 replyId 설정
+            accuseDate: accuseDate,
+            accuseStatus: 'PENDING'
+        };
         postAccuseRequest(requestBody, accessToken).then(postAccuseResponse);
     };
 
@@ -88,6 +91,20 @@ export default function AccuseModal({ accuse, cancelHandler, discussionData }: a
 
         alert('정상적으로 신고가 접수되었습니다.');
     }
+
+    useEffect(() => {
+        if (commentData) {
+            setReportTarget({
+                type: 'COMMENT',
+                id: commentData.commentId, // commentData가 존재하면 id를 commentId로 설정
+            });
+        } else {
+            setReportTarget({
+                type: 'POST',
+                id: roomId ? parseInt(roomId, 10) : null,
+            });
+        }
+    }, [commentData, roomId]); // commentData나 roomId가 변경될 때 실행
 
     return (
         <div>

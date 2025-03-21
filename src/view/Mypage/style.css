@@ -16,6 +16,7 @@
         transform: translateY(0);
     }
 }
+
 /* .mypage-container {
     display: flex;
     gap: 20px;
@@ -89,10 +90,10 @@
     gap: 20px;
 }
 
-.mypage-wrapper .mypage-left-opstions {    
+.mypage-wrapper .mypage-left-opstions {
     display: flex;
     flex-direction: column;
-    flex:1;
+    flex: 1;
     width: 100%;
     gap: 20px;
 }
@@ -119,7 +120,7 @@
 }
 
 .mypage-wrapper .top-icon-setting {
-    display: flex; 
+    display: flex;
     flex-direction: column;
     justify-content: right;
     align-items: end;
@@ -137,6 +138,7 @@
 
     cursor: pointer;
 }
+
 .mypage-wrapper .menu-list {
     position: absolute;
     top: 60px;
@@ -166,6 +168,7 @@
     padding: 10px;
     cursor: pointer;
 }
+
 .mypage-wrapper .menu-item:hover {
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 15px;
@@ -187,7 +190,7 @@
     width: 70%;
 }
 
-.mypage-wrapper #main-profile{
+.mypage-wrapper #main-profile {
     width: 230px;
     height: 230px;
 
@@ -233,14 +236,11 @@
     margin-bottom: 20px;
 }
 
-.mypage-wrapper .mypage-user {
+.mypage-wrapper .mypage-user {}
 
-}
+.mypage-wrapper .subscribe-button-box {}
 
-.mypage-wrapper .subscribe-button-box {
-}
-
-.mypage-wrapper .subscribe-button{
+.mypage-wrapper .subscribe-button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -256,17 +256,18 @@
     background-color: black;
     color: white;
 }
+
 .mypage-wrapper .mypage-discussion-room-top {
     display: flex;
     margin-top: 55px;
     margin-bottom: 55px;
     justify-content: space-between;
-    
+
     position: relative;
 
     width: 100%
-
 }
+
 .mypage-wrapper .discussion-state-box {
     display: flex;
     width: 100px;
@@ -282,7 +283,7 @@
 }
 
 .mypage-wrapper .state-type-box {
-    
+
     gap: 20px;
     width: 100px;
     height: 100px;
@@ -295,13 +296,17 @@
     top: 60px;
 
     z-index: 100;
-    opacity: 0; /* 처음에 투명하게 설정 */
-    transform: translateY(-10px); /* 위에서 내려오는 효과 */
-    animation: slideIn 0.3s ease forwards; /* 보여지는 애니메이션 */
+    opacity: 0;
+    /* 처음에 투명하게 설정 */
+    transform: translateY(-10px);
+    /* 위에서 내려오는 효과 */
+    animation: slideIn 0.3s ease forwards;
+    /* 보여지는 애니메이션 */
 
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
-.mypage-wrapper .state-type{
+
+.mypage-wrapper .state-type {
     display: flex;
     flex-direction: column;
     text-align: center;
@@ -311,6 +316,7 @@
 
     cursor: pointer;
 }
+
 .mypage-wrapper .state-type:hover {
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 15px;
@@ -320,7 +326,7 @@
     font-size: 24px;
 }
 
-.mypage-wrapper .mypage-discussion-room{
+.mypage-wrapper .mypage-discussion-room {
     font-weight: bold;
     font-size: 24px;
 }
@@ -401,7 +407,7 @@
 
 .discussion-icon {
     background-image: url('/public/delete@2x.png');
-    
+
     width: 20px;
     height: 20px;
 
@@ -421,15 +427,18 @@
     background-color: rgba(255, 255, 255, 1);
     position: absolute;
     right: -20px;
-    
+
     align-items: center;
     justify-content: center;
 
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     z-index: 100;
-    opacity: 0; /* 처음에 투명하게 설정 */
-    transform: translateY(-10px); /* 위에서 내려오는 효과 */
-    animation: slideIn 0.3s ease forwards; /* 보여지는 애니메이션 */
+    opacity: 0;
+    /* 처음에 투명하게 설정 */
+    transform: translateY(-10px);
+    /* 위에서 내려오는 효과 */
+    animation: slideIn 0.3s ease forwards;
+    /* 보여지는 애니메이션 */
 }
 
 .edit-item {
@@ -444,6 +453,7 @@
     background-color: rgba(0, 0, 0, 0.2);
 
 }
+
 .discussion-contents {
 
     font-size: 16px;

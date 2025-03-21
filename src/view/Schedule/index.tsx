@@ -5,30 +5,31 @@ import interactionPlugin from '@fullcalendar/interaction';
 import './style.css';
 import ResponseDto from '../../apis/dto/response/response.dto';
 import { PostScheduleRequestDto } from '../../apis/dto/request/schedule';
-import { getScheduleListRequest, postScheduleRequest } from '../../apis';
+import { deleteScheduleRequest, getScheduleListRequest, postScheduleRequest } from '../../apis';
 import { useCookies } from 'react-cookie';
 import { ACCESS_TOKEN } from '../../constants';
 import ScheduleComponentProps from '../../types/schedule.interface';
 import { GetScheduleListResponseDto } from '../../apis/dto/response/schedule';
+import { useSignInUserStore } from '../../stores';
 
 export default function MyCalendar() {
 
     // state: cookie 상태 //
     const [cookies] = useCookies();
 
+    const { signInUser, setSignInUser } = useSignInUserStore();
+
     const [events, setEvents] = useState<ScheduleComponentProps[]>([]);
+    const [scheduleNumber, setScheduleNumber] = useState<number>(0);
     const [modalOpen, setModalOpen] = useState(false);
     const [currentEvent, setCurrentEvent] = useState<any>(null);
-    const [showWriteDaily, setShowWriteDaily] = useState(false);
-
-    const handleClick = () => {
-        setShowWriteDaily(true);
-    };
+    const [isAdmin, setIsAdmin] = useState(false);
 
     const handleEventClick = (clickInfo: any) => {
         setCurrentEvent(clickInfo.event);
         setModalOpen(true);
-        // alert(`이벤트: ${clickInfo.event.title}, 날짜: ${clickInfo.event.start}, locatioin: ${clickInfo.event.extendedProps.location}, description: ${clickInfo.event.extendedProps.description}`);
+        const scheduleNumber = clickInfo.event.extendedProps.scheduleNumber;
+        setScheduleNumber(scheduleNumber);
     };
 
     const formatDateString = (dateStr: string): string => {
@@ -47,7 +48,7 @@ export default function MyCalendar() {
         return {
             title: schedule.title,
             start: parsedDate ? parsedDate.toString() : undefined, // 변환된 날짜를 ISO 형식으로
-            extendedProps: { link: schedule.link, description: schedule.description }
+            extendedProps: { scheduleNumber: schedule.scheduleNumber, link: schedule.link, description: schedule.description }
         };
     }).filter(event => event.start !== null); // 유효하지 않은 날짜는 제외
 
@@ -91,10 +92,13 @@ export default function MyCalendar() {
             return;
         }
 
-        console.log('접근');
+        if (signInUser?.role == true) {
+            setIsAdmin(true);
+        }
+
         getScheduleListRequest(accessToken)
             .then((response) => getScheduleListResponse(response as GetScheduleListResponseDto | ResponseDto | null));
-    }, []);
+    }, [signInUser]);
 
     // component: 일정 작성 모달창 //
     function WriteDaily() {
@@ -141,7 +145,7 @@ export default function MyCalendar() {
             postScheduleRequest(requestBody, accessToken).then(postScheduleResponse);
 
             setModalOpen(false);
-            window.location.reload()
+            window.location.reload();
         };
 
         const handleClose = () => {
@@ -234,9 +238,37 @@ export default function MyCalendar() {
             setModalOpen(false);
         };
 
+        // event handler: 스케쥴 삭제 이벤트 처리 //
+        const onScheduleDeleteButtonClickHandler = async () => {
+            const accessToken = cookies[ACCESS_TOKEN];
+            if (!accessToken) {
+                alert('접근 권한이 없습니다');
+                return;
+            }
+
+            await deleteScheduleRequest(scheduleNumber, accessToken).then(deleteScheduleResponse);
+            setModalOpen(false);
+            window.location.reload();
+        }
+
+        const deleteScheduleResponse = (responseBody: ResponseDto | null) => {
+            const message =
+                !responseBody ? '서버에 문제가 있습니다.' :
+                    responseBody.code === 'VF' ? '유효하지 않은 데이터입니다.' :
+                        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+                            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+            const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+            if (!isSuccessed) {
+                alert(message);
+                return;
+            }
+            alert('삭제 되었습니다.');
+        }
+
         if (!currentEvent) return null; // 이벤트가 없으면 null 반환
         return (
-            <div className='modal-container' ref={modalBackground} onClick={e => {
+            <div className='schedule-modal-container' ref={modalBackground} onClick={e => {
                 if (e.target === modalBackground.current) {
                     setModalOpen(false);
                 }
@@ -276,7 +308,7 @@ export default function MyCalendar() {
                     </div>
                     <div className="button-group">
                         <button onClick={handleClose}>닫기</button>
-                        <button onClick={handleClose} className='delete-schedule'>삭제</button>
+                        {isAdmin && <button onClick={onScheduleDeleteButtonClickHandler} className='delete-schedule'>삭제</button>}
                     </div>
                 </div>
 
@@ -287,7 +319,7 @@ export default function MyCalendar() {
     // component: 달력 화면 //
     return (
         <div id='main-calendar'>
-            <WriteDaily />
+            {isAdmin && <WriteDaily />}
             <FullCalendar
                 plugins={[dayGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
@@ -309,7 +341,6 @@ export default function MyCalendar() {
                 }}
                 dayMaxEvents={3} // 최대 이벤트 수 설정
             />
-
             {modalOpen && <DetailDaily />}
         </div>
     );

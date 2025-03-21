@@ -18,19 +18,19 @@ const DEBOUNCE_DELAY = 200; // 0.2초 (200ms)
 interface TableRowProps {
     discussionList: DiscussionList;
     getDiscussionList: () => void;
-    postLike:(targetId:number, userId:string ,likeType:string, event:MouseEvent<HTMLDivElement>) => void;
-    click: {[key: number]: boolean};
-    
+    postLike: (targetId: number, userId: string, likeType: string, event: MouseEvent<HTMLDivElement>) => void;
+    click: { [key: number]: boolean };
+
 }
 
 // component: 일반 토론방 리스트 컴포넌트//
-function TableRow({ discussionList, getDiscussionList, postLike, click}: TableRowProps) {
-    
+function TableRow({ discussionList, getDiscussionList, postLike, click }: TableRowProps) {
+
     // state: 로그인 유저 //
     const { signInUser, setSignInUser } = useSignInUserStore();
     const user = signInUser?.userId ?? "";
 
-    
+
 
     // function: navigate 함수 처리 //
     const navigator = useNavigate();
@@ -44,13 +44,13 @@ function TableRow({ discussionList, getDiscussionList, postLike, click}: TableRo
     const checkStatus = (discussionEnd: string) => {
         const today = new Date().setHours(0, 0, 0, 0); // 오늘 날짜 (시간 제거)
         const endDate = new Date(discussionEnd).setHours(0, 0, 0, 0); // 문자열을 Date로 변환
-    
+
         return endDate < today ? "마감" : "진행중";
     };
     // event handler: 게시글 작성자 프로필 클릭 이벤트 처리 //
     const onProfileClickHandler = (event: MouseEvent<HTMLDivElement>) => {
         event.stopPropagation();
-        if(signInUser?.userId === discussionList.userId) navigator(MY_PATH);
+        if (signInUser?.userId === discussionList.userId) navigator(MY_PATH);
         else {
             document.cookie = `selectedUser=${discussionList.userId}; path=/;`;
             navigator(ANOTHER_USER_PROFILE_ABSOULTE_PATH);
@@ -89,12 +89,12 @@ function TableRow({ discussionList, getDiscussionList, postLike, click}: TableRo
                             <div className="date-and-status">
                                 <div className="deadline">마감 : {discussionList.discussionEnd}</div>
                                 <div className="modify">{discussionList.updateStatus ? '(수정됨)' : ''}</div>
-                                <div className={`progress-status ${checkStatus(discussionList.discussionEnd)==='마감'?'end':'active'}`}>{checkStatus(discussionList.discussionEnd)}</div>
+                                <div className={`progress-status ${checkStatus(discussionList.discussionEnd) === '마감' ? 'end' : 'active'}`}>{checkStatus(discussionList.discussionEnd)}</div>
                             </div>
                             <div className="comment-and-recommendation">
                                 <div className="comment-icon"></div>
                                 <div className="comment-count">{discussionList.commentCount}</div>
-                                <div className={`recommendation-icon ${ click[discussionList.roomId] ? 'active' : ''}`} onClick={(event)=>postLike(discussionList.roomId,user,'POST', event)} ></div>
+                                <div className={`recommendation-icon ${click[discussionList.roomId] ? 'active' : ''}`} onClick={(event) => postLike(discussionList.roomId, user, 'POST', event)} ></div>
                                 <div className="recommendation-count">{discussionList.likeCount}</div>
                             </div>
                         </div>
@@ -112,7 +112,7 @@ export default function GD() {
 
     // state: 쿠키 상태 //
     const [cookies] = useCookies();
-    
+
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState<string>('정렬순');
     const [likeClick, setLikeClick] = useState<{[key:number]:boolean}>({});
@@ -143,7 +143,7 @@ export default function GD() {
         onNextSectionClickHandler, } = usePagination<DiscussionList>();
 
     // state: zustand 일반 토론방 상태 //
-    const {category, setCategory} = useCategoryStore();
+    const { category, setCategory } = useCategoryStore();
     const [categoryItem, setCategoryItem] = useState(category);
 
     const toggleDropdown = () => {
@@ -151,7 +151,6 @@ export default function GD() {
     };
 
     const handleOptionSelect = (option: string) => {
-
         let sortedList = [...originalList];
 
         if (option === '최신순') {
@@ -198,20 +197,20 @@ export default function GD() {
     }
 
     // function: 일반 토론방 list 불러오기 함수 //
-    const getDiscussionList = async() => {
+    const getDiscussionList = async () => {
         const accessToken = cookies[ACCESS_TOKEN];
         if (!accessToken) return;
         await getDiscussionListRequest(accessToken).then(getDiscussionListResponse);
 
         await setViewList((prevList)=> prevList.filter((item)=>item.roomId !== discussion?.roomId));
-    
+
     }
 
     // event handler: 토론방 작성 클릭 이벤트 처리 //
     const handleWriteButtonClick = () => {
         navigator(GEN_DISC_WRITE_ABSOLUTE_PATH);
     };
-    
+
     // event handler: 토론방 카테고리 클릭 이벤트 처리 //
     const onCategoryHandler = (type: string) => {
         setCategory(type);
@@ -237,37 +236,39 @@ export default function GD() {
             if (event.key === 'Enter') {
                 onSearchButtonClickHandler();
             }
+
         }
+    }
 
     // function: post like response 처리 함수 //
-        const postLikeResponse = (responseBody: ResponseDto | null) => {
-            const message = !responseBody ? '서버에 문제가 있습니다. ': 
-                responseBody.code === 'AF' ? '잘못된 접근입니다. ':
-                responseBody.code === 'DL' ? '중복된 값입니다. ':
-                responseBody.code === 'NR' ? '존재하지 않는 토론방입니다. ':
-                responseBody.code === 'NM' ? '존재하지 않는 댓글입니다. ':
-                responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ': '';
-            const isSuccessd = responseBody !== null && responseBody.code === 'SU';
-            if (!isSuccessd){
-                alert(message);
-            }
+    const postLikeResponse = (responseBody: ResponseDto | null) => {
+        const message = !responseBody ? '서버에 문제가 있습니다. ' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다. ' :
+                responseBody.code === 'DL' ? '중복된 값입니다. ' :
+                    responseBody.code === 'NR' ? '존재하지 않는 토론방입니다. ' :
+                        responseBody.code === 'NM' ? '존재하지 않는 댓글입니다. ' :
+                            responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ' : '';
+        const isSuccessd = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessd) {
+            alert(message);
+        }
     }
 
     // function: delete like response 처리 함수 //
-        const deleteLikeResponse = (responseBody: ResponseDto | null) => {
-            const message = !responseBody ? '서버에 문제가 있습니다. ': 
-                responseBody.code === 'AF' ? '잘못된 접근입니다. ':
-                responseBody.code === 'NT' ? '잘못된 게시물(댓글)입니다. ':
-                responseBody.code === 'NP' ? '잘못된 접근입니다. ':
-                responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ': '';
-            const isSuccessd = responseBody !== null && responseBody.code === 'SU';
-            if (!isSuccessd){
-                alert(message);
-            }
+    const deleteLikeResponse = (responseBody: ResponseDto | null) => {
+        const message = !responseBody ? '서버에 문제가 있습니다. ' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다. ' :
+                responseBody.code === 'NT' ? '잘못된 게시물(댓글)입니다. ' :
+                    responseBody.code === 'NP' ? '잘못된 접근입니다. ' :
+                        responseBody.code === 'DBE' ? '서버에 문제가 있습니다. ' : '';
+        const isSuccessd = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessd) {
+            alert(message);
+        }
     }
 
     // event handler: 좋아요 버튼 클릭 이벤트 처리 //
-    const onLikeClickHandler = async(targetId: number, user:string, likeType: string, event: MouseEvent<HTMLDivElement> ) => {
+    const onLikeClickHandler = async (targetId: number, user: string, likeType: string, event: MouseEvent<HTMLDivElement>) => {
         event.stopPropagation();
         const accessToken = cookies[ACCESS_TOKEN];
         if (!targetId || !likeType || !accessToken || !user ) return;
@@ -313,7 +314,7 @@ export default function GD() {
     useEffect(()=>{
 
         getDiscussionList();
-        if(!category)return;
+        if (!category) return;
         setCategoryItem(category);
 
     }, [category]);
@@ -342,11 +343,12 @@ export default function GD() {
                             <div className='search-bar'>
                                 <div className="magnifier-and-search-input">
                                     <div className='magnifier'></div>
-                                    <input type="text" className="search-input" placeholder="검색어를 입력해주세요." value={searched} onChange={onSearchedChangeHandler} onKeyDown={handleKeyDown}/>
+                                    <input type="text" className="search-input" placeholder="검색어를 입력해주세요." value={searched} onChange={onSearchedChangeHandler} onKeyDown={handleKeyDown} />
                                 </div>
                                 <div className='search-button' onClick={onSearchButtonClickHandler}>검색</div>
                             </div>
                             <div className='sequence-choice'><button className='sequence-choice-button' type='button' onClick={toggleDropdown}>{selectedOption}</button></div>
+
                         </div>
                         {isDropdownOpen && (
                             <div className='dropdown-menu-box'>
