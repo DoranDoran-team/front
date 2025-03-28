@@ -19,4 +19,7 @@ export default interface GetSignInResponseDto extends ResponseDto{
     isLikeComment:CommentInfo[];
     subscribers: Subscribers[];
     subscribersCount: number | null;
+    accuseCount: number;
+    accuseState: boolean;
+    accuseTime: string;
 }

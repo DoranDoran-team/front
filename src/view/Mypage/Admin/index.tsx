@@ -100,9 +100,11 @@ export default function Admin() {
 
     // effect: 일반 사용자 관리자 마이페이지 이동 막기 //
     useEffect(() => {
-        if(!signInUser?.role) {
-            alert('접근권한이 없습니다.');
-            navigator(MAIN_ABSOLUTE_PATH);
+        if(signInUser) {
+            if(!signInUser.role) {
+                alert('접근권한이 없습니다.');
+                navigator(MAIN_ABSOLUTE_PATH);
+            }
         }
     }, [signInUser]);
     

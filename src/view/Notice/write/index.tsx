@@ -47,7 +47,14 @@ export default function NoticeWrite() {
         if(!title || !contents || !signInUser || !accessToken) return;
 
         const now = new Date();
-        const formattedDate = now.toISOString().split('T')[0];
+        const formattedDate = now.toLocaleString('ko-KR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        }).replace(/\. /g, '-').replace(/\.$/, '');     // 예: 2025-03-25 23:45:12
 
         const requestBody : PostNoticeRequestDto = {
             title, 

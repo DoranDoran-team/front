@@ -30,7 +30,7 @@ import GetMainGenDiscListResponseDto from "./dto/response/main/get-main-gen-disc
 import { GetDiscussionResponseDto } from "./dto/response/gd_discussion";
 import PostCommentRequestDto from "./dto/request/comment/post-comment.request.dto";
 import PatchCommentRequestDto from "./dto/request/comment/patch-comment.request.dto";
-import { PostAccuseRequestDto } from "./dto/request/accuse";
+import { PatchBlackListRequestDto, PostAccuseRequestDto } from "./dto/request/accuse";
 import GetAccuseListResponseDto from "./dto/response/accuse/get-accuse-list.response.dto";
 import GetAccuseResponseDto from "./dto/response/accuse/get-accuse.response.dto";
 import { PostAdminMileageRequestDto } from "./dto/request/mileage/post-admin-mileage.request.dto";
@@ -45,6 +45,7 @@ import PostUserFollowRequestDto from "./dto/request/follow/post-user-follow.requ
 import GetAccuseUserListResponseDto from "./dto/response/accuse/get-accuse-user-list.response.dto";
 import { GetNotificationsResponseDto } from "./dto/response/notification/get-notifications.reponse.dto";
 import GetSearchUserListResponseDto from "./dto/response/user/get-search-user-list.response.dto";
+import GetBlackListResponseDto from "./dto/response/accuse/get-black-list.response.dto";
 
 // variable: api url 상수//
 const DORANDORAN_API_DOMAIN = process.env.REACT_APP_API_URL;
@@ -102,6 +103,10 @@ const GET_ACCUSE_USER_LIST = (keyword: string) => `${DORANDORAN_API_DOMAIN}/accu
 const PATCH_ACCUSE_APROVED = (accuseId: number) => `${DORANDORAN_API_DOMAIN}/accuse/approve/${accuseId}`;
 const PATCH_ACCUSE_REJECTED = (accuseId: number) => `${DORANDORAN_API_DOMAIN}/accuse/rejected/${accuseId}`;
 
+//* ============ 관리자 마이페이지 - 신고
+const GET_BLACK_LIST_API_URL = `${DORANDORAN_API_DOMAIN}/accuse/get-black-list`;
+const CANCLE_BLACK_LIST_API_URL = `${DORANDORAN_API_DOMAIN}/accuse/cancel-black-list`;
+const SET_BLACK_LIST_API_URL = `${DORANDORAN_API_DOMAIN}/accuse/set-black-list`;
 
 const MILEAGE_API_URL = `${DORANDORAN_API_DOMAIN}/mypage/mileage`;
 const ADMIN_MILEAGE_API_URL = `${DORANDORAN_API_DOMAIN}/admin/mileage`;
@@ -386,7 +391,31 @@ export const patchAccuseApproved = async (accuseId: number, accessToken: string)
 export const patchAccuseRejected = async (accuseId: number, accessToken: string) => {
     const responseBody = await axios.patch(PATCH_ACCUSE_REJECTED(accuseId), {}, bearerAuthorization(accessToken))
         .then(responseDataHandler<ResponseDto>)
-        .catch(responseDataHandler);
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 활동 중지 리스트 가져오기 요청 함수 //
+export const getBlackListRequest = async(accessToken: string) => {
+    const responseBody = await axios.get(GET_BLACK_LIST_API_URL, bearerAuthorization(accessToken))
+        .then(responseDataHandler<GetBlackListResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 활동 중지 취소 요청 함수 //
+export const cancelBlackListRequest = async(requestBody: PatchBlackListRequestDto, accessToken: string) => {
+    const responseBody = await axios.patch(CANCLE_BLACK_LIST_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: 활동 중지 요청 함수 //
+export const setBlackListRequest = async(requestBody: PatchBlackListRequestDto, accessToken: string) => {
+    const responseBody = await axios.patch(SET_BLACK_LIST_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
     return responseBody;
 }
 
@@ -491,10 +520,6 @@ export const getNotifications = async (accessToken: string, page: number = 1) =>
         return [];
     }
 };
-
-// const formatNotificationMessage = (notification: GetNotificationsResponseDto) => {
-//     return notification.message;
-// };
 
 // function: 특정 알림 읽음 처리 PATCH 요청 함수 //
 export const markNotificationAsRead = async (notificationId: number, accessToken: string) => {

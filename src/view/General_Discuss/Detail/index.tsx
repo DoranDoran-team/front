@@ -1,4 +1,4 @@
-import React, { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
+import React, { MouseEvent, useEffect, useRef, useState } from 'react';
 import './style.css';
 import AccuseModal from '../../../components/modal/accuse';
 import { deleteCommentRequest, deleteLikeRequest, deleteMyDiscussionRequest, getDiscussionRequest, getLikeRequest, getVoteResultRequest, patchCommentRequest, postCommentRequest, postLikeRequest, postVoteRequest } from '../../../apis';
@@ -176,7 +176,13 @@ function Comments({ comment, depth, getDiscussion, postLike, click }: commentPro
     const handleReplySubmit = async (commentId: number) => {
 
         const accessToken = cookies[ACCESS_TOKEN];
-        if (!roomId || !accessToken || !discussionId) return;
+        if (!roomId || !accessToken || !discussionId || !signInUser) return;
+
+        if(signInUser.accuseCount >= 5 || signInUser.accuseState) {
+            alert("신고 5회 이상으로 활동 중지되었습니다.");
+            return;
+        }
+        
         const requestBody: PostCommentRequestDto = {
             userId: discussionId, contents: newReply, discussionType: '찬성', parentId: commentId
         }
@@ -382,6 +388,7 @@ function OpinionSelector({ agreeOpinion, oppositeOpinion, opinionAgreeUsers, opi
     const { roomId } = useParams();
     const { signInUser } = useSignInUserStore();
 
+    const navigator = useNavigate();
 
     const handleOpinionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSelectedOpinion(event.target.value);
@@ -409,6 +416,12 @@ function OpinionSelector({ agreeOpinion, oppositeOpinion, opinionAgreeUsers, opi
         const accessToken = cookies[ACCESS_TOKEN];
         const userId = signInUser?.userId;
         if (!roomId || !accessToken || !userId) return;
+
+        if(signInUser.accuseCount >= 5 || signInUser.accuseState) {
+            alert("신고 5회 이상으로 활동 중지되었습니다.");
+            return;
+        }
+
         const requestBody: PostVoteRequestDto = { voteChoice: selectedOpinion };
 
         if (selectedOpinion) {
@@ -574,7 +587,12 @@ export default function GDDetail() {
     const handleCommentSubmit = async () => {
 
         const accessToken = cookies[ACCESS_TOKEN];
-        if (!accessToken || !discussionId || !roomId) return;
+        if (!accessToken || !discussionId || !roomId || !signInUser) return;
+
+        if(signInUser.accuseCount >= 5 || signInUser.accuseState) {
+            alert("신고 5회 이상으로 활동 중지되었습니다.");
+            return;
+        }
 
         const requestBody: PostCommentRequestDto = {
             userId: discussionId, contents: newComment, discussionType: '찬성', parentId: commentId

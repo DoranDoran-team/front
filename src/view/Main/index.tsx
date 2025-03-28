@@ -120,8 +120,17 @@ export default function Main() {
                 <div className='main-general-discussion'>
                     <div className='main-general-box'>
                         <div className='main-general-photo'>
-                            <img src={posts[postIndex]?.imgSrc} className="general-image" 
-                                onClick={() => onGenDiscClickHandler(posts[postIndex].roomId)}/>
+                            <div 
+                                style={{
+                                    backgroundImage: `url(${posts[postIndex]?.imgSrc})`,
+                                    backgroundSize: 'cover',  // 배경 이미지를 커버하도록 설정
+                                    backgroundPosition: 'center',  // 배경 이미지를 중앙에 배치
+                                    width: '600px',  // 원하는 너비
+                                    height: '350px',  // 원하는 높이
+                                }} 
+                                className="general-image"
+                                onClick={() => onGenDiscClickHandler(posts[postIndex].roomId)}
+                            />
                         </div>
                     </div>
                 </div>

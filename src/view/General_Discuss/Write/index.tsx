@@ -83,6 +83,11 @@ export default function GDWrite() {
 
         if (!signInUser) return;
 
+        if(signInUser.accuseCount >= 5 || signInUser.accuseState) {
+            alert("신고 5회 이상으로 활동 중지되었습니다.");
+            return;
+        }
+
         if(signInUser.role) {
             alert("관리자는 작성이 불가합니다.");
             setShowModal(false);

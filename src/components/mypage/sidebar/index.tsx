@@ -21,15 +21,10 @@ export default function MypageSidebar() {
 
     // state: 로그인 유저 정보 상태 //
     const { signInUser, setSignInUser } = useSignInUserStore();
-    const { userId } = useParams();
 
     // state: 마이페이지 상태 //
     const [subscribe, setSubscribe] = useState<boolean>(false);
     const [subscribers, setSubscribers] = useState<Subscribers[]>([]);
-    const [searchWord, setSearchWord] = useState<string>('');
-
-    // state: 원본 리스트 상태 //
-    const [originalList, setOriginalList] = useState<Subscribers[]>([]);
 
     // state: 검색어, 검색 결과, 드롭다운 열림 여부
     const [searchTerm, setSearchTerm] = useState<string>('');
@@ -66,13 +61,6 @@ export default function MypageSidebar() {
     const naviagateToAttendance = () => {
         navigator(MY_ABSOLUTE_ATTENDANCE_CHECK_PATH);
     }
-
-    // event handler: 공지사항 검색 버튼 //
-    const onSearchButtonHandler = () => {
-        const searchedList = originalList.filter(notice => notice.userId.includes(searchWord));
-        setTotalList(searchedList);
-        initViewList(searchedList);
-    };
 
     const performSearch = async (keyword: string) => {
         if (!keyword.trim()) {
@@ -202,9 +190,6 @@ export default function MypageSidebar() {
 
         const [cookies, setCookie] = useCookies();
         const accessToken = cookies[ACCESS_TOKEN];
-        const userId = getCookie(SELECTED_USER);
-
-        const [id, setId] = useState<string>('');
 
         // event handler: 상대방 프로필 클릭 이벤트 핸들러 //
         const onProfileClickHandler = () => {

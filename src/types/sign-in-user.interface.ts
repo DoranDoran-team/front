@@ -13,5 +13,7 @@ export default interface SignInUser {
     statusMessage : string | null;
     subscribers: Subscribers[];
     subscribersCount: number | null;
-  
+    accuseCount: number;
+    accuseState: boolean;
+    accuseTime: string;
 }
