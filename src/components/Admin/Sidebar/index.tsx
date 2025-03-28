@@ -1,15 +1,26 @@
-import React, { MouseEvent, useState } from 'react';
+import React, { MouseEvent, useEffect, useState } from 'react';
 import './style.css';
-import { ADMIN_ABSOULTE_PATH, ADMIN_ABSOLUTE_ACCUSE_PATH, ADMIN_ABSOLUTE_MILEAGE_PATH, ANOTHER_USER_PROFILE_ABSOULTE_PATH } from '../../../constants';
+import { ADMIN_ABSOULTE_PATH, ADMIN_ABSOLUTE_ACCUSE_PATH, ADMIN_ABSOLUTE_MILEAGE_PATH, ANOTHER_USER_PROFILE_ABSOULTE_PATH, ACCESS_TOKEN, MAIN_ABSOLUTE_PATH } from '../../../constants';
 import { useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
-import { searchUsersRequest } from '../../../apis';
+import { cancelBlackListRequest, getBlackListRequest, searchUsersRequest, setBlackListRequest } from '../../../apis';
+import { useSignInUserStore } from '../../../stores';
+import BlackList from '../../../types/blackList.interface';
+import GetBlackListResponseDto from '../../../apis/dto/response/accuse/get-black-list.response.dto';
+import ResponseDto from '../../../apis/dto/response/response.dto';
+import { PatchBlackListRequestDto } from '../../../apis/dto/request/accuse';
+
+interface BlackListProps {
+    black: BlackList
+}
 
 export default function AdminSideBar() {
     const [menuIndex, setMenuIndex] = useState<number | null>(null);
     const navigate = useNavigate();
     const [cookies] = useCookies();
     const accessToken = cookies['accessToken'];
+    const { signInUser, setSignInUser } = useSignInUserStore();
+    const [blackList, setBlackList] = useState<BlackList[]>([]);
 
     const goToAdminHome = () => navigate(ADMIN_ABSOULTE_PATH);
     const goToRTManagement = () => navigate(ADMIN_ABSOULTE_PATH);
@@ -76,14 +87,131 @@ export default function AdminSideBar() {
         document.cookie = "yourCookieName=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     }
 
-    // 활동 중지(블랙리스트) 처리 – 추후 기능 구현
-    const onSuspendUser = (userId: string) => {
-        alert(`(활동 중지 기능 미구현) ${userId} 유저의 활동을 중지합니다.`);
+    // event handler: 활동 중지(블랙리스트) 처리 //
+    const onSuspendUser = (event: MouseEvent<HTMLDivElement>, userId: string) => {
+        event.stopPropagation();
+        if(!accessToken) return;
+            const requestBody: PatchBlackListRequestDto =  {
+                userId: userId
+            }
+        setBlackListRequest(requestBody, accessToken).then(setBlackListResponse);
     };
 
     // 일반 유저 아이디 검색, 관리자 아이디 걸러내기
     const filteredResults = searchResults.filter(user => !user.role);
 
+    // function: 활동 중지 리스트 가져오기 처리 함수 //
+    const getBlackListResponse = (responseBody: GetBlackListResponseDto | ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'VF' ? '일치하는 정보가 없습니다.' :
+            responseBody.code === 'AF' ? '일치하는 정보가 없습니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' : '';
+                        
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+                        
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        } else {
+            const {blackLists} = responseBody as GetBlackListResponseDto;
+            setBlackList(blackLists);
+        }
+    }
+
+    // function: 활동 중지 설정 응답 처리 //
+    const setBlackListResponse = (responseBody: ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'VF' ? '일치하는 정보가 없습니다.' :
+            responseBody.code === 'AF' ? '일치하는 정보가 없습니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' : '';
+                        
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+                        
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        } else {
+            alert(`활동 중지 처리 완료.`);
+            window.location.reload();
+        }
+    }
+
+    // component: 활동 중지 리스트 컴포넌트 //
+    function BlackList({black}: BlackListProps) {
+
+        // state: //
+        const accessToken = cookies[ACCESS_TOKEN];
+
+        // event handler: 프로필 클릭 이벤트 핸들러 //
+        const onProfileClickHandler = () => {
+            document.cookie = `selectedUser=${black.userId}; path=/;`;
+            navigator(ANOTHER_USER_PROFILE_ABSOULTE_PATH);
+            document.cookie = "yourCookieName=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        }
+        
+        // event handler: 취소 버튼 클릭 이벤트 핸들러 //
+        const onCancleClickHandler = (event: MouseEvent<HTMLDivElement>) => {
+            event.stopPropagation();
+            if(!accessToken) return;
+            const requestBody: PatchBlackListRequestDto =  {
+                userId: black.userId
+            }
+            cancelBlackListRequest(requestBody, accessToken).then(cancelBlackListResponse);
+        }
+
+        // function: 활동 중지 취소 처리 함수 //
+        const cancelBlackListResponse = (responseBody: ResponseDto | null) => {
+            const message =
+                !responseBody ? '서버에 문제가 있습니다.' :
+                responseBody.code === 'VF' ? '일치하는 정보가 없습니다.' :
+                responseBody.code === 'AF' ? '일치하는 정보가 없습니다.' :
+                responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
+                responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' : '';
+
+            const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+                    
+            if (!isSuccessed) {
+                alert(message);
+                return;
+            } else {
+                alert("활동 중지 취소되었습니다.");
+                window.location.reload();
+            }
+        }
+
+        // render: //
+        return (
+            <div className="blacklist-box" onClick={onProfileClickHandler}>
+                <div className="blacklist-image"
+                    style={{ backgroundImage: `url(${black.profileImage || '/public/mypage/profile1.png'})` }}></div>
+                <div className="blacklist-user-info">
+                    <div className="blacklist-nickname">{black.nickName}</div>
+                    <div className="blacklist-user">@{black.userId}</div>
+                </div>
+                <div className="blacklist-cancel-button">
+                    <div className="blacklist-cancel" onClick={onCancleClickHandler}>취소</div>
+                </div>
+            </div>
+        )
+    }
+
+    // effect: 블랙 리스트 가져오기 //
+    useEffect(() => {
+        if(signInUser) {
+            if(!signInUser.role) {
+                alert('접근권한이 없습니다.');
+                navigator(MAIN_ABSOLUTE_PATH);
+            }else {
+                getBlackListRequest(accessToken).then(getBlackListResponse);
+            }
+        }
+    }, [signInUser]);
+
+    // render: 관리자 마이페이지 사이드바 렌더링 //
     return (
         <div className="admin-sidebar-container">
             <aside className="admin-sidebar">
@@ -132,23 +260,14 @@ export default function AdminSideBar() {
                                             <div className="search-result-nickname">{user.nickName}</div>
                                             <div className="search-result-userId">@{user.userId}</div>
                                         </div>
-                                        <div className="search-suspend-button" onClick={() => onSuspendUser(user.userId)}>
+                                        <div className="search-suspend-button" onClick={(event) => onSuspendUser(event, user.userId)}>
                                             활동 중지</div>
                                     </div>
                                 ))
                             )}
                     </div>
                 )}
-                <div className="blacklist-box">
-                    <div className="blacklist-image"></div>
-                    <div className="blacklist-user-info">
-                        <div className="blacklist-nickname">사용자이름</div>
-                        <div className="blacklist-user">@user123</div>
-                    </div>
-                    <div className="blacklist-cancel-button">
-                        <div className="blacklist-cancel">취소</div>
-                    </div>
-                </div>
+                {blackList.map((black) => <BlackList key={black.userId} black={black}/>)}
             </div>
         </div>
     );

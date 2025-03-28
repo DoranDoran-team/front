@@ -158,7 +158,7 @@
     border: 1px solid #666;
     border-radius: 15px;
     padding: 5px 10px;
-    font-size: 13px;
+    font-size: 11px;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
     background-color: #fff;
@@ -181,7 +181,7 @@
 
 .blacklist-image {
     width: 85px;
-    height: 69px;
+    height: 85px;
     border-radius: 50%;
     background-image: url('/public/mypage/profile1.png');
     background-position: 50% 50%;

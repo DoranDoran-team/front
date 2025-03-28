@@ -24,7 +24,7 @@ export function NoticeRow({ notice, getNoticeList, onDetailClickHandler, index }
 
     // function: 날짜 변환 함수 //
     const formatDate = (dateString: string): string => {
-        return dateString.replace(/-/g, ".");
+        return dateString.split('-').slice(0, 3).join('.');
     };
 
     // render: NoticeRow 컴포넌트 렌더링 //
@@ -42,7 +42,7 @@ export function TopNotice({ notice, getNoticeList, onDetailClickHandler }: Table
     
     // function: 날짜 변환 함수 //
     const formatDate = (dateString: string): string => {
-        return dateString.replace(/-/g, ".");
+        return dateString.split('-').slice(0, 3).join('.');
     };
 
     // render: 상단 고정 공지사항 컴포넌트 렌더링 //

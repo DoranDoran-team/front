@@ -3,10 +3,12 @@ import './style.css';
 import { useSignInUserStore } from '../../../stores';
 import { ACCESS_TOKEN, NOTICE_ABSOLUTE_PATH, NOTICE_DETAIL_ABSOLUTE_PATH } from '../../../constants';
 import { useCookies } from 'react-cookie';
-import { deleteNoticeRequest, getNoticeDetailRequest } from '../../../apis';
+import { deleteNoticeRequest, getNoticeDetailRequest, getNoticeListRequest } from '../../../apis';
 import { useNavigate, useParams } from 'react-router-dom';
 import GetNoticeDetailResponseDto from '../../../apis/dto/response/notice/Get-notice-detail.response.dto';
 import ResponseDto from '../../../apis/dto/response/response.dto';
+import GetNoticeListResponseDto from '../../../apis/dto/response/notice/Get-notice-list.response.dto';
+import NoticeList from '../../../types/notice.interface';
 
 // component: 공지사항 상세보기 화면 컴포넌트 //
 export default function NoticeDetail() {
@@ -26,19 +28,15 @@ export default function NoticeDetail() {
     const [noticeId, setNoticeId] = useState<number>(0);
     const [noticeDate, setNoticeDate] = useState<string>('');
     const [contents, setContents] = useState<String>('');
-    const [preTitle, setPreTitle] = useState<String>('');
+    const [preTitle, setPreTitle] = useState<string>('');
     const [nextTitle, setNextTitle] = useState<string>('');
+    const [noticeList, setNoticeList] = useState<NoticeList[]>([]);
 
     // variable: access token //
     const accessToken = cookies[ACCESS_TOKEN];
 
     // function: navigator //
     const navigator = useNavigate();
-
-    // event handler: 수정 버튼 클릭 이벤트 핸들러 //
-    const onPatchNoticeClickHandler = () => {
-
-    }
 
     // event handler: 삭제 버튼 클릭 이벤트 핸들러 //
     const onDeleteNoticeClickHandler = () => {
@@ -52,25 +50,55 @@ export default function NoticeDetail() {
 
     // event handler: 이전글 클릭 이벤트 핸들러 //
     const onPreNoticeClickHandler = () => {
-        navigator(NOTICE_DETAIL_ABSOLUTE_PATH((noticeId - 1)));
-        window.location.reload();
-    }
-
+        const currentIndex = noticeList.findIndex(notice => notice.noticeId === noticeId);
+        if (currentIndex + 1 < noticeList.length) {
+            const prevNotice = noticeList[currentIndex + 1];  // ✅ currentIndex + 1 = 이전 글
+            navigator(NOTICE_DETAIL_ABSOLUTE_PATH(prevNotice.noticeId));
+        }
+    };
+    
     // event handler: 다음글 클릭 이벤트 핸들러 //
     const onNextNoticeClickHandler = () => {
-        navigator(NOTICE_DETAIL_ABSOLUTE_PATH((noticeId + 1)));
-        window.location.reload();
-    }
+        const currentIndex = noticeList.findIndex(notice => notice.noticeId === noticeId);
+        if (currentIndex - 1 >= 0) {
+            const nextNotice = noticeList[currentIndex - 1];  // ✅ currentIndex - 1 = 다음 글
+            navigator(NOTICE_DETAIL_ABSOLUTE_PATH(nextNotice.noticeId));
+        }
+    };
 
     // function: notice detail 불러오기 함수 //
     const getNoticeDetail = () => {
         if(!accessToken || !noticeNumber) return;
         
-        getNoticeDetailRequest(noticeNumber, accessToken).then(getNoticeListResponse);
+        getNoticeDetailRequest(noticeNumber, accessToken).then(getNoticeDetailResponse);
+
+        // 전체 공지사항 목록 불러오기 (날짜 정렬을 위해 필요)
+        getNoticeListRequest(accessToken).then((response) => {
+            if (response && response.code === 'SU') {
+                // 날짜 순으로 정렬 (최신 글이 뒤로 가도록 오름차순 정렬)
+                const { notices } = response as GetNoticeListResponseDto;
+                const sortedNotices = notices.sort((a, b) => 
+                    new Date(b.noticeDate).getTime() - new Date(a.noticeDate).getTime()
+                );
+                setNoticeList(sortedNotices);
+
+                // noticeList 세팅 후 이전/다음 제목 세팅
+                const currentNoticeId = Number(noticeNumber);
+                const currentIndex = sortedNotices.findIndex(notice => notice.noticeId === currentNoticeId);
+
+                if (currentIndex + 1 < sortedNotices.length) {
+                    setPreTitle(sortedNotices[currentIndex + 1].title);
+                } else setPreTitle('이전 글이 없습니다.');
+                
+                if (currentIndex - 1 >= 0) {
+                    setNextTitle(sortedNotices[currentIndex - 1].title);
+                } else setNextTitle('다음 글이 없습니다.');
+            }
+        });
     };
 
     // function: getNoticeDetail response 처리 함수 //
-    const getNoticeListResponse = (responseBody: GetNoticeDetailResponseDto | ResponseDto | null) => {
+    const getNoticeDetailResponse = (responseBody: GetNoticeDetailResponseDto | ResponseDto | null) => {
         const message =
             responseBody === null ? '서버에 문제가 있습니다.' :
             responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
@@ -89,13 +117,11 @@ export default function NoticeDetail() {
         setNoticeDate(noticeDate);
         setContents(contents);
         setNoticeId(noticeId);
-        setPreTitle(preTitle);
-        setNextTitle(nextTitle);
     };
 
     // function: 날짜 변환 함수 //
     const formatDate = (dateString: string): string => {
-        return dateString.replace(/-/g, ".");
+        return dateString.split('-').slice(0, 3).join('.');
     };
 
     // function: delete notice response 처리 함수 //
@@ -112,11 +138,10 @@ export default function NoticeDetail() {
         }
         alert("삭제되었습니다.");
         navigator(NOTICE_ABSOLUTE_PATH);
-        window.location.reload();
     }
 
     // effect: 컴포넌트 로드시 공지사항 리스트 불러오기 함수 //
-    useEffect(getNoticeDetail, [signInUser]);
+    useEffect(getNoticeDetail, [noticeNumber]);
 
     // render: 공지사항 상세보기 화면 렌더링 //
     return (
