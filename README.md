@@ -63,8 +63,7 @@ JWT(Json Web Token), AuthenticationPrincipal(annotation) 활용하여 보안에 
 
 프로젝트의 주요 폴더 구조는 다음과 같습니다: 
 ``` 
-FRONT/   
-  ┣ images/ # README에 사용될 이미지 파일들   
+FRONT/    
   ┣ node_modules/ # npm 종속성 모듈들이 설치된 폴더  
   ┣ public/ # 정적 파일이 포함된 폴더 (HTML, favicon 등)  
   ┣ src/ # 애플리케이션의 핵심 소스 코드가 있는 폴더  
@@ -251,4 +250,5 @@ Notice, 개인 정보 수정, 유저 간 팔로우 </td>
 ## 라이선스
     GPL License
     Copyright (c) 2025 [DoranDoran]
+
 
