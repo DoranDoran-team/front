@@ -159,34 +159,34 @@ FRONT/
 ### 도란도란 서비스 일부 화면입니다.  
 
 #### 1. 로그인 화면
-![로그인](images/login.JPG)
+![로그인](login.JPG)
 
 #### 2. 메인 화면
-![메인 화면](images/main.JPG)
+![메인 화면](main.JPG)
 
 #### 3. 알림창
-![알림창](images/alarm.JPG)
+![알림창](alarm.JPG)
 
 #### 4. 일반 토론 게시판
-![일반 토론 게시판](images/generalDiscussion.JPG)
+![일반 토론 게시판](generalDiscussion.JPG)
 
 #### 5. 일반 토론 게시글
-![일반 토론 게시글](images/generalDiscusisonDetail.JPG)
+![일반 토론 게시글](generalDiscusisonDetail.JPG)
 
 #### 6. 일정 관리
-![일정 관리](images/schedule2.JPG)
+![일정 관리](schedule2.JPG)
 
 #### 7. 마이페이지
-![마이페이지](images/mypage.JPG)
+![마이페이지](mypage.JPG)
 
 #### 8. 출석 체크
-![출석 체크](images/attendanceCheck.JPG)
+![출석 체크](attendanceCheck.JPG)
 
 ---
 
 ## 제작 기간
 ### Timeline
-![대체 텍스트](images/progess.png)
+![대체 텍스트](progess.png)
 
 ### Team Roles
 
@@ -251,3 +251,4 @@ Notice, 개인 정보 수정, 유저 간 팔로우 </td>
 ## 라이선스
     GPL License
     Copyright (c) 2025 [DoranDoran]
+
