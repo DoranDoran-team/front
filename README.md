@@ -120,13 +120,13 @@ FRONT/
    npm install @typescript@4.9.5
    npm install @web-vitals@2.1.4
    npm install @zustand@5.0.3
-```
+   ```
 
 4. 개발 서버 실행
 
-  ``` bash 
-    npm run start
-  ```
+      ``` bash 
+        npm run start
+      ```
 
 5. 웹 브라우저에서 http://localhost:3000 열기
 
@@ -186,7 +186,7 @@ FRONT/
 
 ## 제작 기간
 ### Timeline
-![대체 텍스트](images/progess.png)
+![제작 기간](images/progess.png)
 
 ### Team Roles
 
@@ -251,3 +251,4 @@ Notice, 개인 정보 수정, 유저 간 팔로우 </td>
 ## 라이선스
     GPL License
     Copyright (c) 2025 [DoranDoran]
+
