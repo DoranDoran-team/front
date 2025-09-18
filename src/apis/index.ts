@@ -43,7 +43,6 @@ import GetLikeListResponseDto from "./dto/response/like/get-like.response.dto";
 import GetUserProfileResponseDto from "./dto/response/mypage/another_user/get-user-profile.response.dto";
 import PostUserFollowRequestDto from "./dto/request/follow/post-user-follow.request.dto";
 import GetAccuseUserListResponseDto from "./dto/response/accuse/get-accuse-user-list.response.dto";
-import { GetNotificationsResponseDto } from "./dto/response/notification/get-notifications.reponse.dto";
 import GetSearchUserListResponseDto from "./dto/response/user/get-search-user-list.response.dto";
 import GetBlackListResponseDto from "./dto/response/accuse/get-black-list.response.dto";
 
@@ -672,13 +671,13 @@ export const patchUserInfoRequest = async (requestBody: PatchUserInfoRequestDto,
     return responseBody;
 }
 
-// function: 회원 탈퇴 요청 함수 //
-export const deleteUserRequest = async (accessToken: string) => {
-    const responseBody = await axios.delete(MYPAGE_USER_DELETE_API_URL, bearerAuthorization(accessToken))
-        .then(responseDataHandler<ResponseDto>)
-        .catch(responseErrorHandler);
-    return responseBody;
-}
+// // function: 회원 탈퇴 요청 함수 //
+// export const deleteUserRequest = async(accessToken: string) => {
+//     const responseBody = await axios.post(MYPAGE_USER_DELETE_API_URL, bearerAuthorization(accessToken))
+//         .then(responseDataHandler<ResponseDto>)
+//         .catch(responseErrorHandler);
+//     return responseBody;
+// }
 
 // function: 마이페이지 - 내가 작성한 게시글 불러오기 함수 //
 export const getMyDiscussionRequest = async (accessToken: string) => {

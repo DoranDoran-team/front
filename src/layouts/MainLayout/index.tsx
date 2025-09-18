@@ -71,10 +71,10 @@ function TopNavigation() {
                     <div className='item-text'>실시간 토론</div>
                 </a>
                 <div className={`navigation-item ${isNotice ? 'active' : ''}`} onClick={() => onItemClickHandler(NOTICE_ABSOLUTE_PATH)}>
-                    <div className='item-text'>공지사항</div>
+                    <div className='item-text'>공지 사항</div>
                 </div>
                 <div className={`navigation-item ${isSchedule ? 'active' : ''}`} onClick={() => onItemClickHandler(SCHEDULE_ABSOLUTE_PATH)}>
-                    <div className='item-text'>일정관리</div>
+                    <div className='item-text'>일정 관리</div>
                 </div>
             </div>
         </div>

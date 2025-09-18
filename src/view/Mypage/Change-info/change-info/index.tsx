@@ -1,10 +1,10 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import './style.css'
 import { useNavigate } from 'react-router-dom';
-import { ACCESS_TOKEN, MY_ABSOLUTE_PATH, ROOT_ABSOLUTE_PATH } from '../../../../constants';
+import { ACCESS_TOKEN, MY_ABSOLUTE_PATH} from '../../../../constants';
 import { useSignInUserStore } from '../../../../stores';
 import { useCookies } from 'react-cookie';
-import { changePwRequest, deleteUserRequest, getUserInfoRequest, patchUserInfoRequest, telAuthCheckRequest, telAuthRequest } from '../../../../apis';
+import { changePwRequest, getUserInfoRequest, patchUserInfoRequest, telAuthCheckRequest, telAuthRequest } from '../../../../apis';
 import GetUserInfoResponseDto from '../../../../apis/dto/response/mypage/myInfo/get-user-info.response.dto';
 import ResponseDto from '../../../../apis/dto/response/response.dto';
 import PatchUserInfoRequestDto from '../../../../apis/dto/request/mypage/myInfo/patch-user-info.request.dto';
@@ -12,6 +12,7 @@ import TelAuthRequestDto from '../../../../apis/dto/request/auth/tel-auth.reques
 import TelAuthCheckRequestDto from '../../../../apis/dto/request/auth/tel-auth-check.request.dto';
 import ChangePwRequestDto from '../../../../apis/dto/request/mypage/myInfo/change-pw.request.dto';
 import MypageSidebar from '../../../../components/mypage/sidebar';
+
 
 // component: 개인정보 수정 화면 컴포넌트 //
 export default function ChangeInfo() {
@@ -160,12 +161,16 @@ export default function ChangeInfo() {
         else return;
     }
 
-    // event handler: 탈퇴 버튼 클릭 이벤트 핸들러 //
-    const onSecesstionClickHandler = () => {
-        const isConfirm = window.confirm('정말로 탈퇴하시겠습니까?');
-        if (!isConfirm) return;
-        deleteUserRequest(accessToken).then(deleteUserResponse);
-    }
+    // // event handler: 탈퇴 버튼 클릭 이벤트 핸들러 //
+    // const onSecesstionClickHandler = () => {
+    //     const isConfirm = window.confirm('정말로 탈퇴하시겠습니까?');
+    //     if (!isConfirm) return;
+    //     if(!signInUser || !accessToken) return;
+    //     const requestBody: DeleteUserRequestDto = {
+    //         userId : signInUser.userId
+    //     };
+    //     deleteUserRequest(accessToken).then(deleteUserResponse);
+    // }
 
     // function: navigator //
     const navigator = useNavigate();
@@ -265,28 +270,27 @@ export default function ChangeInfo() {
         }
     };
 
-    // function: 회원 탈퇴 Response 처리 함수 //
-    const deleteUserResponse = (responseBody: ResponseDto | null) => {
+    // // function: 회원 탈퇴 Response 처리 함수 //
+    // const deleteUserResponse = (responseBody: ResponseDto | null) => {
 
-        const message =
-            !responseBody ? '서버에 문제가 있습니다.' :
-                responseBody.code === 'VF' ? '일치하는 정보가 없습니다.' :
-                    responseBody.code === 'AF' ? '일치하는 정보가 없습니다.' :
-                        responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
-                            responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' :
-                                responseBody.code === 'MP' ? '비밀번호가 일치하지 않습니다.' : '';
+    //     const message =
+    //         !responseBody ? '서버에 문제가 있습니다.' :
+    //         responseBody.code === 'VF' ? '일치하는 정보가 없습니다.' :
+    //         responseBody.code === 'AF' ? '일치하는 정보가 없습니다.' :
+    //         responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
+    //         responseBody.code === 'NI' ? '존재하지 않는 사용자입니다.' :'';
 
-        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+    //     const isSuccessed = responseBody !== null && responseBody.code === 'SU';
 
-        if (!isSuccessed) {
-            alert(message);
-            return;
-        } else {
-            alert('탈퇴가 완료되었습니다.');
-            removeCookie(ACCESS_TOKEN, { path: ROOT_ABSOLUTE_PATH });
-            navigator(ROOT_ABSOLUTE_PATH);
-        }
-    };
+    //     if (!isSuccessed) {
+    //         alert(message);
+    //         return;
+    //     } else {
+    //         alert('탈퇴가 완료되었습니다.');
+    //         removeCookie(ACCESS_TOKEN, { path: ROOT_ABSOLUTE_PATH });
+    //         navigator(ROOT_ABSOLUTE_PATH);
+    //     }
+    // };
 
     // effect: 회원 정보 받기 //
     useEffect(() => {
@@ -294,8 +298,6 @@ export default function ChangeInfo() {
         if (!accessToken || !signInUser) {
             return;
         }
-
-        //getNewInfo(accessToken, signInUser.userId).then(getNewInfoResponse);
     }, [signInUser]);
 
     // useRef로 interval을 관리
@@ -497,12 +499,13 @@ export default function ChangeInfo() {
                     <div className='changePWbtn' onClick={onChangePwBtnClickHandler}>비밀번호 변경</div>
                     {modalOpen && <ChangePassword/>}
 
-                    <div style={{ display: "flex", flexDirection: "row", marginTop: "60px" }}>
+                    {/* <div style={{ display: "flex", flexDirection: "row", marginTop: "60px" }}>
                         <div className='secession-btn' onClick={onSecesstionClickHandler}>탈퇴</div>
-                        <div className='btn-box'>
-                            <div className='update-btn' onClick={onUpdateClickHandler}>수정</div>
-                            <div className='cancle-btn' onClick={onCancleClickHandler}>취소</div>
-                        </div>
+                        
+                    </div> */}
+                    <div className='btn-box'>
+                        <div className='update-btn' onClick={onUpdateClickHandler}>수정</div>
+                        <div className='cancle-btn' onClick={onCancleClickHandler}>취소</div>
                     </div>
 
                 </div>

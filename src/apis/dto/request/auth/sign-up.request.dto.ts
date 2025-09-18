@@ -10,4 +10,5 @@ export default interface SignUpRequestDto {
     telAuthNumber: string;
     accuseCount: number;
     mileage: number;
+    ceaseCount: number;
 }

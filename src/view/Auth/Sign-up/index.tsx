@@ -255,7 +255,8 @@ export default function SignUp() {
             snsId: null,
             birth,
             accuseCount: 0,
-            mileage: 0
+            mileage: 0,
+            ceaseCount: 0
         }
         signUpRequest(requestBody).then(signUpResponse);
     }
