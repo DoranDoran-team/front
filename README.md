@@ -108,7 +108,7 @@ FRONT/
    ```bash
    npm install @fullcalendar/react@6.1.15, @fullcalendar/timegrid@6.1.15  
    npm install @stomp/stompjs@7.0.0  
-   npm install@testing-library/jest-dom@5.17.0, @testing-library/react@13.4.0, @testing-library/user-event@13.5.0  
+   npm install @testing-library/jest-dom@5.17.0, @testing-library/react@13.4.0, @testing-library/user-event@13.5.0  
    npm install @types/jest@27.5.2, @types/node@16.18.123, @types/react-dom@18.3.5, @types/react@18.3.18  
    npm install @axios@1.7.9
    npm install @cookie@1.0.2, @cookies@0.9.1  
@@ -250,5 +250,6 @@ Notice, 개인 정보 수정, 유저 간 팔로우 </td>
 ## 라이선스
     GPL License
     Copyright (c) 2025 [DoranDoran]
+
 
 
